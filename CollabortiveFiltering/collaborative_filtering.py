@@ -157,3 +157,11 @@ def average_prediction_collaborative_filtering(item_based_prediction: dict, user
         rmse(average_prediction, user_mean)))
 
     return average_prediction
+
+
+def dict_to_sets_list(myDict: dict) -> list:
+    # convert the dictionary to a list of sets
+    myList = []
+    for item in myDict:
+        myList.append({item, myDict[item]})
+    return myList
