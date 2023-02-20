@@ -1,2 +1,4 @@
 *.csv
 __pycache__
+
+dataset/goodreads_reviews_dedup.json
