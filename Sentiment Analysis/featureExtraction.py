@@ -9,7 +9,7 @@ from sklearn.svm import SVC
 
 def dataSplit(df):
     #Splitting the data into train and test
-    X_train,X_test,Y_train, Y_test = train_test_split(df['review'], df['sentiment'], test_size=0.25, random_state=30)
+    X_train,X_test,Y_train, Y_test = train_test_split(df['review_text'], df['sentiment'], test_size=0.25, random_state=30)
     print("Train: ",X_train.shape,Y_train.shape,"Test: ",(X_test.shape,Y_test.shape))
     return X_train,X_test,Y_train, Y_test
     
@@ -19,7 +19,7 @@ def save_model(classifier, path: str):
     pickle.dump(classifier, open(rPath, 'wb'))
 
 def load_model(path: str):
-    rPath='Sentiment analysis models/'+path
+    rPath='models/'+path
     if not os.path.exists(rPath):
         raise Exception('Model not found')
     return pickle.load(open(rPath, 'rb'))
@@ -28,15 +28,16 @@ def featureExtractionTFIDF(X_train,X_test):
     #Feature Extraction using TF-IDF
     print("TFIDF Vectorizer……")
     tfidf = TfidfVectorizer(min_df=0.0, max_df=1.0, ngram_range=(1,2),use_idf=True, smooth_idf=True, sublinear_tf=True)
-    save_model(tfidf, 'tfidf.pkl')
+    
     tf_x_train = tfidf.fit_transform(X_train)
     tf_x_test = tfidf.transform(X_test)
     print (tf_x_train.shape, tf_x_test.shape)
+    save_model(tfidf, 'tfidf.pkl')
     return tf_x_train, tf_x_test
 
 def printResultsStatistics(predictions,Y_test):
-    classificationReport=classification_report(Y_test, predictions, target_names=['negative', 'positive'])
-    CMatrix=confusion_matrix(Y_test, predictions, labels=['negative', 'positive'])
+    classificationReport=classification_report(Y_test, predictions, target_names=[ '0' ,  '1' ])
+    CMatrix=confusion_matrix(Y_test, predictions, labels=[ '0' ,  '1' ])
 
     print("Confusion matrix:")
     print("\t\tpositive\tnegative")
