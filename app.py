@@ -3,6 +3,7 @@ from flask import request
 from DataProcessing.preprocessing import *
 from CollabortiveFiltering.collaborative_filtering import *
 from Evaluation.evaluation import *
+# from SentimentAnalysis.classifier import *
 
 app = Flask(__name__)
 
@@ -25,6 +26,7 @@ def recommendation():
             average_prediction_list)
         precision, recall, f1, average_precision, mrr = get_metrics(
             recommended, relevant, relavant_count, recommended_count, predictions)
+
         print("precision:", precision)
         print("recall:", recall)
         print("f1:", f1)
