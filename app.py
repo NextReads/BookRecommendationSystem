@@ -3,11 +3,13 @@ from flask import request
 from DataProcessing.preprocessing import *
 from CollabortiveFiltering.collaborative_filtering import *
 from Evaluation.evaluation import *
-# from SentimentAnalysis.classifier import *
+from SentimentAnalysis.classifier import readData, productsSentimentScore
+from recommender import combineScores
 
 app = Flask(__name__)
 
 rating_matrix, mean_centered_matrix = matrix_creation()
+data = readData()
 
 
 # create a request handler
@@ -26,6 +28,8 @@ def recommendation():
             average_prediction_list)
         precision, recall, f1, average_precision, mrr = get_metrics(
             recommended, relevant, relavant_count, recommended_count, predictions)
+        Sentiment_score = productsSentimentScore(data, average_prediction)
+        combined_score = combineScores(average_prediction, Sentiment_score)
 
         print("precision:", precision)
         print("recall:", recall)
@@ -33,4 +37,4 @@ def recommendation():
         print("average_precision:", average_precision)
         print("mrr:", mrr)
 
-        return average_prediction
+        return combined_score

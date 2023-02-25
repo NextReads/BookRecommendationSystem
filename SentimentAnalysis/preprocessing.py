@@ -38,7 +38,11 @@ def removeSW(texts):
 
 # split into sentences for negative phrase identification
 def sentenceSplit(text):
+    # print(text)
+    # try:
     text=text.replace('<br /><br />','').replace('(', ' ').replace(')', ' ')
+    # except:
+        # print("Error: ",text)
 
     sentences = re.split(r'[.!?,]', text)
     # my_list_2 = re.split(r',|-|:|.', text)
@@ -165,30 +169,35 @@ def lemmatize(review):
 def reviewMerge(review):
     return ' '.join(review)
 
+def convertToString(review):
+    review = str(review)
+    return review
+
 def preprocessing(data):
    
     # print(data.iloc[:1])
+    data['review_text']=data['review_text'].apply(convertToString)
     data['review_text']=data['review_text'].apply(sentenceSplit)
-    print("sentence split is complete")
+    # print("sentence split is complete")
     data['review_text']=data['review_text'].apply(TokenizeWords)
-    print("tokenization is complete")
+    # print("tokenization is complete")
     data['review_text']=data['review_text'].apply(pos_tagging)
     # print(data['review_text'][0])
-    print("pos tagging is complete")
+    # print("pos tagging is complete")
     data['review_text']=data['review_text'].apply(TagNounremoval)
-    print("noun removal is complete")
+    # print("noun removal is complete")
     data['review_text']=data['review_text'].apply(lemmatize)
-    print("lemmatization is complete")
+    # print("lemmatization is complete")
     data['review_text']=data['review_text'].apply(removePosTag)
-    print("pos tag removal is complete")
+    # print("pos tag removal is complete")
     # print(data['review_text'][0])
     data['review_text']=data['review_text'].apply(sentMerge)
-    print("merging is complete")
+    # print("merging is complete")
     # print(data['review_text'][0])
     data['review_text']=data['review_text'].apply(removeSW)
-    print("stopword removal is complete")
+    # print("stopword removal is complete")
     data['review_text']=data['review_text'].apply(reviewMerge)
-    print("review Merging is complete")
+    # print("review Merging is complete")
     # print(data['review'][0])
     return data
 # print(df.iloc[:])
