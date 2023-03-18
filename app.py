@@ -2,6 +2,7 @@ from flask import Flask
 from flask import request
 from DataProcessing.preprocessing import *
 from CollabortiveFiltering.collaborative_filtering import *
+from CollabortiveFiltering.common_functions import *
 from Evaluation.evaluation import *
 from SentimentAnalysis.classifier import readData, productsSentimentScore
 from recommender import combineScores

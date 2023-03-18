@@ -2,6 +2,18 @@ from math import sqrt
 import numpy as np
 import pandas as pd
 
+# example of usage of collabortive filtering
+######################################
+# from common_functions import *
+# read_data = read_data(RATINGS_DF_PATH)
+# data_shrinking = data_shrinking(read_data)
+# ratings_matrix = create_ratings_matrix(data_shrinking)
+# ratings_matrix_centered = mean_centered_rating_matrix(ratings_matrix)
+#
+#
+#
+# then call any of the collaborative filtering approach
+
 
 def find_not_rated_books(userID: str, rating_matrix: pd.DataFrame):
     not_rated_books = rating_matrix.loc[userID][rating_matrix.loc[userID].isnull(
