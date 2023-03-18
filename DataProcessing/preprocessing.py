@@ -27,12 +27,12 @@ def matrix_creation():
         plt.title(title)
         plt.show()
 
-    plotHIST(df, "rating", "Rating", "Count", "Rating Distribution")
+    #plotHIST(df, "rating", "Rating", "Count", "Rating Distribution")
     # remove rows with rating 0 (not rated)
     df = df[df['rating'] != 0]
     df.shape
 
-    plotHIST(df, "rating", "Rating", "Count", "Rating Distribution")
+    #plotHIST(df, "rating", "Rating", "Count", "Rating Distribution")
     df['rating'].value_counts()
     # showing books
     df['book_id'].value_counts()
