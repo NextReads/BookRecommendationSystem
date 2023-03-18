@@ -60,9 +60,11 @@ def data_shrinking(ratings_df: pd.DataFrame) -> pd.DataFrame:
     counts = ratings_df['book_id'].value_counts()
     ratings_df = ratings_df[ratings_df['book_id'].isin(
         counts[counts >= 100].index)]
+    print("1 - shape of dataset {}".format(ratings_df.shape))
     # there are users that have rated only once
     # SHRINKING THE DATASET BY REMOVING USERS THAT HAVE RATED LESS THAN 10 TIMES
     counts = ratings_df["user_id"].value_counts()
     ratings_df = ratings_df[ratings_df["user_id"].isin(
         counts[counts >= 20].index)]
+    # print("1 - shape of dataset {}".format(ratings_df.shape))
     return ratings_df
