@@ -1,20 +1,11 @@
 import pandas as pd
-
 # example of usage
-# goodreads_books_shrink = read_books_data()
+################################################################
+# from common_functions import *
+# from author_other_works import *
+# goodreads_books_shrink = read_books_data(BOOKS_DF_PATH)
 # print(get_author_other_works(6066819, goodreads_books_shrink))
 # print(get_author_other_works(33394837, goodreads_books_shrink))
-
-
-path = 'dataset/goodreads_books_shrink.csv'
-
-# @desc: read the goodreads books dataset from the csv file
-# @param: path: the path of the csv file, default is the path of the csv file in the dataset folder
-# @return: the goodreads books dataset
-
-
-def read_books_data(path=path) -> pd.DataFrame:
-    return pd.read_csv(path)
 
 
 # @desc: get the other works of the author of the required book
