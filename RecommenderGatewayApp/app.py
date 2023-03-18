@@ -9,6 +9,7 @@ import time
 from SentimentAnalysis import featureExtraction as fe
 from SentimentAnalysis import classifier
 from recommender import combineScores
+import pandas as pd
 
 
 
@@ -40,6 +41,15 @@ cfModel = CollaborativeFiltering(rating_matrix, mean_centered_matrix)
 
 data = classifier.readData()
 
+try:
+    df = pd.read_json("../RecommendationGenerator/combined_score.json", orient='records')
+    if df.empty:
+        df = pd.DataFrame(columns=['user_id', 'combined_score', 'date'])
+except:
+    df = pd.DataFrame(columns=['user_id', 'combined_score', 'date'])
+
+cachedCombinedScoreDf = df
+
 # create a request handler
 @metrics.counter('nr_recommendation_counter', 'Number of times the recommendation endpoint was called')
 @app.route("/Recommendation", methods=['GET'])
@@ -48,6 +58,12 @@ def recommendation():
     if request.method == 'GET':
         start_time = time.time()
         user_ID_test = request.get_json().get('user_ID_test')
+
+        # check if userid is in cachedCombinedScore 
+        if user_ID_test in cachedCombinedScoreDf['user_id'].values:
+            # get the combined score from the cache
+            combined_score = cachedCombinedScoreDf[cachedCombinedScoreDf['user_id'] == user_ID_test]['combined_score'].values[0]
+            return combined_score
 
         cfModel.setUserID(user_ID_test)
         user_based_prediction = cfModel.user_based_collaborative_filtering()
@@ -81,4 +97,4 @@ def recommendation():
         for book in average_prediction:
             NR_BOOKS_RECOMMENDED.labels(book).inc()
 
-        return average_prediction
+        return combined_score

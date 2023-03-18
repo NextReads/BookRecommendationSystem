@@ -4,8 +4,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-def matrix_creation():
-    df = pd.read_csv('../Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv')
+def matrix_creation(dataPath = None):
+    if dataPath == None:
+        df = pd.read_csv('../Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv')
+    else:
+        df = pd.read_csv(dataPath)
+
     print(df.shape)
     df.head()
 
