@@ -56,6 +56,9 @@ def recall_at_k(recommended, relevant, k):
     for i in range(len(recommended)):
         if recommended[i] in relevant:
             recall += 1
+    
+    if len(relevant) == 0:
+        return 0
     recall /= len(relevant)
     return recall
 # recall = recall_at_k(recommended, relevant, recommended_count)
@@ -64,6 +67,8 @@ def recall_at_k(recommended, relevant, k):
 
 # calculate the F1 score
 def f1_metric(precision, recall):
+    if precision + recall == 0:
+        return 0
     return 2 * precision * recall / (precision + recall)
 
 # calculate the average precision @ k

@@ -5,7 +5,7 @@ import seaborn as sns
 
 
 def matrix_creation():
-    df = pd.read_csv('DataProcessing/dataset/goodreads_reviews_shrink.csv')
+    df = pd.read_csv('../Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv')
     print(df.shape)
     df.head()
 
@@ -71,3 +71,9 @@ def matrix_creation():
     mean_centered_matrix.head()
 
     return rating_matrix, mean_centered_matrix
+
+def readData():
+    df= pd.read_csv('../Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv')
+    print(df.shape)
+    df.head()
+    return df
