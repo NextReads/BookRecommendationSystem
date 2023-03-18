@@ -65,3 +65,4 @@ def data_shrinking(ratings_df: pd.DataFrame) -> pd.DataFrame:
     counts = ratings_df["user_id"].value_counts()
     ratings_df = ratings_df[ratings_df["user_id"].isin(
         counts[counts >= 20].index)]
+    return ratings_df
