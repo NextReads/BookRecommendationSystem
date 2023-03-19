@@ -2,3 +2,7 @@
 __pycache__
 
 Dataset/*/*.csv
+dataset/goodreads_reviews_dedup.json
+Backend/NextReads/venv
+Backend/NextReads/venv/Scripts
+Backend/NextReads/node_modules

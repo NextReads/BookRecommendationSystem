@@ -1,15 +1,9 @@
-import pandas as pd
-def readData():
-    df = pd.read_csv('dataset/IMDB Dataset.csv',header=0)
-    df.head()
-    return df
 
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 nltk.download('stopwords')
 
-import nltk 
 nltk.download('wordnet') 
 nltk.download('averaged_perceptron_tagger')
 nltk.download('omw-1.4')
@@ -50,16 +44,16 @@ def sentenceSplit(text):
     return sentences
 # spacy lemmatization
 
-import spacy
-# spacy.download('en')
-def spacyLemmatize(texts):
-    nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
-    review=[]
-    for sent in texts:
-        doc = nlp(sent)
-        # texts= " ".join([token.lemma_ for token in doc])
-        review.append(" ".join([token.lemma_ for token in doc]))
-    return review
+# import spacy
+# # spacy.download('en')
+# def spacyLemmatize(texts):
+#     nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
+#     review=[]
+#     for sent in texts:
+#         doc = nlp(sent)
+#         # texts= " ".join([token.lemma_ for token in doc])
+#         review.append(" ".join([token.lemma_ for token in doc]))
+#     return review
 
 
 from nltk.tokenize import word_tokenize, sent_tokenize
@@ -110,16 +104,16 @@ def contractions(s):
  s = re.sub(r"\'ve", " have", s)
  s = re.sub(r"\'m", " am", s)
  return s
-def preprocessingWord(review):
-    # review=contractions(review)
-    review = spacyLemmatize(review)
-    # print(review)
-    review=TokenizeWords(review)
-    review=removeSW(review)
+# def preprocessingWord(review):
+#     # review=contractions(review)
+#     review = spacyLemmatize(review)
+#     # print(review)
+#     review=TokenizeWords(review)
+#     review=removeSW(review)
 
     
-    # review=lemmatize(review)
-    return review
+#     # review=lemmatize(review)
+#     return review
 
 import re
 # text="One of the other reviewers has mentioned that after watching just 1 Oz episode you'll be hooked. They are right, as this is exactly what happened with me.<br /><br />The first thing that struck me about Oz was its brutality and unflinching scenes of violence, which set in right from the word GO. Trust me, this is not a show for the faint hearted or timid. This show pulls no punches with regards to drugs, sex or violence. Its is hardcore, in the classic use of the word.<br /><br />It is called OZ as that is the nickname given to the Oswald Maximum Security State Penitentary. It focuses mainly on Emerald City, an experimental section of the prison where all the cells have glass fronts and face inwards, so privacy is not high on the agenda. Em City is home to many..Aryans, Muslims, gangstas, Latinos, Christians, Italians, Irish and more....so scuffles, death stares, dodgy dealings and shady agreements are never far away.<br /><br />I would say the main appeal of the show is due to the fact that it goes where other shows wouldn't dare. Forget pretty pictures painted for mainstream audiences, forget charm, forget romance...OZ doesn't mess around. The first episode I ever saw struck me as so nasty it was surreal, I couldn't say I was ready for it, but as I watched more, I developed a taste for Oz, and got accustomed to the high levels of graphic violence. Not just violence, but injustice (crooked guards who'll be sold out for a nickel, inmates who'll kill on order and get away with it, well mannered, middle class inmates being turned into prison bitches due to their lack of street skills or prison experience) Watching Oz, you may become comfortable with what is uncomfortable viewing....thats if you can get in touch with your darker side."
@@ -212,3 +206,30 @@ def preprocessing(data):
     data.loc[:, 'review_text']=data['review_text'].apply(reviewMerge)
     return data
 # print(df.iloc[:])
+def preprocessReview(review):
+   
+    # print(data.iloc[:1])
+    review=convertToString(review)
+    review=sentenceSplit(review)
+    # print("sentence split is complete")
+    review=TokenizeWords(review)
+    # print("tokenization is complete")
+    review=pos_tagging(review)
+    # print(review[0])
+    # print("pos tagging is complete")
+    review=TagNounremoval(review)
+    # print("noun removal is complete")
+    review=lemmatize(review)
+    # print("lemmatization is complete")
+    review=removePosTag(review)
+    # print("pos tag removal is complete")
+    # print(review[0])
+    review=sentMerge(review)
+    # print("merging is complete")
+    # print(review[0])
+    review=removeSW(review)
+    # print("stopword removal is complete")
+    review=reviewMerge(review)
+    # print("review Merging is complete")
+    # print(data['review'][0])
+    return review
