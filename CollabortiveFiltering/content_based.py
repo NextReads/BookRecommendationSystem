@@ -1,5 +1,5 @@
 import pandas as pd
-from common_functions import *
+from CollabortiveFiltering.common_functions import *
 
 
 def content_based_recommendation(book_id: int, genre_df: pd.DataFrame, N=CB_TOP_N_BOOKS):
@@ -41,7 +41,7 @@ def get_highest_N_genre(book_id: int, genre_mean: pd.DataFrame, N=CB_TOP_N_GENRE
                           == book_id].drop('book_id', axis=1)
     r_genres = r_genres.squeeze()
     r_genre_len = min(N, len(r_genres))
-    r_genres = r_genres.sort_values(ascending=False)[:r_genre_len]
+    r_genres = r_genres.sort_values(by="values",ascending=False)[:r_genre_len]
     return r_genres
 
 

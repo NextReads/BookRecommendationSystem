@@ -10,6 +10,8 @@ from SentimentAnalysis import featureExtraction as fe
 from SentimentAnalysis import classifier
 from recommender import combineScores
 import pandas as pd
+from CollabortiveFiltering.content_based import content_based_recommendation
+from CollabortiveFiltering.common_functions import *
 
 
 
@@ -98,3 +100,16 @@ def recommendation():
             NR_BOOKS_RECOMMENDED.labels(book).inc()
 
         return combined_score
+
+# create a request handler for book with id
+@metrics.counter('nr_book_counter', 'Number of times the book endpoint was called')   
+@app.route("/Book/<book_id>", methods=['GET'])
+def book(book_id):
+    if request.method == 'GET':
+        start_time = time.time()
+        listIds = content_based_recommendation(book_id, read_data('../CollabortiveFiltering/'+GENRES_DF_PATH))
+        response_time = time.time() - start_time
+        NR_HISTOGRAM.observe(response_time)
+        return listIds
+    
+

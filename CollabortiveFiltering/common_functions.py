@@ -1,5 +1,5 @@
 import pandas as pd
-from constants import *
+from CollabortiveFiltering.constants import *
 # %matplotlib inline
 # %load_ext autoreload
 # %autoreload 2
