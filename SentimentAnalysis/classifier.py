@@ -24,7 +24,7 @@ def getProductSentiment(data,book,clflinear,tfidf_vectorizer):
     mean=predictions.mean()
     # print("mean",mean)
     return mean 
-from preprocessing import preprocessing
+
 def getProductsSentiment(data,books,clflinear,tfidf_vectorizer):
     # get specific books review_text
     text=data[data['book_id'].isin(books)]
