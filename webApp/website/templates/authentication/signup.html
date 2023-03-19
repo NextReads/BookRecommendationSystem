@@ -1,0 +1,62 @@
+{% extends 'auth_base.html' %}
+{% load static %}
+
+{% block content %}
+<form>
+    <img class= "rounded mb-4" width="92" height = "77"src="{% static 'img/logo.png'%}" alt="error loading logo">
+    <h1 class="h3 mb-3 fw-normal">Create Account</h1>
+
+
+    <div class="form-floating mb-2">
+      <input type="email" class="form-control" id="emailField" placeholder="name@example.com">
+      <label for="emailField">Email address</label>
+    </div>
+    <div class="invalid-feedback-email" style="display:none">
+    </div>
+    <p class="text-sm text-success emailSuccessOutput"></p>
+
+
+
+    <div class="form-floating mb-2">
+      <input type="text" class="form-control" id="usernameField" placeholder="username" name="username">
+      <label for="usernameField">username</label>
+  </div>
+  <div class="invalid-feedback" style="display:none">
+  </div>
+  <p class="text-sm text-success usernameSuccessOutput"></p>
+
+
+
+    <div class="form-floating">
+      <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+      <label for="floatingPassword">Password</label>
+    </div>
+    <div class="form-floating">
+        <input type="password" class="form-control" id="floatingPassword2" placeholder="Password">
+        <label for="floatingPassword2">Confirm Password</label>
+    </div>
+
+    <div class="checkbox mb-3">
+      <label>
+        <input type="checkbox" class="showPasswordToggle" value="show-password"> show password
+      </label>
+    </div>
+    <button class="w-100 btn btn-lg btn-primary" type="submit" >Create account</button>
+
+    <div class="or">
+      <hr>
+      <span>or</span>
+      <hr>
+    </div>
+
+   
+    <a class="btn btn-outline-dark" href="/authentication/set-goal-step" role="button" style="text-transform:none">
+      <img width="20px" style="margin-bottom:3px; margin-right:5px" alt="Google sign-in" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" />
+      signup with Google
+    </a>
+
+
+    <p class="mt-5 mb-3 text-muted">&copy; 2017–2022</p>
+  </form>
+  <script src="{% static 'js/register.js' %}"></script>
+{% endblock %}
