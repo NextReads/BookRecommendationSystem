@@ -1,6 +1,6 @@
 import pandas as pd
 def readData():
-    df = pd.read_csv('../dataset/goodreads_reviews_shrink.csv',header=0,usecols=['review_text','rating'])
+    df = pd.read_csv('../Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv',header=0,usecols=['review_text','rating'])
     df.head()
     return df
 def datapreprocessing(data):

@@ -4,8 +4,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-def matrix_creation():
-    df = pd.read_csv('DataProcessing/dataset/goodreads_reviews_shrink.csv')
+def matrix_creation(dataPath = None):
+    if dataPath == None:
+        df = pd.read_csv('../Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv')
+    else:
+        df = pd.read_csv(dataPath)
+
     print(df.shape)
     df.head()
 
@@ -27,12 +31,12 @@ def matrix_creation():
         plt.title(title)
         plt.show()
 
-    plotHIST(df, "rating", "Rating", "Count", "Rating Distribution")
+    #plotHIST(df, "rating", "Rating", "Count", "Rating Distribution")
     # remove rows with rating 0 (not rated)
     df = df[df['rating'] != 0]
     df.shape
 
-    plotHIST(df, "rating", "Rating", "Count", "Rating Distribution")
+    #plotHIST(df, "rating", "Rating", "Count", "Rating Distribution")
     df['rating'].value_counts()
     # showing books
     df['book_id'].value_counts()
@@ -71,3 +75,9 @@ def matrix_creation():
     mean_centered_matrix.head()
 
     return rating_matrix, mean_centered_matrix
+
+def readData():
+    df= pd.read_csv('../Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv')
+    print(df.shape)
+    df.head()
+    return df

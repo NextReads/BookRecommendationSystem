@@ -19,7 +19,9 @@ def save_model(classifier, path: str):
     pickle.dump(classifier, open(rPath, 'wb'))
 
 def load_model(path: str):
-    rPath='models/'+path
+    #TODO: fix this bandaid solution
+    rPath='../SentimentAnalysis/models/'+path
+    print(rPath)
     if not os.path.exists(rPath):
         raise Exception('Model not found')
     return pickle.load(open(rPath, 'rb'))
