@@ -51,10 +51,15 @@ def mean_centered_rating_matrix(ratings_matrix: pd.DataFrame) -> pd.DataFrame:
     return ratings_matrix_centered
 
 
+def mean_matrix(matrix: pd.DataFrame) -> pd.DataFrame:
+    return matrix.div(matrix.sum(axis=1), axis=0)
+
 # @desc: decrease the size of the dataset by removing books that have been rated less than 100 times and users that have rated less than 10 times
 # @param: ratings_df: the dataset to be shrunk
 # @return: the shrunk dataset
 # @type: SPECIFIC
+
+
 def data_shrinking(ratings_df: pd.DataFrame) -> pd.DataFrame:
     ratings_df = ratings_df.dropna(subset=['review_text'])
     # remove rows with rating 0 (not rated)
@@ -68,5 +73,5 @@ def data_shrinking(ratings_df: pd.DataFrame) -> pd.DataFrame:
     # SHRINKING THE DATASET BY REMOVING USERS THAT HAVE RATED LESS THAN 10 TIMES
     counts = ratings_df["user_id"].value_counts()
     ratings_df = ratings_df[ratings_df["user_id"].isin(
-        counts[counts >= 20].index)]
+        counts[counts >= 10].index)]
     return ratings_df
