@@ -15,7 +15,6 @@ import CollabortiveFiltering.common_functions as cfcf
 import json
 
 
-
 app = Flask(__name__)
 
 # initialize the prometheus metrics
@@ -29,15 +28,20 @@ metrics = PrometheusMetrics(app)
 
 # RECOMMENDATIONS_HISTOGRAM = Histogram('recommendations_response_time_seconds', 'Response time for recommendations endpoint')
 
-NR_PRECISION = Gauge('nr_precision', 'Number of times the precision was calculated', ['input'])
-NR_RECALL = Gauge('nr_recall', 'Number of times the recall was calculated', ['input'])
+NR_PRECISION = Gauge(
+    'nr_precision', 'Number of times the precision was calculated', ['input'])
+NR_RECALL = Gauge(
+    'nr_recall', 'Number of times the recall was calculated', ['input'])
 NR_F1 = Gauge('nr_f1', 'Number of times the f1 was calculated', ['input'])
-NR_AVERAGE_PRECISION = Gauge('nr_average_precision', 'Number of times the average precision was calculated', ['input'])
+NR_AVERAGE_PRECISION = Gauge(
+    'nr_average_precision', 'Number of times the average precision was calculated', ['input'])
 NR_MRR = Gauge('nr_mrr', 'Number of times the mrr was calculated', ['input'])
 
 
-NR_HISTOGRAM = Histogram('nr_recommendations_response_time_seconds', 'Response time for recommendations endpoint', buckets=(0.1, 0.5, 1, 2, 5, 10, 20, 30, 60, 120, 180, 240, 300, 360, 420, 480, 540, 600))
-NR_BOOKS_RECOMMENDED = Counter('nr_books_recommended', 'Number of books recommended', ['input'])
+NR_HISTOGRAM = Histogram('nr_recommendations_response_time_seconds', 'Response time for recommendations endpoint', buckets=(
+    0.1, 0.5, 1, 2, 5, 10, 20, 30, 60, 120, 180, 240, 300, 360, 420, 480, 540, 600))
+NR_BOOKS_RECOMMENDED = Counter(
+    'nr_books_recommended', 'Number of books recommended', ['input'])
 
 rating_matrix, mean_centered_matrix = matrix_creation()
 cfModel = CollaborativeFiltering(rating_matrix, mean_centered_matrix)
@@ -47,7 +51,8 @@ genreData = cfcf.read_data('../CollabortiveFiltering/'+cfcf.GENRES_DF_PATH)
 booksData = cfcf.read_data('../CollabortiveFiltering/'+cfcf.BOOKS_DF_PATH)
 
 try:
-    df = pd.read_json("../RecommendationGenerator/combined_score.json", orient='records')
+    df = pd.read_json(
+        "../RecommendationGenerator/combined_score.json", orient='records')
     if df.empty:
         df = pd.DataFrame(columns=['user_id', 'combined_score', 'date'])
 except:
@@ -56,18 +61,21 @@ except:
 cachedCombinedScoreDf = df
 
 # create a request handler
+
+
 @metrics.counter('nr_recommendation_counter', 'Number of times the recommendation endpoint was called')
 @app.route("/Recommendation", methods=['GET'])
 def recommendation():
-    
+
     if request.method == 'GET':
         start_time = time.time()
         user_ID_test = request.get_json().get('user_ID_test')
 
-        # check if userid is in cachedCombinedScore 
+        # check if userid is in cachedCombinedScore
         if user_ID_test in cachedCombinedScoreDf['user_id'].values:
             # get the combined score from the cache
-            combined_score = cachedCombinedScoreDf[cachedCombinedScoreDf['user_id'] == user_ID_test]['combined_score'].values[0]
+            combined_score = cachedCombinedScoreDf[cachedCombinedScoreDf['user_id']
+                                                   == user_ID_test]['combined_score'].values[0]
             return combined_score
 
         cfModel.setUserID(user_ID_test)
@@ -79,7 +87,8 @@ def recommendation():
             average_prediction_list)
         precision, recall, f1, average_precision, mrr = get_metrics(
             recommended, relevant, relavant_count, recommended_count, predictions)
-        Sentiment_score = classifier.productsSentimentScore(data, average_prediction)
+        Sentiment_score = classifier.productsSentimentScore(
+            data, average_prediction)
         combined_score = combineScores(average_prediction, Sentiment_score)
 
         print("precision:", precision)
@@ -94,8 +103,6 @@ def recommendation():
         NR_AVERAGE_PRECISION.labels(user_ID_test).set(average_precision)
         NR_MRR.labels(user_ID_test).set(mrr)
 
-        
-
         response_time = time.time() - start_time
         NR_HISTOGRAM.observe(response_time)
 
@@ -105,7 +112,9 @@ def recommendation():
         return combined_score
 
 # create a request handler for book with id
-@metrics.counter('nr_book_counter', 'Number of times the book endpoint was called')   
+
+
+@metrics.counter('nr_book_counter', 'Number of times the book endpoint was called')
 @app.route("/Book/<book_id>", methods=['GET'])
 def book(book_id):
     if request.method == 'GET':
