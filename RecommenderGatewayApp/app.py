@@ -10,8 +10,9 @@ from SentimentAnalysis import featureExtraction as fe
 from SentimentAnalysis import classifier
 from recommender import combineScores
 import pandas as pd
-from CollabortiveFiltering.content_based import content_based_recommendation
-from CollabortiveFiltering.common_functions import *
+from CollabortiveFiltering.content_based import content_based_recommendation, visualize_recommendations
+import CollabortiveFiltering.common_functions as cfcf
+import json
 
 
 
@@ -42,6 +43,8 @@ rating_matrix, mean_centered_matrix = matrix_creation()
 cfModel = CollaborativeFiltering(rating_matrix, mean_centered_matrix)
 
 data = classifier.readData()
+genreData = cfcf.read_data('../CollabortiveFiltering/'+cfcf.GENRES_DF_PATH)
+booksData = cfcf.read_data('../CollabortiveFiltering/'+cfcf.BOOKS_DF_PATH)
 
 try:
     df = pd.read_json("../RecommendationGenerator/combined_score.json", orient='records')
@@ -107,9 +110,10 @@ def recommendation():
 def book(book_id):
     if request.method == 'GET':
         start_time = time.time()
-        listIds = content_based_recommendation(book_id, read_data('../CollabortiveFiltering/'+GENRES_DF_PATH))
+        listIds = content_based_recommendation(int(book_id), genreData)
         response_time = time.time() - start_time
         NR_HISTOGRAM.observe(response_time)
-        return listIds
+        visData = visualize_recommendations(listIds,booksData)
+        return visData
     
 
