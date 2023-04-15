@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.http import JsonResponse
 from django.contrib.auth.models import User
+from django.contrib import messages
 from validate_email import validate_email
 import json
 
@@ -34,6 +35,11 @@ class UsernamesValidationView(View):
 class SignupView(View):
     def get(self, request):
         return render(request, "authentication/signup.html", {})
+    
+    def post(self, request):
+        messages.success(request, 'Account created successfully.')
+        return render(request, "authentication/signup.html", {})
+    
 
 class LoginView(View):
     def get(self, request):

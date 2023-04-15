@@ -2,11 +2,14 @@
 {% load static %}
 
 {% block content %}
-<form>
+<form action = "{%  url 'signup' %}" method = "post">
+    {% csrf_token %}
+  
+   
     <img class= "rounded mb-4" width="92" height = "77"src="{% static 'img/logo.png'%}" alt="error loading logo">
     <h1 class="h3 mb-3 fw-normal">Create Account</h1>
 
-
+    {% include 'partials/_messages.html' %}
     <div class="form-floating mb-2">
       <input type="email" class="form-control" id="emailField" placeholder="name@example.com">
       <label for="emailField">Email address</label>
