@@ -37,9 +37,19 @@ class SignupView(View):
         return render(request, "authentication/signup.html", {})
     
     def post(self, request):
-        messages.success(request, 'Account created successfully.')
-        messages.error (request, 'Error creating your account.')
+        # Get user data
+        # validate data
+        # create user
+        # redirect to login page
+        username = request.POST['username']
+        email = request.POST['email']
+        password = request.POST['password']
+        confrimPassword = request.POST['confrimPassword']
         return render(request, "authentication/signup.html", {})
+
+
+
+        
     
 
 class LoginView(View):
