@@ -38,6 +38,7 @@ class SignupView(View):
     
     def post(self, request):
         messages.success(request, 'Account created successfully.')
+        messages.error (request, 'Error creating your account.')
         return render(request, "authentication/signup.html", {})
     
 
