@@ -1,17 +1,16 @@
 {% load static %}
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Register Steps</title>
-    
 
-    
-
-<link href="{% static 'css/bootstrap.css'%}" rel="stylesheet" >
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
+    <link href="{% static 'css/bootstrap.css'%}" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
 
     <style>
       .bd-placeholder-img {
@@ -30,10 +29,11 @@
 
       .b-example-divider {
         height: 3rem;
-        background-color: rgba(0, 0, 0, .1);
-        border: solid rgba(0, 0, 0, .15);
+        background-color: rgba(0, 0, 0, 0.1);
+        border: solid rgba(0, 0, 0, 0.15);
         border-width: 1px 0;
-        box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+        box-shadow: inset 0 0.5em 1.5em rgba(0, 0, 0, 0.1),
+          inset 0 0.125em 0.5em rgba(0, 0, 0, 0.15);
       }
 
       .b-example-vr {
@@ -43,7 +43,7 @@
       }
 
       .bi {
-        vertical-align: -.125em;
+        vertical-align: -0.125em;
         fill: currentColor;
       }
 
@@ -66,51 +66,53 @@
       }
     </style>
 
-    
     <!-- Custom styles for this template -->
-    <link href="{% static 'css/registering.css'%}" rel="stylesheet">
+    <link href="{% static 'css/registering.css'%}" rel="stylesheet" />
   </head>
   <body>
-    
-<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="/">NextReads</a>
-  <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+    <header
+      class="navbar navbar-nav navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow"
+    >
+    <div class="container-fluid">
+      <div>
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="/"
+          >NextReads</a
+        >
+      </div>
 
-<div class="container">
-  <button id="progress-prev" class="btn btn-secondary" >Prev</button>
-  <div id="progress">
-    <div id="progress-bar"></div>
-    <ul id="progress-num">
-      <li class="step active">1</li>
-      <li class="step">2</li>
-      <li class="step">3</li>
-    </ul>
-  </div>
-  <button id="progress-next" class="btn btn-secondary" >Next</button>
-</div>
+      <div id = "progress-main-wrapper">
+        <button id="progress-prev" class="btn btn-secondary">Prev</button>
+        <div id="progress">
+          <div id="progress-bar"></div>
+          <ul id="progress-num">
+            <li class="step active">1</li>
+            <li class="step">2</li>
+            <li class="step">3</li>
+          </ul>
+        </div>
+        <button id="progress-next" class="btn btn-secondary">Next</button>
+      </div>
+      <div >
+        <button
+          class="navbar-toggler position-absolute d-md-none collapsed"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#sidebarMenu"
+          aria-controls="sidebarMenu"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      </div>
+    </div>
+    </header>
 
- 
+    <div class="container-fluid">
+      <div>{% block content %} {% endblock %}</div>
+    </div>
 
-</header>
-
-<div class="container-fluid">
-  <div class="row">
-
-    {% block content %}
-    
-
-    
-
-    {% endblock %}
-  </div>
-</div>
-
-
-<script src="{% static 'js/progresssteps.js' %}"></script>
-<script src="{% static 'js/bootstrap.bundle.min.js' %}" ></script>
-
-
-</body>
+    <script src="{% static 'js/progresssteps.js' %}"></script>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+  </body>
 </html>
