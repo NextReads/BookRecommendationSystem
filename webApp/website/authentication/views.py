@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.contrib import messages
 from validate_email import validate_email
+from django.contrib import auth
 import json
 
 
@@ -17,8 +18,7 @@ class EmailValidationView(View):
         if User.objects.filter(email=email).exists():
             return JsonResponse({'email_error': 'Email is already taken.'}, status=409)
         return JsonResponse({'email_valid': True})
-    
-        
+           
     
 # Create your views here.
 class UsernamesValidationView(View):
@@ -75,6 +75,28 @@ class SignupView(View):
 class LoginView(View):
     def get(self, request):
         return render(request, "authentication/login.html", {})
+    
+    def post(self, request):
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        context = {
+            'fieldValues': request.POST
+        }
+        if password and username:
+            user = auth.authenticate(username=username, password=password)
+            print("user", user)
+            if user:
+                auth.login(request, user)
+                #messages.success(request, 'You are now logged in.')
+                #return render(request, "authentication/login.html", context)
+                return redirect("set-goal-step")
+            else:
+                messages.error(request, 'Invalid credentials.')
+                return render(request, "authentication/login.html", context)
+        else:
+            messages.error(request, 'Please fill all fields.')
+            return render(request, "authentication/login.html", context)
+        
     
 class setGoalStepView(View):
     def get(self, request):

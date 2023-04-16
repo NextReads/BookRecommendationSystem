@@ -2,21 +2,30 @@
 {% load static %}
 
 {% block content %}
-<form>
-    <img class= "rounded mb-4" width="92" height = "77"src="{% static 'img/logo.png'%}" alt="error loading logo">
-    <h1 class="h3 mb-3 fw-normal">Create Account</h1>
+<form action="{%  url 'login' %}" method="post">
+  {% csrf_token %}
 
+    <img class= "rounded mb-4" width="92" height = "77"src="{% static 'img/logo.png'%}" alt="error loading logo">
+    <h1 class="h3 mb-3 fw-normal">Login</h1>
+    {% include 'partials/_messages.html' %}
 
     <div class="form-floating mb-2">
-      <input type="email" class="form-control" id="emailField" placeholder="name@example.com">
-      <label for="emailField">Email address</label>
+      <input
+        type="text"
+        class="form-control"
+        id="usernameField"
+        placeholder="username"
+        name="username"
+        value = "{{ fieldValues.username }}"
+      />
+      <label for="usernameField">username</label>
     </div>
-    <div class="invalid-feedback-email" style="display:none">
-    </div>
-    <p class="text-sm text-success emailSuccessOutput"></p>
+    <div class="invalid-feedback" style="display: none"></div>
+    <p class="text-sm text-success usernameSuccessOutput"></p>
+  
 
     <div class="form-floating">
-      <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+      <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name ="password">
       <label for="floatingPassword">Password</label>
     </div>
   
