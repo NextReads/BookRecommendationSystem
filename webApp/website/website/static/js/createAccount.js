@@ -1,3 +1,4 @@
+const logo = document.querySelector('#logoimg');
 const emailField = document.querySelector('#emailField');
 const emailFeedbackField = document.querySelector('.invalid-feedback-email');
 const emailSuccessOutput = document.querySelector('.emailSuccessOutput');
@@ -30,7 +31,6 @@ submitBtn.addEventListener('click', (e) => {
     
 });
 
-
 passwordField2.addEventListener('keyup', (e) => {
     const passwordVal = e.target.value;
     const passwordVal2 = passwordField1.value;
@@ -46,12 +46,30 @@ passwordField2.addEventListener('keyup', (e) => {
             passwordsMatch = true;
             passwordField2.classList.remove("is-invalid");
             passwordFeedbackField.style.display = "none";
-            if (usernameValid==true && emailValid==true){
             submitBtn.disabled = false;
-            }
         }
     }
 });
+passwordField1.addEventListener('keyup', (e) => {
+    const passwordVal = e.target.value;
+    const passwordVal2 = passwordField2.value;
+    if (passwordVal.length > 0) {
+        if (passwordVal != passwordVal2) {
+            passwordsMatch = false;
+            passwordField2.classList.add("is-invalid");
+            passwordFeedbackField.style.display = "block";
+            passwordFeedbackField.style = "color: red";
+            passwordFeedbackField.innerHTML = `<p>Passwords do not match</p>`;
+            submitBtn.disabled = true;
+        } else {
+            passwordsMatch = true;
+            passwordField2.classList.remove("is-invalid");
+            passwordFeedbackField.style.display = "none";
+            submitBtn.disabled = false;
+        }
+    }
+});
+
 
 showPassword.addEventListener('click', (e) => {
     if (passwordField1.type === "password") {
