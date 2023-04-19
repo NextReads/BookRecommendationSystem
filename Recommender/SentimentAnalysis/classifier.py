@@ -3,9 +3,15 @@
 from SentimentAnalysis import featureExtraction as fe
 import pandas as pd
 from SentimentAnalysis.preprocessing import preprocessing
+import os
 
 def readData():
-    df = pd.read_csv('../Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv',header=0,usecols=['review_text','book_id'])
+    pathRoot = os.getenv('NAME')
+    if pathRoot == 'NextReadsRecommender':
+        print("pathRoot = ", pathRoot)
+        df = pd.read_csv('/app/Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv',header=0,usecols=['review_text','book_id'])
+    else:
+        df = pd.read_csv('../Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv',header=0,usecols=['review_text','book_id'])
     df.head()
     return df
 

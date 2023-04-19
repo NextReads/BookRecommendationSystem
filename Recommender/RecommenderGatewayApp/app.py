@@ -12,7 +12,7 @@ from recommender import combineScores
 import pandas as pd
 from CollabortiveFiltering.content_based import content_based_recommendation, visualize_recommendations
 import CollabortiveFiltering.common_functions as cfcf
-import json
+import os
 
 
 app = Flask(__name__)
@@ -47,12 +47,20 @@ rating_matrix, mean_centered_matrix = matrix_creation()
 cfModel = CollaborativeFiltering(rating_matrix, mean_centered_matrix)
 
 data = classifier.readData()
-genreData = cfcf.read_data('../CollabortiveFiltering/'+cfcf.GENRES_DF_PATH)
-booksData = cfcf.read_data('../CollabortiveFiltering/'+cfcf.BOOKS_DF_PATH)
+pathRoot = os.getenv('NAME')
+if pathRoot == 'NextReadsRecommender':
+    genreData = cfcf.read_data('/app/CollabortiveFiltering/'+cfcf.GENRES_DF_PATH)
+    booksData = cfcf.read_data('/app/CollabortiveFiltering/'+cfcf.BOOKS_DF_PATH)
+else:
+    genreData = cfcf.read_data('../CollabortiveFiltering/'+cfcf.GENRES_DF_PATH)
+    booksData = cfcf.read_data('../CollabortiveFiltering/'+cfcf.BOOKS_DF_PATH)
 
 try:
-    df = pd.read_json(
-        "../RecommendationGenerator/combined_score.json", orient='records')
+    if pathRoot == 'NextReadsRecommender':
+        df = pd.read_json('/app/RecommendationGenerator/combined_score.json', orient='records')
+    else:
+        df = pd.read_json(
+            "../RecommendationGenerator/combined_score.json", orient='records')
     if df.empty:
         df = pd.DataFrame(columns=['user_id', 'combined_score', 'date'])
 except:
@@ -125,4 +133,12 @@ def book(book_id):
         visData = visualize_recommendations(listIds,booksData)
         return visData
     
-
+# from flask import Flask
+# import os
+# app = Flask(__name__)
+# @app.route('/')
+# def index():
+#     return 'Hello to Flask!'
+if __name__ == "__main__":
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=True, host='0.0.0.0', port=port)

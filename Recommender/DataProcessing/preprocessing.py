@@ -2,11 +2,17 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
 
 
 def matrix_creation(dataPath = None):
     if dataPath == None:
-        df = pd.read_csv('../Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv')
+        pathRoot = os.getenv('NAME')
+        if pathRoot == 'NextReadsRecommender':
+            print("pathRoot = ", pathRoot)
+            df = pd.read_csv('/app/Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv')
+        else:
+            df = pd.read_csv('../Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv')
     else:
         df = pd.read_csv(dataPath)
 
