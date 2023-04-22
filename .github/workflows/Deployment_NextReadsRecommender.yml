@@ -33,7 +33,7 @@ jobs:
       with:
         push: true
         tags: nextreadsrecommender.azurecr.io/next-reads-recommender:${{ github.sha }}
-        file: ./Dockerfile
+        file: ./Recommender/Dockerfile
 
   deploy:
     runs-on: ubuntu-latest
