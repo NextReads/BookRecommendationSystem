@@ -7,8 +7,6 @@ COPY ./Recommender/ /app
 # switch working directory
 WORKDIR /app
 
-RUN ls /
-
 # install the dependencies and packages in the requirements file
 RUN pip3 install -r requirements.txt
 
