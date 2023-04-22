@@ -132,10 +132,7 @@ def book(book_id):
         NR_HISTOGRAM.observe(response_time)
         visData = visualize_recommendations(listIds,booksData)
         return visData
-    
-# from flask import Flask
-# import os
-# app = Flask(__name__)
+
 @app.route('/index')
 def index():
     return 'Coming Soon!'
