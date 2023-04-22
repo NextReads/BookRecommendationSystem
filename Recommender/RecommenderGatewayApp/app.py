@@ -16,6 +16,45 @@ import os
 
 app = Flask(__name__)
 
+if os.getenv('NAME') == 'NextReadsRecommender':
+    basedir = '/app/'
+else:
+    basedir = '../'
+fileLinks = {basedir + 'Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv': ('https://drive.google.com/uc?id=1ue1gnrPCmqDWTFAXyNPeP0PEoEettH0L', True),
+             basedir + 'CollabortiveFiltering/dataset/goodreads_books_shrink.csv': ('https://drive.google.com/uc?id=1cvM5KArllmpjtg0CIoyLZdW_m_VGmwD5', False),
+             basedir + 'CollabortiveFiltering/dataset/goodreads_genres_shrink.csv': ('https://drive.google.com/uc?id=1LCjmQ0vEBRiZtkckV6IxCoAf3V9CLKrJ', False),
+             basedir + 'RecommendationGenerator/combined_score.json': ('https://drive.google.com/uc?id=1kaHSI-CGiWycpsHFOvREo5z9qwGhWTPB', False)}
+
+# Download the dataset
+# if not os.path.exists('Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv'):
+#     print("file doesn't exist, download it from gdrive")
+#     url = 'https://drive.google.com/uc?id=1ue1gnrPCmqDWTFAXyNPeP0PEoEettH0L'
+#     output = '../Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv'
+#     gdown.download(url, output, quiet=False)
+#     # unzip the file
+#     with zipfile.ZipFile('../Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv.zip', 'r') as zip_ref:
+#         zip_ref.extractall('../Dataset/GoodReadsShrink/')
+#     # remove the zip file
+#     os.remove('../Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv.zip')
+# else:
+#     print("file already exists")
+
+# Download the dataset
+for file, url in fileLinks.items():
+    if not os.path.exists(file):
+        print("file doesn't exist, download it from gdrive, file: ", file)
+        output = file + '.zip'
+        gdown.download(url[0], output, quiet=False)
+        if url[1]:
+            # unzip the file
+            with zipfile.ZipFile(output , 'r') as zip_ref:
+                # remove unitl the last /
+                zip_ref.extractall(file[:file.rfind('/')])
+            # remove the zip file
+            os.remove(output)
+    else:
+        print("file already exists, file: ", file)
+
 # initialize the prometheus metrics
 metrics = PrometheusMetrics(app)
 
