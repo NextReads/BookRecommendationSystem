@@ -9,3 +9,5 @@ sklearn
 scikit-learn
 nltk
 regex
+gdown
+zipfile36

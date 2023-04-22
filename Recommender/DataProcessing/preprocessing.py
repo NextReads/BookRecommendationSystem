@@ -3,6 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
+import gdown
+import zipfile
 
 
 def matrix_creation(dataPath = None):
@@ -10,6 +12,18 @@ def matrix_creation(dataPath = None):
         pathRoot = os.getenv('NAME')
         if pathRoot == 'NextReadsRecommender':
             print("pathRoot = ", pathRoot)
+            # if file doesn't exist, download it from gdrive
+            if not os.path.exists('/app/Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv'):
+                print("file doesn't exist, download it from gdrive")
+                url = 'https://drive.google.com/file/d/1ue1gnrPCmqDWTFAXyNPeP0PEoEettH0L/view'
+                output = '/app/Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv'
+                gdown.download(url, output, quiet=False)
+                # unzip the file
+                with zipfile.ZipFile('/app/Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv.zip', 'r') as zip_ref:
+                    zip_ref.extractall('/app/Dataset/GoodReadsShrink/')
+                # remove the zip file
+                os.remove('/app/Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv.zip')
+                
             df = pd.read_csv('/app/Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv')
         else:
             df = pd.read_csv('../Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv')
