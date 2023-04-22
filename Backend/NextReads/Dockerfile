@@ -4,7 +4,7 @@ FROM node
 WORKDIR /usr/app
 
 # Install app dependencies
-COPY package*.json ./
+COPY ./package*.json ./
 
 RUN ls
 
