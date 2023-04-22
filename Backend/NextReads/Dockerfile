@@ -8,7 +8,7 @@ COPY ./package*.json ./
 
 RUN ls /usr/app
 
-RUN cat ./package.json
+RUN cat package.json
 
 RUN NODE_ENV=development npm i
 
