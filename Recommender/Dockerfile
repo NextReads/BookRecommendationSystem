@@ -22,5 +22,12 @@ EXPOSE 80
 ENV NAME NextReadsRecommender
 ENV PYTHONPATH "${PYTHONPATH}:/app/RecommenderGatewayApp"
 
+
+# check if Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv exists if not download it from google drive link https://drive.google.com/file/d/1ue1gnrPCmqDWTFAXyNPeP0PEoEettH0L/view
+# and extract it to Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv
+RUN if [ ! -f "Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv" ]; then \
+    wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1ue1gnrPCmqDWTFAXyNPeP0PEoEettH0L' -O Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv; \
+    fi
+
 # Run app.py when the container launches
 CMD ["RecommenderGatewayApp/app.py"]
