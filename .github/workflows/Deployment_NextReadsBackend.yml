@@ -30,8 +30,8 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         push: true
-        tags: nextreadsbackend.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_de5754edd5874825939ac29109bf44ae }}/next-reads-backend:${{ github.sha }}
-        file: ./Dockerfile
+        tags: nextreadsbackend.azurecr.io/next-reads-backend:${{ github.sha }}
+        file: ./Backend/NextReads/Dockerfile
 
   deploy:
     runs-on: ubuntu-latest
