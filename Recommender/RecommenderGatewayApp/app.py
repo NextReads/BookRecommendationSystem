@@ -35,7 +35,6 @@ NR_AVERAGE_PRECISION = Gauge(
     'nr_average_precision', 'Number of times the average precision was calculated', ['input'])
 NR_MRR = Gauge('nr_mrr', 'Number of times the mrr was calculated', ['input'])
 
-
 NR_HISTOGRAM = Histogram('nr_recommendations_response_time_seconds', 'Response time for recommendations endpoint', buckets=(
     0.1, 0.5, 1, 2, 5, 10, 20, 30, 60, 120, 180, 240, 300, 360, 420, 480, 540, 600))
 NR_BOOKS_RECOMMENDED = Counter(
