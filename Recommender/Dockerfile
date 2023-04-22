@@ -2,7 +2,7 @@
 FROM python:3.9.1-slim-buster
 
 # copy every content from the local file to the image
-COPY . /app
+COPY ./Recommender/ /app
 
 # switch working directory
 WORKDIR /app
