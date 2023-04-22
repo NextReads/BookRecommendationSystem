@@ -7,8 +7,6 @@ on:
   push:
     branches:
       - Deployment
-    paths:
-      - Recommender/**
   workflow_dispatch:
 
 jobs:
@@ -25,15 +23,15 @@ jobs:
       uses: docker/login-action@v1
       with:
         registry: https://nextreadsrecommender.azurecr.io/
-        username: ${{ secrets.AzureAppService_ContainerUsername_nextreadsrecommender }}
-        password: ${{ secrets.AzureAppService_ContainerPassword_nextreadsrecommender }}
+        username: ${{ secrets.AzureAppService_ContainerUsername_3240bda76dd14541abb855ff6f140704 }}
+        password: ${{ secrets.AzureAppService_ContainerPassword_fd3ea48ca6474cf493c691e5e30db8c2 }}
 
     - name: Build and push container image to registry
       uses: docker/build-push-action@v2
       with:
         push: true
-        tags: nextreadsrecommender.azurecr.io/next-reads-recommender:${{ github.sha }}
-        file: ./Recommender/Dockerfile
+        tags: nextreadsrecommender.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_3240bda76dd14541abb855ff6f140704 }}/next-reads-recommender:${{ github.sha }}
+        file: ./Dockerfile
 
   deploy:
     runs-on: ubuntu-latest
@@ -49,5 +47,5 @@ jobs:
       with:
         app-name: 'NextReadsRecommender'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_nextreadsrecommender }}
-        images: 'nextreadsrecommneder.azurecr.io/next-reads-recommender:${{ github.sha }}'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_88903161d51144cfa2e84534985be951 }}
+        images: 'nextreadsrecommender.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_3240bda76dd14541abb855ff6f140704 }}/next-reads-recommender:${{ github.sha }}'
