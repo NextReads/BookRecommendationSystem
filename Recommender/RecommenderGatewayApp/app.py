@@ -14,6 +14,7 @@ from CollabortiveFiltering.content_based import content_based_recommendation, vi
 import CollabortiveFiltering.common_functions as cfcf
 import os
 
+print("os.getenv('NAME') = ", os.getenv('NAME'))
 app = Flask(__name__)
 
 if os.getenv('NAME') == 'NextReadsRecommender':
