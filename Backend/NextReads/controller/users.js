@@ -24,7 +24,7 @@ module.exports.register = async (req, res, next) => {
     try {
         const token = user.generateAuthToken();
         await user.save();
-        return res.status(201).header('x-auth-token', token).send('success');
+        return res.status(201).header('x-auth-token', token).send('success1');
     } catch (error) {
         console.log(error);
         res.status(500).send({ error: "Internal Server error" });
