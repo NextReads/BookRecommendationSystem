@@ -7,6 +7,8 @@ on:
   push:
     branches:
       - Deployment
+    paths:
+      - Recommender
   workflow_dispatch:
 
 jobs:
@@ -30,7 +32,7 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         push: true
-        tags: nextreadsrecommender.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_3240bda76dd14541abb855ff6f140704 }}/next-reads-recommender:${{ github.sha }}
+        tags: nextreadsrecommender.azurecr.io/next-reads-recommender:${{ github.sha }}
         file: ./Dockerfile
 
   deploy:
@@ -48,4 +50,4 @@ jobs:
         app-name: 'NextReadsRecommender'
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_88903161d51144cfa2e84534985be951 }}
-        images: 'nextreadsrecommender.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_3240bda76dd14541abb855ff6f140704 }}/next-reads-recommender:${{ github.sha }}'
+        images: 'nextreadsrecommender.azurecr.io/next-reads-recommender:${{ github.sha }}'
