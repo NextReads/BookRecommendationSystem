@@ -4,9 +4,16 @@ RUN ls ./
 WORKDIR /usr/app
 
 # Install app dependencies
-COPY ./package*.json ./
+COPY package*.json ./
 
-RUN ls ./ && ls ../
+RUN ls ./
+
+RUN ls ../
+
+RUN ls ../../
+
+RUN ls ../../../
+
 
 RUN NODE_ENV=development npm i
 
