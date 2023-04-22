@@ -1,5 +1,5 @@
 FROM node
-
+RUN ls ./
 # Create app directory
 WORKDIR /usr/app
 
