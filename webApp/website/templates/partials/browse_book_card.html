@@ -1,0 +1,47 @@
+{% load static %}
+<div class="col">
+    <div class="card shadow-sm">
+      <img
+        src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1553383690l/2657.jpg"
+        class="bd-placeholder-img card-img-top"
+        height="260"
+        width="100%"
+      />
+      <div class="card-body text-center">
+        <p class="card-text">supporting text below</p>
+        <div class="justify-content-between align-items-center">
+          <div class="stars" data-rating="0">
+            <span class="fa fa-star" title="did not like it"></span>
+            <span class="fa fa-star" title="it was ok"></span>
+            <span class="fa fa-star" title="liked it"></span>
+            <span class="fa fa-star" title="really liked it"></span>
+            <span class="fa fa-star" title="it was amazing"></span>
+          </div>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary mt-2"
+          >
+            Want to read
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+/>
+<style>
+  .stars .fa-star {
+  color: grey;
+}
+
+/* prev siblings should be orange */
+.stars:hover .fa-star{
+  color: orange;
+}
+
+.stars .fa-star:hover ~ .fa-star {
+  color: grey;
+}
+</style>

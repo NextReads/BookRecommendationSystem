@@ -1,0 +1,75 @@
+{% load static %}
+<header class="header">
+  <div class="main-header-container">
+    <div class="line-bar"></div>
+    <div class="logo-container-class">
+      <img src="{% static 'img/logo.png'%}" width="130px" alt="logo" />
+      <p>
+        Looking for what to read next?<br />
+        We have got you covered!
+      </p>
+      <div>
+        <button type="button" class="btn btn-outline-primary">Logout</button>
+      </div>
+    </div>
+    <nav class="nav-menu">
+      <ul class="nav-list">
+        <li class="nav-list-item">
+          <a href="/userProfile/userhome">
+            <span>Home</span>
+          </a>
+        </li>
+        <li class="nav-list-item">
+          <a href="/userProfile/userbooks">
+            <span>My books</span>
+          </a>
+        </li>
+        <li class="nav-list-item ">
+          <a href="/userProfile/recommendations">
+            <span>Recommendations</span>
+          </a>
+        </li>
+        <li class="nav-list-item">
+          <a href="/userProfile/browsebooks">
+            <span>Browse</span>
+          </a>
+        </li>
+      </ul>
+      <button
+      class="collapsed d-md-none"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#sidebarMenu"
+      aria-controls="sidebarMenu"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span ></span>
+    </button>
+    </nav>
+  </div>
+</header>
+<script>
+  window.addEventListener("scroll", function () {
+    var navMenu = document.querySelector(".nav-menu");
+    var header = document.querySelector(".header");
+
+    if (window.pageYOffset > navMenu.offsetTop) {
+      header.classList.add("scrolled");
+    } else {
+      header.classList.remove("scrolled");
+    }
+  });
+  // add active class to nav-list-item based on url
+  const navListItems = document.querySelectorAll(".nav-list-item");
+  const currentLocation = location.href;
+  const navLinks = document.querySelectorAll(".nav-list-item a");
+  for (let i = 0; i < navLinks.length; i++) {
+    if (navLinks[i].href === currentLocation) {
+      navListItems[i].classList.add("active");
+    }
+  }
+
+
+  
+</script>
