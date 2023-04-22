@@ -6,7 +6,9 @@ WORKDIR /usr/app
 # Install app dependencies
 COPY ./package*.json ./
 
-RUN ls -la
+RUN ls /usr/app
+
+RUN cat ./package.json
 
 RUN NODE_ENV=development npm i
 
