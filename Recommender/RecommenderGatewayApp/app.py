@@ -14,7 +14,6 @@ from CollabortiveFiltering.content_based import content_based_recommendation, vi
 import CollabortiveFiltering.common_functions as cfcf
 import os
 
-
 app = Flask(__name__)
 
 # initialize the prometheus metrics
