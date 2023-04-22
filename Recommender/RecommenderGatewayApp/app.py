@@ -24,7 +24,6 @@ metrics = PrometheusMetrics(app)
 # F1 = Gauge('f1', 'F1 of the recommendation', ['input'])
 # AVERAGE_PRECISION = Gauge('average_precision', 'Average Precision of the recommendation', ['input'])
 # MRRG = Gauge('mrr', 'MRR of the recommendation', ['input'])
-
 # RECOMMENDATIONS_HISTOGRAM = Histogram('recommendations_response_time_seconds', 'Response time for recommendations endpoint')
 
 NR_PRECISION = Gauge(
