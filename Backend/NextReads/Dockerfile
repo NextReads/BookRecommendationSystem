@@ -1,22 +1,12 @@
 FROM node
-RUN ls ./
+
 # Create app directory
 WORKDIR /usr/app
 
 # Install app dependencies
-COPY package*.json ./
-
-RUN ls ./
-
-RUN ls ../
-
-RUN ls ../../
-
-RUN ls ../../../
-
+COPY Backend/NextReads/package*.json ./
 
 RUN NODE_ENV=development npm i
-
 
 # Bundle app source
 COPY . .
