@@ -70,7 +70,6 @@ cachedCombinedScoreDf = df
 
 # create a request handler
 
-
 @metrics.counter('nr_recommendation_counter', 'Number of times the recommendation endpoint was called')
 @app.route("/Recommendation", methods=['GET'])
 def recommendation():
