@@ -23,10 +23,16 @@ ENV NAME NextReadsRecommender
 ENV PYTHONPATH "${PYTHONPATH}:/app/RecommenderGatewayApp"
 
 
-# check if Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv exists if not download it from google drive link https://drive.google.com/file/d/1ue1gnrPCmqDWTFAXyNPeP0PEoEettH0L/view
+# check if Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv exists if not curl it from google drive link https://drive.google.com/file/d/1ue1gnrPCmqDWTFAXyNPeP0PEoEettH0L/view
 # and extract it to Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv
 RUN if [ ! -f "Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv" ]; then \
-    wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1ue1gnrPCmqDWTFAXyNPeP0PEoEettH0L' -O Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv; \
+    apt-get update && apt-get install -y curl && \
+    curl -c ./cookie -s -L "https://drive.google.com/uc?export=download&id=1ue1gnrPCmqDWTFAXyNPeP0PEoEettH0L" > /dev/null && \
+    curl -Lb ./cookie "https://drive.google.com/uc?export=download&confirm=`awk '/download/ {print $NF}' ./cookie`&id=1ue1gnrPCmqDWTFAXyNPeP0PEoEettH0L" -o Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv && \
+    rm ./cookie && \
+    apt-get purge -y --auto-remove curl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*; \
     fi
 
 # Run app.py when the container launches
