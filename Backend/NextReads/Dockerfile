@@ -13,7 +13,7 @@ COPY Backend/NextReads/ .
 
 RUN ls /usr/app/
 
-EXPOSE 4000
+EXPOSE 80
 
 ENV JWTPRIVATEKEY=mysecurekey
 
