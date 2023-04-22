@@ -31,7 +31,7 @@ jobs:
       with:
         push: true
         tags: nextreadsbackend.azurecr.io/next-reads-backend:${{ github.sha }}
-        file: ./Dockerfile
+        file: ./Backend/NextReads/Dockerfile
 
   deploy:
     runs-on: ubuntu-latest
