@@ -7,8 +7,8 @@ on:
   push:
     branches:
       - Deployment
-      paths:
-          - Backend/NextReads/**
+    paths:
+        - Backend/NextReads/**
   workflow_dispatch:
 
 jobs:
