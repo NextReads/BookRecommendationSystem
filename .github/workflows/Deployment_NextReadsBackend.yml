@@ -48,4 +48,4 @@ jobs:
         app-name: 'NextReadsBackend'
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_d754284c695d4fcf96be725490511f1c }}
-        images: 'nextreadsbackend.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_de5754edd5874825939ac29109bf44ae }}/next-reads-backend:${{ github.sha }}'
+        images: 'nextreadsbackend.azurecr.io/next-reads-backend:${{ github.sha }}'
