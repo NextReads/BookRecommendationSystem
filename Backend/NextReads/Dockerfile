@@ -11,6 +11,10 @@ RUN NODE_ENV=development npm i
 # Bundle app source
 COPY . .
 
+RUN ls /usr/app/
+
+RUN ls/usr/app/Backend/NextReads
+
 WORKDIR /usr/app/Backend/NextReads
 
 EXPOSE 4000
