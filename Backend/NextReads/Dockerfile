@@ -11,6 +11,8 @@ RUN NODE_ENV=development npm i
 # Bundle app source
 COPY . .
 
+WORKDIR /usr/app/Backend/NextReads
+
 EXPOSE 4000
 
 ENV JWTPRIVATEKEY=mysecurekey
