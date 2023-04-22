@@ -7,7 +7,7 @@ on:
   push:
     branches:
       - Deployment
-    path:
+    paths:
       - Recommender/**
   workflow_dispatch:
 
