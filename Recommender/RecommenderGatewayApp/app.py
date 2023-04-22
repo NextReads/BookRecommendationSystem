@@ -121,7 +121,6 @@ def recommendation():
 
 # create a request handler for book with id
 
-
 @metrics.counter('nr_book_counter', 'Number of times the book endpoint was called')
 @app.route("/Book/<book_id>", methods=['GET'])
 def book(book_id):
