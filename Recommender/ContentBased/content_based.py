@@ -78,10 +78,11 @@ def cosine_similarity(book_id: int, genre_mean: pd.DataFrame) -> pd.DataFrame:
     return cosine_similarity
 
 
-def book_recommendation(cosine_similarity: pd.Series, N=CB_TOP_N_GENRES):
+def book_recommendation(cosine_similarity: pd.Series, N=CB_TOP_N_BOOKS):
     # get the top N similar books
     book_recommendations_len = min(N, len(cosine_similarity))
-    book_recommendations = cosine_similarity.head(book_recommendations_len).tolist()
+    book_recommendations = cosine_similarity.head(book_recommendations_len)
+    print (book_recommendations)
     return book_recommendations
 
 

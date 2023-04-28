@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import request
+from flask import request, jsonify
 from DataProcessing.preprocessing import *
 from CollabortiveFiltering.collaborative_filtering import *
 from Evaluation.evaluation import *
@@ -10,8 +10,8 @@ from SentimentAnalysis import featureExtraction as fe
 from SentimentAnalysis import classifier
 from recommender import combineScores
 import pandas as pd
-from CollabortiveFiltering.content_based import content_based_recommendation, visualize_recommendations
-import CollabortiveFiltering.common_functions as cfcf
+from ContentBased.content_based import content_based_recommendation, visualize_recommendations
+import Utils.common_functions as cfcf
 import os
 
 print("os.getenv('NAME') = ", os.getenv('NAME'))
@@ -24,51 +24,12 @@ else:
 fileLinks = {basedir + 'Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv': ('https://drive.google.com/uc?id=1ue1gnrPCmqDWTFAXyNPeP0PEoEettH0L', True),
              basedir + 'CollabortiveFiltering/dataset/goodreads_books_shrink.csv': ('https://drive.google.com/uc?id=1cvM5KArllmpjtg0CIoyLZdW_m_VGmwD5', False),
              basedir + 'CollabortiveFiltering/dataset/goodreads_genres_shrink.csv': ('https://drive.google.com/uc?id=1LCjmQ0vEBRiZtkckV6IxCoAf3V9CLKrJ', False),
-             basedir + 'RecommendationGenerator/combined_score.json': ('https://drive.google.com/uc?id=1kaHSI-CGiWycpsHFOvREo5z9qwGhWTPB', False)}
-
-# Download the dataset
-# if not os.path.exists('Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv'):
-#     print("file doesn't exist, download it from gdrive")
-#     url = 'https://drive.google.com/uc?id=1ue1gnrPCmqDWTFAXyNPeP0PEoEettH0L'
-#     output = '../Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv'
-#     gdown.download(url, output, quiet=False)
-#     # unzip the file
-#     with zipfile.ZipFile('../Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv.zip', 'r') as zip_ref:
-#         zip_ref.extractall('../Dataset/GoodReadsShrink/')
-#     # remove the zip file
-#     os.remove('../Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv.zip')
-# else:
-#     print("file already exists")
-
-# Download the dataset
-for file, url in fileLinks.items():
-    if not os.path.exists(file):
-        print("file doesn't exist, download it from gdrive, file: ", file)
-        if url[1]:
-            output = file + '.zip'
-        else:
-            output = file
-        gdown.download(url[0], output, quiet=False)
-        if url[1]:
-            # unzip the file
-            print("unzipping file")
-            with zipfile.ZipFile(output , 'r') as zip_ref:
-                # remove unitl the last /
-                zip_ref.extractall(file[:file.rfind('/')])
-            # remove the zip file
-            os.remove(output)
-    else:
-        print("file already exists, file: ", file)
+             basedir + 'RecommendationGenerator/combined_score.json': ('https://drive.google.com/uc?id=1kaHSI-CGiWycpsHFOvREo5z9qwGhWTPB', False),
+             basedir + 'Utils/dataset/books.csv' : ('https://drive.google.com/uc?id=1TFBNupoC2eW0P7gyIEBNcCmYGDLoljRy',False),
+             basedir + 'Utils/dataset/genre.csv' : ('https://drive.google.com/uc?id=1yJGodSjJbWuCtWIWeojQ9ciS5oNdffX-',False),}
 
 # initialize the prometheus metrics
 metrics = PrometheusMetrics(app)
-
-# PRECISION = Gauge('precision', 'Precision of the recommendation', ['input'])
-# RECALL = Gauge('recall', 'Recall of the recommendation', ['input'])
-# F1 = Gauge('f1', 'F1 of the recommendation', ['input'])
-# AVERAGE_PRECISION = Gauge('average_precision', 'Average Precision of the recommendation', ['input'])
-# MRRG = Gauge('mrr', 'MRR of the recommendation', ['input'])
-# RECOMMENDATIONS_HISTOGRAM = Histogram('recommendations_response_time_seconds', 'Response time for recommendations endpoint')
 
 NR_PRECISION = Gauge(
     'nr_precision', 'Number of times the precision was calculated', ['input'])
@@ -84,30 +45,10 @@ NR_HISTOGRAM = Histogram('nr_recommendations_response_time_seconds', 'Response t
 NR_BOOKS_RECOMMENDED = Counter(
     'nr_books_recommended', 'Number of books recommended', ['input'])
 
-rating_matrix, mean_centered_matrix = matrix_creation()
-cfModel = CollaborativeFiltering(rating_matrix, mean_centered_matrix)
-
-data = classifier.readData()
-pathRoot = os.getenv('NAME')
-if pathRoot == 'NextReadsRecommender':
-    genreData = cfcf.read_data('/app/CollabortiveFiltering/'+cfcf.GENRES_DF_PATH)
-    booksData = cfcf.read_data('/app/CollabortiveFiltering/'+cfcf.BOOKS_DF_PATH)
-else:
-    genreData = cfcf.read_data('../CollabortiveFiltering/'+cfcf.GENRES_DF_PATH)
-    booksData = cfcf.read_data('../CollabortiveFiltering/'+cfcf.BOOKS_DF_PATH)
-
-try:
-    if pathRoot == 'NextReadsRecommender':
-        df = pd.read_json('/app/RecommendationGenerator/combined_score.json', orient='records')
-    else:
-        df = pd.read_json(
-            "../RecommendationGenerator/combined_score.json", orient='records')
-    if df.empty:
-        df = pd.DataFrame(columns=['user_id', 'combined_score', 'date'])
-except:
-    df = pd.DataFrame(columns=['user_id', 'combined_score', 'date'])
-
-cachedCombinedScoreDf = df
+rating_matrix, mean_centered_matrix = None, None
+cfModel = None
+data = None
+cachedCombinedScoreDf = None
 
 # create a request handler
 
@@ -169,8 +110,61 @@ def book(book_id):
         listIds = content_based_recommendation(int(book_id), genreData)
         response_time = time.time() - start_time
         NR_HISTOGRAM.observe(response_time)
-        visData = visualize_recommendations(listIds,booksData)
-        return visData
+        #visData = visualize_recommendations(listIds,booksData)
+        return jsonify(dict(listIds))
+    
+@app.route("/Start", methods=['POST'])
+def start():
+    # Download the dataset
+    for file, url in fileLinks.items():
+        if not os.path.exists(file):
+            print("file doesn't exist, download it from gdrive, file: ", file)
+            if url[1]:
+                output = file + '.zip'
+            else:
+                output = file
+            gdown.download(url[0], output, quiet=False)
+            if url[1]:
+                # unzip the file
+                print("unzipping file")
+                with zipfile.ZipFile(output , 'r') as zip_ref:
+                    # remove unitl the last /
+                    zip_ref.extractall(file[:file.rfind('/')])
+                # remove the zip file
+                os.remove(output)
+        else:
+            print("file already exists, file: ", file)
+
+    global rating_matrix, mean_centered_matrix, cfModel, data, cachedCombinedScoreDf, genreData, booksData
+    rating_matrix, mean_centered_matrix = matrix_creation()
+    cfModel = CollaborativeFiltering(rating_matrix, mean_centered_matrix)
+
+    data = classifier.readData()
+    pathRoot = os.getenv('NAME')
+    if pathRoot == 'NextReadsRecommender':
+        genreData = cfcf.read_data('/app/CollabortiveFiltering/'+cfcf.GENRES_DF_PATH)
+        booksData = cfcf.read_data('/app/CollabortiveFiltering/'+cfcf.BOOKS_DF_PATH)
+    else:
+        genreData = cfcf.read_data('../Utils/dataset/genre.csv')
+        booksData = cfcf.read_data('../Utils/dataset/books.csv')
+
+    try:
+        if pathRoot == 'NextReadsRecommender':
+            df = pd.read_json('/app/RecommendationGenerator/combined_score.json', orient='records')
+        else:
+            df = pd.read_json(
+                "../RecommendationGenerator/combined_score.json", orient='records')
+        if df.empty:
+            df = pd.DataFrame(columns=['user_id', 'combined_score', 'date'])
+    except:
+        df = pd.DataFrame(columns=['user_id', 'combined_score', 'date'])
+
+    
+    cachedCombinedScoreDf = df
+
+    return "Done"
+
+
 
 @app.route('/index')
 def index():
