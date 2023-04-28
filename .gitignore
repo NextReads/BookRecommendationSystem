@@ -1,4 +1,12 @@
 *.csv
 __pycache__
+geckodriver.log
+reviews.txt
+*.csv
+__pycache__
 
+Dataset/*/*.csv
 dataset/goodreads_reviews_dedup.json
+Backend/NextReads/venv
+Backend/NextReads/venv/Scripts
+Backend/NextReads/node_modules

@@ -1,0 +1,214 @@
+{% extends 'register_steps_base.html' %}
+{% load static %}
+
+{% block content %}
+
+<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+    <div class="position-sticky pt-3 sidebar-sticky">
+        <form class="d-flex" role="search">
+            <input class="form-control mx-2" type="search" placeholder="Title/ISBN" aria-label="Search">
+            <button class="btn btn-outline-success me-2" type="submit">Search</button>
+        </form>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="#">
+            <span data-feather="home" class="align-text-bottom"></span>
+            Genre
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">
+            <span data-feather="file" class="align-text-bottom"></span>
+            Fiction
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">
+            <span data-feather="shopping-cart" class="align-text-bottom"></span>
+            Science Fiction
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">
+            <span data-feather="users" class="align-text-bottom"></span>
+            Young adult
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">
+            <span data-feather="bar-chart-2" class="align-text-bottom"></span>
+            Reports
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">
+            <span data-feather="layers" class="align-text-bottom"></span>
+            Mystery
+          </a>
+        </li>
+      </ul>
+
+      
+    </div>
+  </nav>
+
+<div class = "col-md-9 ms-sm-auto col-lg-10 px-md-4">
+    <div class="album py-5 px-5 bg-light">
+        <div class="container">
+            <h5 class="text-center mb-5" > Rate at least 5 books to continue, or tell us about books you heard about before and want to read.</h5>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-6 g-3">
+            <div class="col">
+            <div class="card shadow-sm">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1553383690l/2657.jpg" class="bd-placeholder-img card-img-top" height="260"  >
+                <div class="card-body text-center">
+                <p class="card-text">supporting text below </p>
+                <div class="justify-content-between align-items-center">
+                    <div class="stars" data-rating="0">
+                        <span class="fa fa-star" title="did not like it" ></span>
+                        <span class="fa fa-star" title="it was ok" ></span>
+                        <span class="fa fa-star" title="liked it" ></span>
+                        <span class="fa fa-star" title="really liked it" ></span>
+                        <span class="fa fa-star" title="it was amazing" ></span>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary mt-2">Want to read</button>
+                </div>
+                </div>
+            </div>
+            </div>
+            <div class="col">
+                <div class="card shadow-sm">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1657781256l/61439040._SX318_.jpg" class="bd-placeholder-img card-img-top" height="260"  >
+                <div class="card-body text-center">
+                    <p class="card-text">supporting text below </p>
+                    <div class="justify-content-between align-items-center">
+                    <div class="stars" data-rating="0">
+                        <span class="fa fa-star" title="did not like it" ></span>
+                        <span class="fa fa-star" title="it was ok" ></span>
+                        <span class="fa fa-star" title="liked it" ></span>
+                        <span class="fa fa-star" title="really liked it" ></span>
+                        <span class="fa fa-star" title="it was amazing" ></span>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary mt-2">Want to read</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card shadow-sm">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1646534743l/60556912._SY475_.jpg" class="bd-placeholder-img card-img-top" height="260"  >
+                <div class="card-body text-center">
+                    <p class="card-text">supporting text below </p>
+                    <div class="justify-content-between align-items-center">
+                    <div class="stars" data-rating="0">
+                        <span class="fa fa-star" title="did not like it" ></span>
+                        <span class="fa fa-star" title="it was ok" ></span>
+                        <span class="fa fa-star" title="liked it" ></span>
+                        <span class="fa fa-star" title="really liked it" ></span>
+                        <span class="fa fa-star" title="it was amazing" ></span>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary mt-2">Want to read</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card shadow-sm">
+                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1490528560l/4671._SY475_.jpg" class="bd-placeholder-img card-img-top" height="260"  >
+                <div class="card-body text-center">
+                    <p class="card-text">supporting text below </p>
+                    <div class="justify-content-between align-items-center">
+                    <div class="stars" data-rating="0">
+                        <span class="fa fa-star" title="did not like it" ></span>
+                        <span class="fa fa-star" title="it was ok" ></span>
+                        <span class="fa fa-star" title="liked it" ></span>
+                        <span class="fa fa-star" title="really liked it" ></span>
+                        <span class="fa fa-star" title="it was amazing" ></span>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary mt-2">Want to read</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+            <div class="col">
+            <div class="card shadow-sm">
+                <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
+                <div class="card-body">
+                <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                    </div>
+                    <small class="text-muted">9 mins</small>
+                </div>
+                </div>
+            </div>
+            </div>
+            <div class="col">
+            <div class="card shadow-sm">
+                <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
+                <div class="card-body">
+                <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                    </div>
+                    <small class="text-muted">9 mins</small>
+                </div>
+                </div>
+            </div>
+            </div>
+
+            <div class="col">
+            <div class="card shadow-sm">
+                <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
+                <div class="card-body">
+                <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                    </div>
+                    <small class="text-muted">9 mins</small>
+                </div>
+                </div>
+            </div>
+            </div>
+            <div class="col">
+            <div class="card shadow-sm">
+                <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
+                <div class="card-body">
+                <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                    </div>
+                    <small class="text-muted">9 mins</small>
+                </div>
+                </div>
+            </div>
+            </div>
+            <div class="col">
+            <div class="card shadow-sm">
+                <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
+                <div class="card-body">
+                <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                    </div>
+                    <small class="text-muted">9 mins</small>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
