@@ -8,11 +8,12 @@ from Utils.constants import *
 
 def content_based_recommendation(book_id: int, genre_df: pd.DataFrame, N=CB_TOP_N_BOOKS):
     genre_df_copy = genre_df.copy()
-    genre_df_copy = remove_row_has_negative(genre_df_copy)
-    genre_df_copy = TF_IDF_matrix(genre_df_copy)
-    r_genres = get_highest_N_genre(book_id, genre_df_copy)
-    recommendations = book_recommendations(r_genres, genre_df_copy, N)
-    return recommendations
+    genre_df_copy = map_index_to_key(genre_df_copy)
+    genre_df_copy = remove_row_has_negative(genre_df_copy)    
+    tf_idf = TF_IDF_matrix(genre_df_copy)
+    similarity = cosine_similarity(book_id, tf_idf)
+    book_recommendations = book_recommendation(similarity)
+    return book_recommendations
 
 
 def map_index_to_key(genre_mean: pd.DataFrame, key="book_id") -> pd.DataFrame:
