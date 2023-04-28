@@ -1,5 +1,6 @@
 {% load static %}
-<div class="table">
+<div>
+  <div class="table" id="blur">
     <div class="table-header">Books read</div>
     <table cellspacing="0">
       <tr>
@@ -20,6 +21,96 @@
         </td>
         <td>To kill a mocking bird</td>
         <td>Harper Lee</td>
+        <td>4/5 <br>
+          <button
+            class="btn btn-sm btn-link mt-2"
+            data-bs-toggle="modal" 
+            data-bs-target="#rateBackdrop"
+          >
+            Edit
+          </button>
+        </td>
+        <td>Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+          <button
+            class="btn btn-sm btn-link mt-2"
+            data-bs-toggle="modal" 
+            data-bs-target="#staticBackdrop"
+          >
+            Edit
+          </button>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <img
+            class="table-img"
+            src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1553383690l/2657.jpg"
+            alt=""
+          />
+        </td>
+        <td>To kill a mocking bird</td>
+        <td>Harper Lee</td>
+        <td>
+          <button
+            class="btn btn-sm btn-outline-primary mt-2"
+            data-bs-toggle="modal" 
+            data-bs-target="#rateBackdrop"
+          >
+            Rate
+          </button>
+        </td>
+        <td>
+          <button
+            class="btn btn-sm btn-outline-primary mt-2"
+            data-bs-toggle="modal" 
+            data-bs-target="#staticBackdrop"
+          >
+            Write review
+          </button>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <img
+            class="table-img"
+            src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1553383690l/2657.jpg"
+            alt=""
+          />
+        </td>
+        <td>To kill a mocking bird</td>
+        <td>Harper Lee</td>
+        <td>
+          <button
+            class="btn btn-sm btn-outline-primary mt-2"
+            data-bs-toggle="modal" 
+            data-bs-target="#rateBackdrop"
+          >
+            Rate
+          </button>
+        </td>
+        <td>
+          <button
+            class="btn btn-sm btn-outline-primary mt-2"
+            data-bs-toggle="modal" 
+            data-bs-target="#staticBackdrop"
+          >
+            Write review
+          </button>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <img
+            class="table-img"
+            src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1553383690l/2657.jpg"
+            alt=""
+          />
+        </td>
+        <td>To kill a mocking bird</td>
+        <td>Harper Lee</td>
         <td>4/5</td>
         <td>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</td>
       </tr>
@@ -34,39 +125,76 @@
         </td>
         <td>To kill a mocking bird</td>
         <td>Harper Lee</td>
-        <td><button class="btn btn-sm btn-info mt-2">Rate</button></td>
         <td>
-          <button class="btn btn-sm btn-info mt-2">Write review</button>
+          <button
+            class="btn btn-sm btn-outline-primary mt-2"
+            data-bs-toggle="modal" 
+            data-bs-target="#rateBackdrop"
+          >
+            Rate
+          </button>
+        </td>
+        <td>
+          <button
+            class="btn btn-sm btn-outline-primary mt-2"
+            data-bs-toggle="modal" 
+            data-bs-target="#staticBackdrop"
+          >
+            Write review
+          </button>
         </td>
       </tr>
 
-      <tr>
-        <td>
-          <img
-            class="table-img"
-            src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1553383690l/2657.jpg"
-            alt=""
-          />
-        </td>
-        <td>To kill a mocking bird</td>
-        <td>Harper Lee</td>
-        <td>4/5</td>
-        <td>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</td>
-      </tr>
-
-      <tr>
-        <td>
-          <img
-            class="table-img"
-            src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1553383690l/2657.jpg"
-            alt=""
-          />
-        </td>
-        <td>To kill a mocking bird</td>
-        <td>Harper Lee</td>
-        <td>4/5</td>
-        <td>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</td>
-      </tr>
+      
     </table>
   </div>
+ <!-- model review -->
+  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">Write a review</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="message-text" class="col-form-label">Review:</label>
+              <textarea class="form-control" id="message-text"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- model rate -->
+  <div class="modal fade" id="rateBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="rateBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="rateBackdropLabel">Rate book</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="message-text" class="col-form-label">Rate:</label>
+              <input class="inputNumber" placeholder="#" min="0" max="5" type="number" />
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- -->
 </div>
+
+
