@@ -142,8 +142,8 @@ def start():
     data = classifier.readData()
     pathRoot = os.getenv('NAME')
     if pathRoot == 'NextReadsRecommender':
-        genreData = cfcf.read_data('/app/CollabortiveFiltering/'+cfcf.GENRES_DF_PATH)
-        booksData = cfcf.read_data('/app/CollabortiveFiltering/'+cfcf.BOOKS_DF_PATH)
+        genreData = cfcf.read_data('/app/Utils/dataset/genre.csv')
+        booksData = cfcf.read_data('/app/Utils/dataset/books.csv')
     else:
         genreData = cfcf.read_data('../Utils/dataset/genre.csv')
         booksData = cfcf.read_data('../Utils/dataset/books.csv')
