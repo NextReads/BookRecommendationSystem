@@ -20,7 +20,9 @@ module.exports.addBook= async (req, res, next) => {
     book=new Book({
         title:req.body.title,
         imageUrl:req.body.imageUrl,
-        Author: author._id
+        Author: author._id,
+        isbn:req.body.isbn,
+        genre:req.body.genre
     })
     author.books.push(book._id);
     

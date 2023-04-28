@@ -70,6 +70,20 @@ const Book = mongoose.model('Book', new mongoose.Schema({
             default: 0,
             min: 0,
     },
+    isbn:{
+        type: String,
+        required: true,
+        trim: true,
+        minlength: 10,
+        maxlength: 13
+    },
+    genre:{
+        type: String,
+        required: false,
+        trim: true,
+        minlength: 1,
+        maxlength: 255
+    },
 
     reviews:[reviewSchema]
 }));
@@ -78,7 +92,9 @@ const Book = mongoose.model('Book', new mongoose.Schema({
 function validateBook(book) {
     const schema = Joi.object({
         title: Joi.string().min(5).max(255).required(),
-        imageUrl: Joi.string().min(5).max(1024).required()
+        imageUrl: Joi.string().min(5).max(1024).required(),
+        isbn: Joi.string().min(10).max(13).required(),
+        genre: Joi.string().min(1).max(255),
     });
 
     return schema.validate(book);
