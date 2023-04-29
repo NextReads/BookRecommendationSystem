@@ -60,23 +60,37 @@ def mean_matrix(matrix: pd.DataFrame) -> pd.DataFrame:
 # @type: SPECIFIC
 
 
-def check_cf_compatibilty(current_user: str, current_read_books: list, ratings_df: pd.DataFrame) -> bool:
+def list_to_dataframe(my_list: list, column: list) -> pd.DataFrame:
+    return pd.DataFrame(my_list, columns=column)
+
+
+def check_cf_compatibilty(current_user: str, current_read_books_df: pd.DataFrame, ratings_df: pd.DataFrame) -> bool:
     # 1- check if the data is empty or the current user is not in the dataset
-    if len(current_read_books) == 0 or current_user not in ratings_df['user_id'].values:
+    if ratings_df.empty or current_read_books_df.empty or current_user not in ratings_df['user_id'].values:
         print("the data is empty or the current user is not in the dataset")
         return False
-    # 2- check if there's at least one of the current_read_books in the dataset
-    if len(ratings_df[ratings_df['book_id'].isin(current_read_books)]) != 0:
+    # 2- check if there's at least one of the books_id column in the current_read_books_df exists in the ratings_df
+    is_common_books = ratings_df['book_id'].isin(
+        current_read_books_df['book_id'])
+    if len(ratings_df[is_common_books]) == 0:
         print("None of the books are in the dataset")
         return False
     # 3- check if another user has rated at least one of the current_read_books and is not the current_user
-    if len(ratings_df[ratings_df['book_id'].isin(current_read_books) & (ratings_df['user_id'] != current_user)]) == 0:
+    if len(ratings_df[is_common_books & (ratings_df['user_id'] != current_user)]) == 0:
         print("None of the books are rated by another user")
         return False
     return True
 
+    # if len(ratings_df[ratings_df['book_id'].isin(current_read_books)]) == 0:
+    #     print("None of the books are in the dataset")
+    #     return False
+    # # 3- check if another user has rated at least one of the current_read_books and is not the current_user
+    # if len(ratings_df[ratings_df['book_id'].isin(current_read_books) & (ratings_df['user_id'] != current_user)]) == 0:
+    #     print("None of the books are rated by another user")
+    #     return False
 
-def data_shrinking(current_user: str, current_read_books: list, ratings_df: pd.DataFrame) -> pd.DataFrame:
+
+def data_shrinking(current_user: str, current_read_books: pd.DataFrame, ratings_df: pd.DataFrame) -> pd.DataFrame:
     # check if the current_read_books list length is longer than the acceptable CF_MAX_BOOK_NUMBER
     if len(current_read_books) > CF_MAX_BOOK_NUMBER:
         # find the most rated CF_MAX_BOOK_NUMBER books
