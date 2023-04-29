@@ -60,18 +60,42 @@ def mean_matrix(matrix: pd.DataFrame) -> pd.DataFrame:
 # @type: SPECIFIC
 
 
-def data_shrinking(ratings_df: pd.DataFrame) -> pd.DataFrame:
-    ratings_df = ratings_df.dropna(subset=['review_text'])
-    # remove rows with rating 0 (not rated)
-    ratings_df = ratings_df[ratings_df['rating'] != 0]
-    # there are books that have been rated only once
-    # SHRINKING THE DATASET BY REMOVING BOOKS THAT HAVE BEEN RATED LESS THAN 100 TIMES
-    counts = ratings_df['book_id'].value_counts()
-    ratings_df = ratings_df[ratings_df['book_id'].isin(
-        counts[counts >= 100].index)]
-    # there are users that have rated only once
-    # SHRINKING THE DATASET BY REMOVING USERS THAT HAVE RATED LESS THAN 10 TIMES
-    counts = ratings_df["user_id"].value_counts()
-    ratings_df = ratings_df[ratings_df["user_id"].isin(
-        counts[counts >= 10].index)]
-    return ratings_df
+def check_cf_compatibilty(current_user: str, current_read_books: list, ratings_df: pd.DataFrame) -> bool:
+    # 1- check if the data is empty or the current user is not in the dataset
+    if len(current_read_books) == 0 or current_user not in ratings_df['user_id'].values:
+        print("the data is empty or the current user is not in the dataset")
+        return False
+    # 2- check if there's at least one of the current_read_books in the dataset
+    if len(ratings_df[ratings_df['book_id'].isin(current_read_books)]) != 0:
+        print("None of the books are in the dataset")
+        return False
+    # 3- check if another user has rated at least one of the current_read_books and is not the current_user
+    if len(ratings_df[ratings_df['book_id'].isin(current_read_books) & (ratings_df['user_id'] != current_user)]) == 0:
+        print("None of the books are rated by another user")
+        return False
+    return True
+
+
+def data_shrinking(current_user: str, current_read_books: list, ratings_df: pd.DataFrame) -> pd.DataFrame:
+    # check if the current_read_books list length is longer than the acceptable CF_MAX_BOOK_NUMBER
+    if len(current_read_books) > CF_MAX_BOOK_NUMBER:
+        # find the most rated CF_MAX_BOOK_NUMBER books
+        current_read_books = current_read_books[:int(
+            CF_MAX_BOOK_NUMBER*CF_MAX_READ_TO_RECOMMEND_RATIO)]
+
+    # find top CF_MAX_USER_NUMBER users that have rated the most books out of the current_user's read books
+    # first step: find the users that have rated any of the current_user's read books
+    # second step: find the users that have rated the highest number of books out of the current_user's read books
+    common_users = ratings_df[ratings_df['book_id'].isin(
+        current_read_books)]['user_id']
+    print("first 10 users that have rated any of the current_user's read books:" + "\n")
+    print(common_users[:10])
+    print(common_users.values.min())
+    print(common_users.values.max())
+    common_users = common_users.value_counts().index.tolist()
+    print("first 10 users that have rated the highest number of books out of the current_user's read books:" + "\n")
+    print(common_users[:10])
+    print(common_users.values.min())
+    print(common_users.values.max())
+    common_users = common_users[:CF_MAX_USER_NUMBER]
+    return common_users
