@@ -93,16 +93,47 @@ def data_shrinking(current_user: str, current_read_books_df: pd.DataFrame, ratin
     # first step: find a subset of rating which includes all users that have rated any of the current_user's read books
     # second step: get the top CF_MAX_USER_NUMBER users that have rated the most books out of the current_user's read books, add the current_user if not there
     # third step: get a subset of the dataframe in step 1 which includes only the users in step 2
-    users_df = ratings_df[ratings_df['book_id'].isin(
+
+    # getting the users that have rated any of the current_user's read books
+    users_books_df = ratings_df[ratings_df['book_id'].isin(
         current_read_books_df['book_id'])]
     number_of_users = min(CF_MAX_USER_NUMBER, len(
-        users_df['user_id'].unique()))
-    unique_users = users_df.groupby('user_id').count(
-    ).sort_values(by='book_id', ascending=False).head(number_of_users).index  # this
+        users_books_df['user_id'].unique()))
+    # getting
+    unique_users = users_books_df.groupby('user_id').count(
+    ).sort_values(by='book_id', ascending=False).head(number_of_users).index
     # check if the current_user is in the unique_users
     if current_user not in unique_users:
         unique_users = unique_users.append(
-            pd.Index([current_user]))  # pd.Index is
-    users_df = users_df[users_df['user_id'].isin(unique_users)]
+            pd.Index([current_user]))
+    # getting the highest related CF_MAX_USER_NUMBER users
+    users_books_df = users_books_df[users_books_df['user_id'].isin(
+        unique_users)]
 
-    return users_df
+    ##################################### GETTING THE BOOKS #####################################
+    # first step: find all other books that have been rated by any user in users_books_df and not in current_read_books_df
+    # second step: add the current_read_books_df to the unique_books
+    # third step: get a subset of the original ratings_df which includes the books and users in step 1 and 2
+
+    # if number_of_books == 0:
+    #     return current_read_books_df
+
+    # find all other books that have been rated by any user in users_books_df and not in current_read_books_df
+    other_books_df = ratings_df[~ratings_df['book_id'].isin(
+        current_read_books_df['book_id']) & ratings_df['user_id'].isin(users_books_df['user_id'])]
+
+    # get the top CF_MAX_BOOK_NUMBER - len(current_read_books_df) books that have been rated by any user in users_books_df and not in current_read_books_df
+    number_of_books = min(CF_MAX_BOOK_NUMBER - len(current_read_books_df), len(  # this
+        other_books_df['book_id'].unique()))
+
+    unique_books = other_books_df.groupby('book_id').count().sort_values(
+        by='user_id', ascending=False).head(number_of_books).index
+
+    # # add the current_read_books_df to the unique_books
+    unique_books = unique_books.append(pd.Index(current_read_books_df['book_id']))
+    # print the number of unique books in unique_books
+
+    users_books_df = ratings_df[ratings_df['book_id'].isin(
+        unique_books) & ratings_df['user_id'].isin(unique_users)]
+
+    return users_books_df
