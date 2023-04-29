@@ -4,3 +4,5 @@ GENRES_DF_PATH = 'dataset/goodreads_genres_shrink.csv'
 K_FEATURES = 20
 CB_TOP_N_GENRES = 3
 CB_TOP_N_BOOKS = 20
+CF_MAX_USER_NUMBER = 1000
+CF_MAX_BOOK_NUMBER = 1000
