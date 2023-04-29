@@ -95,8 +95,8 @@ def data_shrinking(current_user: str, current_read_books_df: pd.DataFrame, ratin
     # third step: get a subset of the dataframe in step 1 which includes only the users in step 2
 
     # getting the users that have rated any of the current_user's read books
-    users_books_df = ratings_df[ratings_df['book_id'].isin(
-        current_read_books_df['book_id'])]
+    current_books_ratings_bool = ratings_df['book_id'].isin(current_read_books_df['book_id'])
+    users_books_df = ratings_df[current_books_ratings_bool]
     number_of_users = min(CF_MAX_USER_NUMBER, len(
         users_books_df['user_id'].unique()))
     # getting
@@ -115,12 +115,8 @@ def data_shrinking(current_user: str, current_read_books_df: pd.DataFrame, ratin
     # second step: add the current_read_books_df to the unique_books
     # third step: get a subset of the original ratings_df which includes the books and users in step 1 and 2
 
-    # if number_of_books == 0:
-    #     return current_read_books_df
-
     # find all other books that have been rated by any user in users_books_df and not in current_read_books_df
-    other_books_df = ratings_df[~ratings_df['book_id'].isin(
-        current_read_books_df['book_id']) & ratings_df['user_id'].isin(users_books_df['user_id'])]
+    other_books_df = ratings_df[~current_books_ratings_bool & ratings_df['user_id'].isin(users_books_df['user_id'])]
 
     # get the top CF_MAX_BOOK_NUMBER - len(current_read_books_df) books that have been rated by any user in users_books_df and not in current_read_books_df
     number_of_books = min(CF_MAX_BOOK_NUMBER - len(current_read_books_df), len(  # this
@@ -130,7 +126,8 @@ def data_shrinking(current_user: str, current_read_books_df: pd.DataFrame, ratin
         by='user_id', ascending=False).head(number_of_books).index
 
     # # add the current_read_books_df to the unique_books
-    unique_books = unique_books.append(pd.Index(current_read_books_df['book_id']))
+    unique_books = unique_books.append(
+        pd.Index(current_read_books_df['book_id']))
     # print the number of unique books in unique_books
 
     users_books_df = ratings_df[ratings_df['book_id'].isin(
