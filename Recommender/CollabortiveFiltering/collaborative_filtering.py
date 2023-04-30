@@ -20,8 +20,10 @@ from Utils.constants import *
 
 class CollaborativeFiltering:
 
-    def __init__(self, user_id: str, ratings_matrix: pd.DataFrame):
+    def __init__(self, user_id: str, ratings_matrix: pd.DataFrame, ratings_matrix_centered: pd.DataFrame):
+        self.user_id = user_id
         self.ratings_matrix = ratings_matrix
+        self.ratings_matrix_centered = ratings_matrix_centered
         self.users_pearson_similiarity = self.pearson_similiarity(
             user_id, ratings_matrix)
 
@@ -89,3 +91,87 @@ class CollaborativeFiltering:
             first_zero_neg_location, round(top_users_percent * len(sorted_pearson_similiarity)))
         top_similiar_users = sorted_pearson_similiarity.iloc[:top_users_percent]
         return top_similiar_users
+
+    def get_not_rated_books(self) -> pd.DataFrame:
+        """
+        Function to find the books that the user didn't rate
+        :param user_id: user id
+        :return: books that the user didn't rate
+        """
+        # steps:
+        # 1. get the user row
+        # 2. get the books that the user didn't rate
+        # 3. return the books that the user didn't rate
+
+        user_row = self.ratings_matrix.loc[self.user_id, :]
+        not_rated_books = user_row[user_row.isnull()].index
+        return not_rated_books
+
+    # this function follows the user-based collaborative filtering approach
+    def get_predicted_rating(self) -> dict:
+        """
+        Function to get the predicted rating for the user
+        :param user_id: user id
+        :return: predicted rating for the user
+        """
+        # steps:
+        # 1. get the top similiar users
+        # 2. get the not rated books
+        # 3. calculate the predicted rating by multiplying the top similiar users ratings for the not rated books with their pearson similiarity in the numerator
+        # and the sum of the pearson similiarity in the denominator
+        # this is done on the ratings matrix centered
+        # 4. add the mean of the target user to the predicted rating
+        # 5. return the predicted rating as a sorted dictionary where the key is the book id and the value is the predicted rating
+
+        top_similiar_users = self.get_top_similiar_users()
+        not_rated_books = self.get_not_rated_books()
+
+        numerator = self.ratings_matrix_centered.loc[top_similiar_users.index, not_rated_books].apply(
+            lambda row: row * top_similiar_users, axis=0).sum(axis=0)
+        denominator = top_similiar_users.sum()
+        predicted_rating = numerator / denominator
+
+        predicted_rating = predicted_rating + \
+            self.get_mean_current_user_rating()
+        predicted_rating = predicted_rating.sort_values(ascending=False)
+        predicted_rating_dict = predicted_rating.to_dict()
+        return predicted_rating_dict
+
+    def get_mean_current_user_rating(self):
+        """
+        Function to get the mean of the current user rating
+        :return: mean of the current user rating
+        """
+        return self.ratings_matrix.loc[self.user_id, :].mean()
+
+    def sort_prediction_around_mean(self, mean_current_user_rating: float, predicted_rating_dict: dict) -> dict:
+        """
+        Function to sort the predicted rating around the mean of the current user rating
+        :param predicted_rating_dict: predicted rating dictionary
+        :return: sorted predicted rating dictionary
+        """
+        # steps:
+        # 1. get the mean of the current user rating
+        # 2. sort the predicted rating around the mean
+        # 3. return the sorted predicted rating dictionary
+
+        sorted_predicted_rating_dict = {
+            k: v for k, v in sorted(predicted_rating_dict.items(), key=lambda item: abs(item[1] - mean_current_user_rating))}
+        return sorted_predicted_rating_dict
+
+
+    def user_based_collaborative_filtering(self) -> dict:
+        """
+        Function to apply the user based collaborative filtering approach
+        :return: predicted rating dictionary
+        """
+        # steps:
+        # 1. get the predicted rating
+        # 2. sort the predicted rating around the mean of the current user rating
+        # 3. return the sorted predicted rating dictionary
+
+        predicted_rating_dict = self.get_predicted_rating()
+        mean_current_user_rating = self.get_mean_current_user_rating()
+        sorted_predicted_rating_dict = self.sort_prediction_around_mean(
+            mean_current_user_rating, predicted_rating_dict)
+        return sorted_predicted_rating_dict
