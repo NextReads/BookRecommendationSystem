@@ -125,6 +125,14 @@ class CollaborativeFiltering:
         top_similiar_users = self.get_top_similiar_users()
         not_rated_books = self.get_not_rated_books()
 
+        # explain the numerator
+        # first step: we get the ratings of the top similiar users for the not rated books, this is a dataframe
+        # the code responsible for first step is self.ratings_matrix_centered.loc[top_similiar_users.index, not_rated_books]
+        # second step: we multiply the ratings of the top similiar users for the not rated books with their pearson similiarity
+        # the code responsible for second step is self.ratings_matrix_centered.loc[top_similiar_users.index, not_rated_books].apply(lambda row: row * top_similiar_users, axis=0)
+        # third step: we sum the ratings of the top similiar users for the not rated books with their pearson similiarity
+        # the code responsible for third step is self.ratings_matrix_centered.loc[top_similiar_users.index, not_rated_books].apply(lambda row: row * top_similiar_users, axis=0).sum(axis=0)
+
         numerator = self.ratings_matrix_centered.loc[top_similiar_users.index, not_rated_books].apply(
             lambda row: row * top_similiar_users, axis=0).sum(axis=0)
         denominator = top_similiar_users.sum()
