@@ -36,5 +36,5 @@ def getReviewSentiment(text):
     # print("prediction",prediction)
     return prediction[0]
 
-print(getReviewSentiment(sys.argv[1]))
-sys.stdout.flush()
+# print(getReviewSentiment(sys.argv[1]))
+# sys.stdout.flush()
