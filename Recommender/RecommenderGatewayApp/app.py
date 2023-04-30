@@ -133,7 +133,7 @@ def recommendUserBook():
 
         response_time = time.time() - start_time
         NR_HISTOGRAM.observe(response_time)
-        return jsonify(dict(listIds))
+        return jsonify((predicted_books))
 
 
 @app.route("/Start", methods=['POST'])
