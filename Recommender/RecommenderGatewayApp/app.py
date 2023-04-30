@@ -8,6 +8,7 @@ from prometheus_client import Counter, Gauge, Histogram
 import time
 from SentimentAnalysis import featureExtraction as fe
 from SentimentAnalysis import classifier
+from SentimentAnalysis import reviewClassifier
 from recommender import combineScores
 import pandas as pd
 from ContentBased.content_based import content_based_recommendation, visualize_recommendations
@@ -174,11 +175,6 @@ def stop():
 @app.route('/index')
 def index():
     return 'Coming Soon!'
-if __name__ == "__main__":
-    port = int(os.environ.get('PORT', 80))
-    app.run(debug=False, host='0.0.0.0', port=port)
-
-
 # add a request to get the sentiment of a review
 @app.route("/sentiment", methods=['POST'])
 def sentiment():
@@ -187,8 +183,15 @@ def sentiment():
         print("inside sentiment")
         review = request.get_json().get('review')
         print("review: ", review)
-        sentiment = classifier.getReviewSentiment(review)
+        sentiment = reviewClassifier.getReviewSentiment(review)
         print("sentiment: ", sentiment)
         response_time = time.time() - start_time
         NR_HISTOGRAM.observe(response_time)
         return str(sentiment)
+    
+if __name__ == "__main__":
+    port = int(os.environ.get('PORT', 80))
+    app.run(debug=False, host='0.0.0.0', port=port)
+
+
+
