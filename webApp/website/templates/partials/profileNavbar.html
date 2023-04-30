@@ -11,7 +11,10 @@
         We have got you covered!
       </p>
       <div>
-        <button type="button" class="btn btn-outline-primary">Logout</button>
+        <form action = "{% url 'logout' %}" method="POST">
+          {% csrf_token %}
+          <input class ='btn btn-primary' type="submit" value="Logout"/>
+        </form>
       </div>
     </div>
     <nav class="nav-menu">

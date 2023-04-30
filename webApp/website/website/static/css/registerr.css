@@ -199,6 +199,11 @@ body {
 .stars .fa-star {
   color: grey;
 }
+.rmv-btn {
+  padding: 0;
+  border: none;
+  background: none;
+}
 
 /* prev siblings should be orange */
 .stars:hover .fa-star{

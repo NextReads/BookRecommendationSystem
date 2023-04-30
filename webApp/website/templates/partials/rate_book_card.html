@@ -1,6 +1,6 @@
 {% load static %}
 <div class="col">
-    <div class="card shadow-sm">
+    <div class="card shadow-sm h-100">
       <img
         src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1553383690l/2657.jpg"
         class="bd-placeholder-img card-img-top"
@@ -8,18 +8,25 @@
         width="100%"
       />
       <div class="card-body text-center">
-        <p class="card-text">supporting text below</p>
+        <p class="card-text">{{book.title}}</p>
         <div class="justify-content-between align-items-center">
-          <div class="stars" data-rating="0">
-            <span class="fa fa-star" title="did not like it"></span>
-            <span class="fa fa-star" title="it was ok"></span>
-            <span class="fa fa-star" title="liked it"></span>
-            <span class="fa fa-star" title="really liked it"></span>
-            <span class="fa fa-star" title="it was amazing"></span>
-          </div>
+
+          <form method="POST" action="{% url 'rate-book' %}">
+            {% csrf_token %}
+            
+            <div class="stars" data-rating="0">
+              <input type="hidden" name="book_id" value="{{ book.id }}" />
+              <button class="fa fa-star rmv-btn" value="rating1" title="did not like it" type="submit" name="rating" ></button>
+              <button class="fa fa-star rmv-btn" value="rating2" title="it was ok" type="submit" name="rating" ></button>
+              <button class="fa fa-star rmv-btn" value="rating3" title="liked it" type="submit" name="rating"></button>
+              <button class="fa fa-star rmv-btn" value="rating4" title="really liked it" type="submit" name="rating"></button>
+              <button class="fa fa-star rmv-btn" value="rating5" title="it was amazing"type="submit" name="rating"></button>
+            </div>
+          </form>
+
           <button
             type="button"
-            class="btn btn-sm btn-outline-secondary mt-2"
+            class="btn btn-sm btn-outline-secondary mt-2 "
           >
             Want to read
           </button>

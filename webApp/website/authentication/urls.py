@@ -10,5 +10,6 @@ urlpatterns = [
     path('validate-email', csrf_exempt(views.EmailValidationView.as_view()), name='validate-email'),
     path('set-goal-step', views.setGoalStepView.as_view(), name='set-goal-step'),
     path('rate-books-step', views.rateBooksStepView.as_view(), name='rate-books-step'),
-    
+    path('logout', views.logoutView.as_view(), name='logout'),
+    path('rate-book', views.rateBook.as_view(), name='rate-book'),
 ]
