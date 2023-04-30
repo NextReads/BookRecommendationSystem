@@ -22,12 +22,11 @@ if os.getenv('NAME') == 'NextReadsRecommender':
     basedir = '/app/'
 else:
     basedir = '../'
-fileLinks = {basedir + 'Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv': ('https://drive.google.com/uc?id=1ue1gnrPCmqDWTFAXyNPeP0PEoEettH0L', True),
-             basedir + 'CollabortiveFiltering/dataset/goodreads_books_shrink.csv': ('https://drive.google.com/uc?id=1cvM5KArllmpjtg0CIoyLZdW_m_VGmwD5', False),
-             basedir + 'CollabortiveFiltering/dataset/goodreads_genres_shrink.csv': ('https://drive.google.com/uc?id=1LCjmQ0vEBRiZtkckV6IxCoAf3V9CLKrJ', False),
-             basedir + 'RecommendationGenerator/combined_score.json': ('https://drive.google.com/uc?id=1kaHSI-CGiWycpsHFOvREo5z9qwGhWTPB', False),
-             basedir + 'Utils/dataset/books.csv': ('https://drive.google.com/uc?id=1TFBNupoC2eW0P7gyIEBNcCmYGDLoljRy', False),
-             basedir + 'Utils/dataset/genre.csv': ('https://drive.google.com/uc?id=1yJGodSjJbWuCtWIWeojQ9ciS5oNdffX-', False), }
+fileLinks = {
+    basedir + 'RecommendationGenerator/combined_score.json': ('https://drive.google.com/uc?id=1kaHSI-CGiWycpsHFOvREo5z9qwGhWTPB', False),
+    basedir + 'Utils/dataset/books.csv': ('https://drive.google.com/uc?id=1TFBNupoC2eW0P7gyIEBNcCmYGDLoljRy', False),
+    basedir + 'Utils/dataset/genres.csv': ('https://drive.google.com/uc?id=1OpCmFSPqORthEtXEdpxbyBOXDH7n99r5', False),
+    basedir + 'Utils/dataset/ratings.csv': ('https://drive.google.com/uc?id=1JZP6HAXqgj8mXnaapnOqAqNPrxXpYWoF', False), }
 
 # initialize the prometheus metrics
 metrics = PrometheusMetrics(app)
@@ -115,12 +114,19 @@ def book(book_id):
         NR_HISTOGRAM.observe(response_time)
         #visData = visualize_recommendations(listIds,booksData)
         return jsonify(dict(listIds))
-    
+
+
 @app.route("/RecommendUserBook", methods=['GET'])
 def recommendUserBook(user_id, books):
     if request.method == 'GET':
         start_time = time.time()
-        listIds = content_based_recommendation(int(book_id), genreData)
+
+        ratings_matrix, ratings_matrix_centered = get_cf_data(
+            user_id, books, ratings_df)
+        cf_model = CollaborativeFiltering(
+            user_id, ratings_matrix, ratings_matrix_centered)
+        predicted_books = cf_model.user_based_collaborative_filtering()
+
         response_time = time.time() - start_time
         NR_HISTOGRAM.observe(response_time)
         return jsonify(dict(listIds))
@@ -148,24 +154,20 @@ def start():
         else:
             print("file already exists, file: ", file)
 
-    global rating_matrix, mean_centered_matrix, cfModel, data, cachedCombinedScoreDf, genreData, booksData
+    global rating_matrix, mean_centered_matrix, cfModel, data, cachedCombinedScoreDf, genreData, booksData, ratings_df
     # rating_matrix, mean_centered_matrix = matrix_creation()
     # cfModel = CollaborativeFiltering(rating_matrix, mean_centered_matrix)
-
-    ratings_matrix, ratings_matrix_centered = get_cf_data(
-        test_user_id, test_book_read_list, ratings_df)
-    cf_model = CollaborativeFiltering(
-        test_user_id, ratings_matrix, ratings_matrix_centered)
-    predicted_books = cf_model.user_based_collaborative_filtering()
 
     data = classifier.readData()
     pathRoot = os.getenv('NAME')
     if pathRoot == 'NextReadsRecommender':
         genreData = cfcf.read_data('/app/Utils/dataset/genre.csv')
         booksData = cfcf.read_data('/app/Utils/dataset/books.csv')
+        ratings_df = cfcf.read_data('/app/Utils/dataset/ratings.csv')
     else:
         genreData = cfcf.read_data('../Utils/dataset/genre.csv')
         booksData = cfcf.read_data('../Utils/dataset/books.csv')
+        ratings_df = cfcf.read_data('../Utils/dataset/ratings.csv')
 
     try:
         if pathRoot == 'NextReadsRecommender':
