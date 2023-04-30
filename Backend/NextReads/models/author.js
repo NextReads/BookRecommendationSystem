@@ -18,10 +18,24 @@ const authorSchema = new mongoose.Schema({
     },
     lastName: {
         type: String,
-        required: true,
+        required: false,
         trim: true,
         minlength: 1,
         maxlength: 50
+    },
+    fullName: {
+        type: String,
+        required: true,
+        trim: true,
+        minlength: 1,
+        maxlength: 150
+    },
+    authorId:{
+        type: String,
+        required: true,
+        trim: true,
+        minlength: 1,
+        maxlength: 150
     },
     books: [{
         type: mongoose.Schema.Types.ObjectId,
