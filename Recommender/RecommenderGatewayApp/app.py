@@ -26,8 +26,8 @@ fileLinks = {basedir + 'Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv': (
              basedir + 'CollabortiveFiltering/dataset/goodreads_books_shrink.csv': ('https://drive.google.com/uc?id=1cvM5KArllmpjtg0CIoyLZdW_m_VGmwD5', False),
              basedir + 'CollabortiveFiltering/dataset/goodreads_genres_shrink.csv': ('https://drive.google.com/uc?id=1LCjmQ0vEBRiZtkckV6IxCoAf3V9CLKrJ', False),
              basedir + 'RecommendationGenerator/combined_score.json': ('https://drive.google.com/uc?id=1kaHSI-CGiWycpsHFOvREo5z9qwGhWTPB', False),
-             basedir + 'Utils/dataset/books.csv' : ('https://drive.google.com/uc?id=1TFBNupoC2eW0P7gyIEBNcCmYGDLoljRy',False),
-             basedir + 'Utils/dataset/genre.csv' : ('https://drive.google.com/uc?id=1yJGodSjJbWuCtWIWeojQ9ciS5oNdffX-',False),}
+             basedir + 'Utils/dataset/books.csv': ('https://drive.google.com/uc?id=1TFBNupoC2eW0P7gyIEBNcCmYGDLoljRy', False),
+             basedir + 'Utils/dataset/genre.csv': ('https://drive.google.com/uc?id=1yJGodSjJbWuCtWIWeojQ9ciS5oNdffX-', False), }
 
 # initialize the prometheus metrics
 metrics = PrometheusMetrics(app)
@@ -46,12 +46,13 @@ NR_HISTOGRAM = Histogram('nr_recommendations_response_time_seconds', 'Response t
 NR_BOOKS_RECOMMENDED = Counter(
     'nr_books_recommended', 'Number of books recommended', ['input'])
 
-rating_matrix, mean_centered_matrix = None, None
+rating_matrix, ratings_matrix_centered = None, None
 cfModel = None
 data = None
 cachedCombinedScoreDf = None
 
 # create a request handler
+
 
 @metrics.counter('nr_recommendation_counter', 'Number of times the recommendation endpoint was called')
 @app.route("/Recommendation", methods=['GET'])
@@ -103,6 +104,7 @@ def recommendation():
 
 # create a request handler for book with id
 
+
 @metrics.counter('nr_book_counter', 'Number of times the book endpoint was called')
 @app.route("/Book/<book_id>", methods=['GET'])
 def book(book_id):
@@ -113,7 +115,8 @@ def book(book_id):
         NR_HISTOGRAM.observe(response_time)
         #visData = visualize_recommendations(listIds,booksData)
         return jsonify(dict(listIds))
-    
+
+
 @app.route("/Start", methods=['POST'])
 def start():
     # Download the dataset
@@ -128,7 +131,7 @@ def start():
             if url[1]:
                 # unzip the file
                 print("unzipping file")
-                with zipfile.ZipFile(output , 'r') as zip_ref:
+                with zipfile.ZipFile(output, 'r') as zip_ref:
                     # remove unitl the last /
                     zip_ref.extractall(file[:file.rfind('/')])
                 # remove the zip file
@@ -137,8 +140,14 @@ def start():
             print("file already exists, file: ", file)
 
     global rating_matrix, mean_centered_matrix, cfModel, data, cachedCombinedScoreDf, genreData, booksData
-    rating_matrix, mean_centered_matrix = matrix_creation()
-    cfModel = CollaborativeFiltering(rating_matrix, mean_centered_matrix)
+    # rating_matrix, mean_centered_matrix = matrix_creation()
+    # cfModel = CollaborativeFiltering(rating_matrix, mean_centered_matrix)
+
+    ratings_matrix, ratings_matrix_centered = get_cf_data(
+        test_user_id, test_book_read_list, ratings_df)
+    cf_model = CollaborativeFiltering(
+        test_user_id, ratings_matrix, ratings_matrix_centered)
+    predicted_books = cf_model.user_based_collaborative_filtering()
 
     data = classifier.readData()
     pathRoot = os.getenv('NAME')
@@ -151,7 +160,8 @@ def start():
 
     try:
         if pathRoot == 'NextReadsRecommender':
-            df = pd.read_json('/app/RecommendationGenerator/combined_score.json', orient='records')
+            df = pd.read_json(
+                '/app/RecommendationGenerator/combined_score.json', orient='records')
         else:
             df = pd.read_json(
                 "../RecommendationGenerator/combined_score.json", orient='records')
@@ -160,7 +170,6 @@ def start():
     except:
         df = pd.DataFrame(columns=['user_id', 'combined_score', 'date'])
 
-    
     cachedCombinedScoreDf = df
 
     return "Done"
@@ -171,11 +180,12 @@ def stop():
     pass
 
 
-
 @app.route('/index')
 def index():
     return 'Coming Soon!'
 # add a request to get the sentiment of a review
+
+
 @app.route("/sentiment", methods=['POST'])
 def sentiment():
     if request.method == 'POST':
@@ -188,10 +198,8 @@ def sentiment():
         response_time = time.time() - start_time
         NR_HISTOGRAM.observe(response_time)
         return str(sentiment)
-    
+
+
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 80))
     app.run(debug=False, host='0.0.0.0', port=port)
-
-
-
