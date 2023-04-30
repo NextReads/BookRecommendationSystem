@@ -164,9 +164,6 @@ def start():
 
     return "Done"
 
-
-
-
 @app.route('/index')
 def index():
     return 'Coming Soon!'
@@ -176,12 +173,15 @@ if __name__ == "__main__":
 
 
 # add a request to get the sentiment of a review
-@app.route("/Sentiment", methods=['GET'])
+@app.route("/sentiment", methods=['POST'])
 def sentiment():
-    if request.method == 'GET':
+    if request.method == 'POST':
         start_time = time.time()
+        print("inside sentiment")
         review = request.get_json().get('review')
+        print("review: ", review)
         sentiment = classifier.getReviewSentiment(review)
+        print("sentiment: ", sentiment)
         response_time = time.time() - start_time
         NR_HISTOGRAM.observe(response_time)
-        return sentiment
+        return str(sentiment)

@@ -2,7 +2,7 @@
 
 from SentimentAnalysis import featureExtraction as fe
 import pandas as pd
-from SentimentAnalysis.preprocessing import preprocessing
+from SentimentAnalysis.preprocessing import preprocessing,preprocessReview
 import os
 
 def readData():
@@ -35,16 +35,21 @@ def getProductsSentiment(data,books,clflinear,tfidf_vectorizer):
     text=data[data['book_id'].isin(books)]
     # text=data[data['book_id']==book]
     # print(text)
-    text=preprocessing(text)
+    # text=preprocessing(text)
     # print(text)
-    text['review_text']=text['review_text'].apply(lambda x:str(x))
-    tfidf_test=tfidf_vectorizer.transform(text['review_text'])
+    # text['review_text']=text['review_text'].apply(lambda x:str(x))
+    # tfidf_test=tfidf_vectorizer.transform(text['review_text'])
     # print("tfidf",tfidf_test)
     # clflinear = fe.load_model('svm_linear_model.sav')
-    predictions=clflinear.predict(tfidf_test)
+    # predictions=clflinear.predict(tfidf_test)
     # print("predictions",predictions)
     # mean=predictions.mean()
     # get mean predictions for each book
+    # if data has attribute 'senti_score', then use it else calculate it based on the rate
+    if 'senti_score' in data.columns:
+        predictions=data['sentiment']
+    else:
+        predictions=data['rating']
     mean={}
     for book in books:
         mean[book]=predictions[text['book_id']==book].mean()
@@ -73,3 +78,13 @@ def productsSentimentScore(data,predictions):
     sentimentScores=getProductsSentiment(data,predictions,clflinear,tfidf_vectorizer)
     return sentimentScores
 # ss=sentimentScore(df,books)
+
+
+def getReviewSentiment(text):
+    clflinear = fe.load_model('svm_linear_model.sav')
+    tfidf_vectorizer = fe.load_model('tfidf.pkl')
+    # discard prints from the function
+    text=preprocessReview(text)
+    tfidf_test=tfidf_vectorizer.transform([text])
+    prediction=clflinear.predict(tfidf_test)
+    return prediction[0]
