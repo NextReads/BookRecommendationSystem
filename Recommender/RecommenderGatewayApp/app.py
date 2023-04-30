@@ -173,3 +173,15 @@ def index():
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 80))
     app.run(debug=False, host='0.0.0.0', port=port, threaded=True, use_reloader=False)
+
+
+# add a request to get the sentiment of a review
+@app.route("/Sentiment", methods=['GET'])
+def sentiment():
+    if request.method == 'GET':
+        start_time = time.time()
+        review = request.get_json().get('review')
+        sentiment = classifier.getReviewSentiment(review)
+        response_time = time.time() - start_time
+        NR_HISTOGRAM.observe(response_time)
+        return sentiment

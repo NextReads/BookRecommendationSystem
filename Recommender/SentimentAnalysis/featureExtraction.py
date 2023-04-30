@@ -6,6 +6,7 @@ import sklearn.metrics as metrics
 from sklearn.metrics import classification_report,confusion_matrix
 from sklearn.svm import LinearSVC
 from sklearn.svm import SVC
+from tfidfVectorizer import fit,transform
 
 def dataSplit(df):
     #Splitting the data into train and test
@@ -35,6 +36,31 @@ def featureExtractionTFIDF(X_train,X_test):
     tf_x_test = tfidf.transform(X_test)
     print (tf_x_train.shape, tf_x_test.shape)
     save_model(tfidf, 'tfidf.pkl')
+    return tf_x_train, tf_x_test
+
+def save_Dict(idf,wordIndex, idfName, wordIndexName):
+    rPath='models/'+idfName
+    pickle.dump(idf, open(rPath, 'wb'))
+    rPath='models/'+wordIndexName
+    pickle.dump(wordIndex, open(rPath, 'wb'))
+
+def load_Dict(idfName, wordIndexName):
+    rPath='models/'+idfName
+    idf = pickle.load(open(rPath, 'rb'))
+    rPath='models/'+wordIndexName
+    wordIndex = pickle.load(open(rPath, 'rb'))
+    return idf, wordIndex
+
+
+def featureExtractionTFIDFVectorizer(X_train,X_test):
+    #Feature Extraction using TF-IDF
+    print("TFIDF Vectorizer……")
+    # tfidf = TfidfVectorizer(min_df=0.0, max_df=1.0, ngram_range=(1,2),use_idf=True, smooth_idf=True, sublinear_tf=True)
+    idf, wordIndex = fit(X_train)
+    tf_x_train = transform(X_train, idf, wordIndex)
+    tf_x_test = transform(X_test, idf, wordIndex)
+    print (tf_x_train.shape, tf_x_test.shape)
+    save_Dict(idf,wordIndex, 'idf.pkl', 'wordIndex.pkl')
     return tf_x_train, tf_x_test
 
 def printResultsStatistics(predictions,Y_test):

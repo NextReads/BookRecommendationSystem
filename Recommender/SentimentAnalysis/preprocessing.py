@@ -31,16 +31,37 @@ def removeSW(texts):
 
 
 # split into sentences for negative phrase identification
+negative_words_english=["not","n't","no","never","none","nothing","nowhere","neither","nor","hardly","scarcely","barely","don't","doesn't","didn't","isn't","aren't","wasn't","weren't","haven't","hasn't","hadn't","won't","wouldn't","shan't","shouldn't","can't","couldn't","mustn't","mightn't","needn't","oughtn't","daren't","needn't","needn't've","oughtn't've","daren't've","aren't","aren't've","couldn't","couldn't've","didn't","didn't've","doesn't","doesn't've","don't","don't've","hadn't","hadn't've","hasn't","hasn't've","haven't","haven't've","isn't","isn't've","mightn't","mightn't've","mustn't","mustn't've","needn't","needn't've","oughtn't","oughtn't've","shan't","shan't've","shouldn't","shouldn't've","wasn't","wasn't've","weren't","weren't've","won't","won't've","wouldn't","wouldn't've","mayn't","might've","must've","needn't","oughtn't","sha'n't","shan't","shouldn't","wasn't","weren't","won't","wouldn't","mustn't","needn't","oughtn't","shan't","shouldn't","wasn't","weren't","won't","wouldn't","mustn't","needn't","oughtn't","shan't","shouldn't","wasn't","weren't","won't","wouldn't","mustn't","needn't","oughtn't","shan't","shouldn't","wasn't","weren't","won't","wouldn't","mustn't","needn't","oughtn't","shan't","shouldn't","wasn't","weren't","won't","wouldn't","mustn't","needn't","oughtn't","shan't","shouldn't","wasn't","weren't","won't","wouldn't","mustn't","needn't","oughtn't","shan"]
+def negPhraseIdentification(text):
+    # negPhrases=[]
+    # for sentence in texts:
+        # print(sentence)
+    # print("inside negPhraseIdentification: ",text)
+    text=text.split()
+    for word in text:
+        # print(word)
+        if word in negative_words_english:
+            # print("Negative: ",word)
+            return True
+                    
+    return False
 def sentenceSplit(text):
     # print(text)
     # try:
+    # print(text)
     text=text.replace('<br /><br />','').replace('(', ' ').replace(')', ' ')
     # except:
         # print("Error: ",text)
-
+    # print(text)
     sentences = re.split(r'[.!?,]', text)
+    # print(sentences)
+
     # my_list_2 = re.split(r',|-|:|.', text)
+    # if sentence has a negative phrase remove it
     sentences = [s.strip() for s in sentences if len(s) > 0]
+    sentences = [s for s in sentences if not negPhraseIdentification(s)]
+    # print(sentences)
+    
     return sentences
 # spacy lemmatization
 
@@ -79,17 +100,7 @@ def TagNounremoval(review):
     return texts
 # Negative Phrase Identification
 # we can add negative words to hashtable and then check if the word is present in the hash table later for better performance
-negative_words_english=["not","n't","no","never","none","nothing","nowhere","neither","nor","hardly","scarcely","barely","don't","doesn't","didn't","isn't","aren't","wasn't","weren't","haven't","hasn't","hadn't","won't","wouldn't","shan't","shouldn't","can't","couldn't","mustn't","mightn't","needn't","oughtn't","daren't","needn't","needn't've","oughtn't've","daren't've","aren't","aren't've","couldn't","couldn't've","didn't","didn't've","doesn't","doesn't've","don't","don't've","hadn't","hadn't've","hasn't","hasn't've","haven't","haven't've","isn't","isn't've","mightn't","mightn't've","mustn't","mustn't've","needn't","needn't've","oughtn't","oughtn't've","shan't","shan't've","shouldn't","shouldn't've","wasn't","wasn't've","weren't","weren't've","won't","won't've","wouldn't","wouldn't've","mayn't","might've","must've","needn't","oughtn't","sha'n't","shan't","shouldn't","wasn't","weren't","won't","wouldn't","mustn't","needn't","oughtn't","shan't","shouldn't","wasn't","weren't","won't","wouldn't","mustn't","needn't","oughtn't","shan't","shouldn't","wasn't","weren't","won't","wouldn't","mustn't","needn't","oughtn't","shan't","shouldn't","wasn't","weren't","won't","wouldn't","mustn't","needn't","oughtn't","shan't","shouldn't","wasn't","weren't","won't","wouldn't","mustn't","needn't","oughtn't","shan't","shouldn't","wasn't","weren't","won't","wouldn't","mustn't","needn't","oughtn't","shan"]
-def negPhraseIdentification(texts):
-    negPhrases=[]
-    for sentence in texts:
-        # print(sentence)
-        for word in sentence:
-            if word[0] in negative_words_english:
-                print("Negative: ",sentence)
-                break
-                    
-    return negPhrases
+
 def contractions(s):
  s = re.sub(r"won't", "will not",s)
  s = re.sub(r"would't", "would not",s)
@@ -195,41 +206,52 @@ def preprocessing(data):
     # # print(data['review'][0])
     # return data
     data.loc[:, 'review_text']=data['review_text'].apply(convertToString)
+    print("string conversion is complete")
     data.loc[:, 'review_text']=data['review_text'].apply(sentenceSplit)
+    print("sentence split is complete")
     data.loc[:, 'review_text']=data['review_text'].apply(TokenizeWords)
+    print("tokenization is complete")
     data.loc[:, 'review_text']=data['review_text'].apply(pos_tagging)
+    print("pos tagging is complete")
     data.loc[:, 'review_text']=data['review_text'].apply(TagNounremoval)
+    print("noun removal is complete")
     data.loc[:, 'review_text']=data['review_text'].apply(lemmatize)
+    print("lemmatization is complete")
     data.loc[:, 'review_text']=data['review_text'].apply(removePosTag)
+    print("remove pos tag is complete")
     data.loc[:, 'review_text']=data['review_text'].apply(sentMerge)
+    print("merging is complete")
     data.loc[:, 'review_text']=data['review_text'].apply(removeSW)
+    print("stopword removal is complete")
     data.loc[:, 'review_text']=data['review_text'].apply(reviewMerge)
+    print("review Merging is complete")
     return data
 # print(df.iloc[:])
 def preprocessReview(review):
    
     # print(data.iloc[:1])
     review=convertToString(review)
+    print("string conversion is complete")
     review=sentenceSplit(review)
-    # print("sentence split is complete")
+    print("sentence split is complete")
     review=TokenizeWords(review)
-    # print("tokenization is complete")
+    print("tokenization is complete")
     review=pos_tagging(review)
     # print(review[0])
-    # print("pos tagging is complete")
+    print("pos tagging is complete")
     review=TagNounremoval(review)
-    # print("noun removal is complete")
+    print("noun removal is complete")
     review=lemmatize(review)
-    # print("lemmatization is complete")
+    print("lemmatization is complete")
     review=removePosTag(review)
-    # print("pos tag removal is complete")
+    print("pos tag removal is complete")
     # print(review[0])
     review=sentMerge(review)
-    # print("merging is complete")
+    print("merging is complete")
     # print(review[0])
     review=removeSW(review)
-    # print("stopword removal is complete")
+    print("stopword removal is complete")
     review=reviewMerge(review)
-    # print("review Merging is complete")
+    print("review Merging is complete")
     # print(data['review'][0])
     return review
