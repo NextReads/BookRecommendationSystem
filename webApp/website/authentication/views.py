@@ -187,14 +187,15 @@ class rateBooksStepView(View):
         # else:
         #     messages.error(request, booksResposne.text)
         #     return render(request, "authentication/rate-books-step.html", {})
-
 class rateBook(View):
+
     def post(self, request):
         bookId = request.POST.get('book_id')
         rating = request.POST.get('rating')
         print("bookId", bookId)
         print("rating", rating)
         print("token", request.session['token'])
+        
         # if bookId and rating:
         #     data={'bookId': bookId, 'rating': rating}
         #     response = requests.post('https://nextreadsbackend.azurewebsites.net/api/books/rate', json=data)
