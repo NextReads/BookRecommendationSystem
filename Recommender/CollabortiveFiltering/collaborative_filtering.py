@@ -7,15 +7,14 @@ from Utils.constants import *
 
 # example of usage of collabortive filtering
 ######################################
-# from common_functions import *
-# read_data = read_data(RATINGS_DF_PATH)
-# data_shrinking = data_shrinking(read_data)
-# ratings_matrix = create_ratings_matrix(data_shrinking)
-# ratings_matrix_centered = mean_centered_rating_matrix(ratings_matrix)
+######## data GIVEN #########
+# test_user_id = "8842281e1d1347389f2ab93d60773d4d"
+# test_book_read_list = ratings_df[ratings_df['user_id'] == test_user_id]['book_id'].tolist()
 #
-#
-#
-# then call any of the collaborative filtering approach
+######### functions called #########
+# ratings_matrix, ratings_matrix_centered = get_cf_data(test_user_id, test_book_read_list, ratings_df)
+# cf_model_1 = CollaborativeFiltering(test_user_id, ratings_matrix, ratings_matrix_centered)
+# predicted_books = cf_model_1.user_based_collaborative_filtering()
 
 
 class CollaborativeFiltering:
@@ -158,7 +157,6 @@ class CollaborativeFiltering:
         sorted_predicted_rating_dict = {
             k: v for k, v in sorted(predicted_rating_dict.items(), key=lambda item: abs(item[1] - mean_current_user_rating))}
         return sorted_predicted_rating_dict
-
 
     def user_based_collaborative_filtering(self) -> dict:
         """
