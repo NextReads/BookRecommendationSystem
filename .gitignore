@@ -1,4 +1,6 @@
 *.csv
+*.7z
+preprocessed_original/**
 __pycache__
 geckodriver.log
 reviews.txt
