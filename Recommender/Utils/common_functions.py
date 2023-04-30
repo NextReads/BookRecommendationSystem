@@ -95,7 +95,8 @@ def data_shrinking(current_user: str, current_read_books_df: pd.DataFrame, ratin
     # third step: get a subset of the dataframe in step 1 which includes only the users in step 2
 
     # getting the users that have rated any of the current_user's read books
-    current_books_ratings_bool = ratings_df['book_id'].isin(current_read_books_df['book_id'])
+    current_books_ratings_bool = ratings_df['book_id'].isin(
+        current_read_books_df['book_id'])
     users_books_df = ratings_df[current_books_ratings_bool]
     number_of_users = min(CF_MAX_USER_NUMBER, len(
         users_books_df['user_id'].unique()))
@@ -116,7 +117,8 @@ def data_shrinking(current_user: str, current_read_books_df: pd.DataFrame, ratin
     # third step: get a subset of the original ratings_df which includes the books and users in step 1 and 2
 
     # find all other books that have been rated by any user in users_books_df and not in current_read_books_df
-    other_books_df = ratings_df[~current_books_ratings_bool & ratings_df['user_id'].isin(users_books_df['user_id'])]
+    other_books_df = ratings_df[~current_books_ratings_bool &
+                                ratings_df['user_id'].isin(users_books_df['user_id'])]
 
     # get the top CF_MAX_BOOK_NUMBER - len(current_read_books_df) books that have been rated by any user in users_books_df and not in current_read_books_df
     number_of_books = min(CF_MAX_BOOK_NUMBER - len(current_read_books_df), len(  # this
@@ -134,3 +136,22 @@ def data_shrinking(current_user: str, current_read_books_df: pd.DataFrame, ratin
         unique_books) & ratings_df['user_id'].isin(unique_users)]
 
     return users_books_df
+
+
+def get_cf_data(current_user: str, current_read_books_list: list, ratings_df: pd.DataFrame) -> pd.DataFrame:
+    # change the current_read_books_list to a dataframe
+    current_read_books_df = list_to_dataframe(
+        current_read_books_list, ['book_id'])
+
+    # check if the data is compatible with the CF algorithm
+    if not check_cf_compatibilty(current_user, current_read_books_df, ratings_df):
+        return pd.DataFrame()
+    # shrink the data to be compatible with the CF algorithm
+    users_books_df = data_shrinking(
+        current_user, current_read_books_df, ratings_df)
+    
+    # get the ratings matrix, mean matrix
+    ratings_matrix = create_ratings_matrix(users_books_df)
+    ratings_matrix_centered = mean_centered_rating_matrix(ratings_matrix)
+    # return the shrunk data
+    return ratings_matrix, ratings_matrix_centered
