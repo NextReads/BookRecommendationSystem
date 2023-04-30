@@ -22,12 +22,13 @@ if os.getenv('NAME') == 'NextReadsRecommender':
     basedir = '/app/'
 else:
     basedir = '../'
-fileLinks = {basedir + 'Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv': ('https://drive.google.com/uc?id=1ue1gnrPCmqDWTFAXyNPeP0PEoEettH0L', True),
-             basedir + 'CollabortiveFiltering/dataset/goodreads_books_shrink.csv': ('https://drive.google.com/uc?id=1cvM5KArllmpjtg0CIoyLZdW_m_VGmwD5', False),
-             basedir + 'CollabortiveFiltering/dataset/goodreads_genres_shrink.csv': ('https://drive.google.com/uc?id=1LCjmQ0vEBRiZtkckV6IxCoAf3V9CLKrJ', False),
-             basedir + 'RecommendationGenerator/combined_score.json': ('https://drive.google.com/uc?id=1kaHSI-CGiWycpsHFOvREo5z9qwGhWTPB', False),
-             basedir + 'Utils/dataset/books.csv' : ('https://drive.google.com/uc?id=1TFBNupoC2eW0P7gyIEBNcCmYGDLoljRy',False),
-             basedir + 'Utils/dataset/genre.csv' : ('https://drive.google.com/uc?id=1yJGodSjJbWuCtWIWeojQ9ciS5oNdffX-',False),}
+fileLinks = {basedir + 'Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv': ['https://drive.google.com/uc?id=1ue1gnrPCmqDWTFAXyNPeP0PEoEettH0L', True, '.zip'],
+             basedir + 'CollabortiveFiltering/dataset/goodreads_books_shrink.csv': ['https://drive.google.com/uc?id=1cvM5KArllmpjtg0CIoyLZdW_m_VGmwD5', False],
+             basedir + 'CollabortiveFiltering/dataset/goodreads_genres_shrink.csv': ['https://drive.google.com/uc?id=1LCjmQ0vEBRiZtkckV6IxCoAf3V9CLKrJ', False],
+             basedir + 'RecommendationGenerator/combined_score.json': ['https://drive.google.com/uc?id=1kaHSI-CGiWycpsHFOvREo5z9qwGhWTPB', False],
+             basedir + 'Utils/dataset/books.csv' : ['https://drive.google.com/uc?id=1TFBNupoC2eW0P7gyIEBNcCmYGDLoljRy',False],
+             basedir + 'Utils/dataset/genre.csv' : ['https://drive.google.com/uc?id=1yJGodSjJbWuCtWIWeojQ9ciS5oNdffX-',False],
+             basedir + 'SentimentAnalysis/models/tfidf.pkl': ['https://drive.google.com/uc?id=1AJmpb9J7yzZTWRJUuCrMIt8a79_oPHoP', True,'.7z'],}
 
 # initialize the prometheus metrics
 metrics = PrometheusMetrics(app)
@@ -121,7 +122,7 @@ def start():
         if not os.path.exists(file):
             print("file doesn't exist, download it from gdrive, file: ", file)
             if url[1]:
-                output = file + '.zip'
+                output = file + url[2]
             else:
                 output = file
             gdown.download(url[0], output, quiet=False)
