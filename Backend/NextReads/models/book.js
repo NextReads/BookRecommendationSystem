@@ -2,12 +2,12 @@ const Joi = require('joi');
 const mongoose = require('mongoose');
 
 const reviewSchema = new mongoose.Schema({
-    // define rating from 1 to 5
+    // define review rating
     rating: {
         type: Number,
         required: true,
         trim: true,
-        min: 1,
+        min: 0,
         max: 5
     },
     // define review sentiment
@@ -114,8 +114,7 @@ function validateBook(book) {
 }
 function validateReview (body) {
     const schema = Joi.object({
-        rating: Joi.number().integer().min(1).max(5).required(),
-        review: Joi.string().min(1).max(1024),
+        review: Joi.string().min(1).max(1024).required()
     });
 
     return schema.validate(body);

@@ -13,6 +13,8 @@ router.post('/', [auth, manager], bookController.addBook);
 //     res.send(req.params.id);
 // });
 router.post('/:id/review', auth,bookController.addReview);
+router.post('/coldstart', bookController.addRatings);
+router.post('/:id/rating', bookController.addRating);
 // router.put('/events/info/:id',[auth,manager],bookController.editEvent);
 // router.get('/:id',bookController.getEvent);
 // router.get('/events/:bookId',bookController.getEvents);

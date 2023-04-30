@@ -4,7 +4,18 @@ Joi.objectId= require("joi-objectid")(Joi);
 const jwt = require('jsonwebtoken');
 const config = require('config');
 
-
+const readSchema = new mongoose.Schema({
+    bookId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'Book'
+    },
+    rating: {
+        type: Number,
+        required: true,
+        min: 1,
+        max: 5
+}});
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -70,11 +81,7 @@ const userSchema = new mongoose.Schema({
             ref: 'Author'
         }
     }),
-    read: [{
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: 'Book'
-    }],
+    read: [readSchema],
     wantToRead:[{
         type: mongoose.Schema.Types.ObjectId,
         required: true,
@@ -104,7 +111,9 @@ userSchema.methods.generateAuthToken = function() {
     const token = jwt.sign({ _id: this._id, isManager: this.isManager,isAdmin:this.isAdmin }, process.env['JWTPRIVATEKEY']);
     return token;
   }
+
 const User = mongoose.model('User', userSchema);
+const Read = mongoose.model('Read', readSchema);
 // const Movie = mongoose.model('Movie', movieSchema);
 
 
@@ -132,8 +141,19 @@ function validateSignup (body) {
     return schema.validate(body);
 };
 
+function validateRating(body) {
+    const schema = Joi.object({
+        bookId: Joi.objectId().required(),
+        rating: Joi.number().min(1).max(5).required()
+    });
+
+    return schema.validate(body);
+};
+
 
 
 exports.User = User;
+exports.Read = Read;
 exports.validateLogin = validateLogin;
 exports.validateSignup=validateSignup;
+exports.validateRating=validateRating;

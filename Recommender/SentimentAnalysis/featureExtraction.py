@@ -6,7 +6,7 @@ import sklearn.metrics as metrics
 from sklearn.metrics import classification_report,confusion_matrix
 from sklearn.svm import LinearSVC
 from sklearn.svm import SVC
-from SentimentAnalysis.tfidfVectorizer import fit,transform
+from tfidfVectorizer import fit,transform
 
 def dataSplit(df):
     #Splitting the data into train and test

@@ -1,7 +1,15 @@
 const {validateBook,  Book,validateReview,Review}=require('../models/book')
 const {Author,validateAuthor}=require('../models/author')
+const {User, Read,validateRating}=require('../models/user')
 const _=require('lodash');
-const spawn = require("child_process").spawn;
+// const spawn = require("child_process").spawn;
+// const https = require('http');
+// const axios = require('axios');
+// const { json } = require('body-parser');
+// const { response } = require('express');
+const fetch = require('node-fetch')
+
+
 
 
 module.exports.addBook= async (req, res, next) => {
@@ -38,47 +46,30 @@ module.exports.addBook= async (req, res, next) => {
 module.exports.addReview= async (req, res, next) => {
     let { error } = validateReview(req.body);
     if (error) return res.status(400).send(error.details[0].message);
+    console.log(req.body);
     let book = await Book.findById(req.params.id);
     if (!book){return res.status(400).send('Book does not exist');}
-    // running function getReviewSentiment() from classifier.py with req.body.review as argument and capturing the output
-    // let sentiment = spawn('python3', ['-c', `from SentimentAnalysis.classifier import getReviewSentiment; print(getReviewSentiment('${req.body.review}'))`]);
     let sentiment;
     const review = new Review({
         review:req.body.review,
-        rating:req.body.rating,
         userId:req.user._id
     })
-
-
-    // run anaconda python script with arguments
-    const pythonProcess = spawn('python3',["../../SentimentAnalysis/reviewClassifier.py", req.body.review]);
-    // const pythonProcess = spawn('python3',["../../SentimentAnalysis/reviewClassifier.py", req.body.review]);
-    // set sentiment to the output of the python script and save sentiment to the book
-    pythonProcess.stdout.on('data', async (data) => {
-        // Do something with the data returned from python script
-        sentiment = data.toString();
-    });
-    // in close event we are sure that stream from child process is closed
-    pythonProcess.on('close', async (code) => {
-        console.log(`child process close all stdio with code ${code}`);
-        // send data to browser
-        // res.send(dataToSend)
-        review.sentiment=sentiment;
-        book.reviews.push(review);
-        try {
-            await book.save();
-            return res.status(201).send('Review added successfully');
-        } catch (error) {
-            console.log(error);
-            return res.status(500).send({ error: "Internal Server error" });
-        }
-        
-    });
-    
-
-
-
- 
+  
+    const url = 'http://127.0.0.1:5000/sentiment'
+    const body = {review:req.body.review}
+    const response = await fetch(url,{method:'POST',body:JSON.stringify(body),headers: { 'Content-Type': 'application/json' }});
+    sentiment = await response.json();//assuming data is json
+    console.log(sentiment);
+    review.sentiment=sentiment;
+    book.reviews.push(review);
+    try {
+        await book.save();
+        console.log(review);
+        return res.status(201).send('Review added successfully');
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({ error: "Internal Server error" });
+    }
     
 }
 module.exports.getBooks= async (req, res, next) => {
@@ -86,6 +77,66 @@ module.exports.getBooks= async (req, res, next) => {
     if (books.length==0) return res.status(404).send('No books found');
     return res.status(200).send(books);
 }
+
+module.exports.addRating= async (req, res, next) => {
+    let { error } = validateRating(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
+    let book = await Book.findById(req.params.id);
+    if (!book){return res.status(400).send('Book does not exist');}
+    let user = await User.findById(req.user._id);
+    if (!user){return res.status(400).send('User does not exist, please sign out and try again');}
+    let rating=book.avgRating*book.ratingCount;
+    rating+=req.body.rating;
+    book.ratingCount+=1;
+    book.avgRating=rating/book.ratingCount;
+    const read= new Read({
+        bookId:req.params.id,
+        rating:req.body.rating
+    })
+    user.read.push(read);
+    try {
+        await book.save();
+        await user.save();
+        return res.status(201).send('Rating added successfully');
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({ error: "Internal Server error" });
+    }
+}
+
+module.exports.addRatings= async (req, res, next) => {
+    for(let rating of req.body.ratings){
+        console.log(rating);
+        let { error } = validateRating(rating);
+        if (error) return res.status(400).send(error.details[0].message);
+    }
+    let user = await User.findById(req.user._id);
+    if (!user){return res.status(400).send('User does not exist, please sign out and try again');}
+    // find books from the list of ids
+    let books = await Book.find({ _id: { $in: req.body.ratings.map(rating=>rating.bookId) } });
+    if (!books){return res.status(400).send('Book does not exist');}
+    for (let book of books){
+        let rating=book.avgRating*book.ratingCount;
+        rating+=req.body.rating;
+        book.ratingCount+=1;
+        book.avgRating=rating/book.ratingCount;
+        const read= new Read({
+            bookId:req.params.id,
+            rating:req.body.rating
+        })
+        user.read.push(read);
+    }
+
+    try {
+        await book.save();
+        await user.save();
+        return res.status(201).send('Rating added successfully');
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({ error: "Internal Server error" });
+    }
+}
+
 // module.exports.editEvent= async (req, res, next) => {
 //     let { error } = validateScreeningRoom(_.pick(req.body,['screeningRoom']));
 //     if (error) return res.status(400).send(error.details[0].message);
