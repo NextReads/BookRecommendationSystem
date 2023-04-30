@@ -2,174 +2,174 @@ from math import sqrt
 import numpy as np
 import pandas as pd
 
+from Utils.common_functions import *
+from Utils.constants import *
+
 # example of usage of collabortive filtering
 ######################################
-# from common_functions import *
-# read_data = read_data(RATINGS_DF_PATH)
-# data_shrinking = data_shrinking(read_data)
-# ratings_matrix = create_ratings_matrix(data_shrinking)
-# ratings_matrix_centered = mean_centered_rating_matrix(ratings_matrix)
+######## data GIVEN #########
+# test_user_id = "8842281e1d1347389f2ab93d60773d4d"
+# test_book_read_list = ratings_df[ratings_df['user_id'] == test_user_id]['book_id'].tolist()
 #
-#
-#
-# then call any of the collaborative filtering approach
+######### functions called #########
+# ratings_matrix, ratings_matrix_centered = get_cf_data(test_user_id, test_book_read_list, ratings_df)
+# cf_model_1 = CollaborativeFiltering(test_user_id, ratings_matrix, ratings_matrix_centered)
+# predicted_books = cf_model_1.user_based_collaborative_filtering()
+
 
 class CollaborativeFiltering:
 
-    def __init__(self, rating_matrix: pd.DataFrame, mean_centered_matrix: pd.DataFrame):
-        self.rating_matrix = rating_matrix
-        self.mean_centered_matrix = mean_centered_matrix
-        user_pearson_similarity_matrix = rating_matrix.copy()
-        # use corr function to calculate pearson correlation between users (columns)
-        user_pearson_similarity_matrix = user_pearson_similarity_matrix.apply(
-            lambda row: row.fillna(row.mean()), axis=1)
-        user_pearson_similarity_matrix = user_pearson_similarity_matrix.T.corr(
-            method="pearson")
-        self.user_pearson_similarity_matrix = user_pearson_similarity_matrix
-        item_pearson_similarity_matrix = rating_matrix.copy()
-        # use corr function to calculate pearson correlation between items (rows)
-        item_pearson_similarity_matrix = item_pearson_similarity_matrix.apply(
-            lambda row: row.fillna(row.mean()), axis=1)
-        item_pearson_similarity_matrix = item_pearson_similarity_matrix.corr(method="pearson")
-        self.item_pearson_similarity_matrix = item_pearson_similarity_matrix
+    def __init__(self, user_id: str, ratings_matrix: pd.DataFrame, ratings_matrix_centered: pd.DataFrame):
+        self.user_id = user_id
+        self.ratings_matrix = ratings_matrix
+        self.ratings_matrix_centered = ratings_matrix_centered
+        self.users_pearson_similiarity = self.pearson_similiarity(
+            user_id, ratings_matrix)
 
-    def setUserID(self, userID: str):
-        self.userID = userID
-    
-    # FIXME: check if userId is defined
-    def similar_users(self, top_users_percent: float = 0.3, threshold: float = 0.2) -> list:
-        # User-based collaborative filtering
-        # find the most similar users to the user
-        index = self.rating_matrix.index.get_loc(self.userID)
-        row_rating = self.user_pearson_similarity_matrix.iloc[index]
-        row_rating.sort_values(ascending=False, inplace=True)
-        top_users = round(len(self.user_pearson_similarity_matrix) * top_users_percent)
-        user_list = list(row_rating.index[1:top_users+1])
-        # remove users with similarity less than threshold
-        user_list = [user for user in user_list if row_rating[user] > threshold]
-        return user_list
-    
-    def find_not_rated_books(self) -> list:
-        # find the books that the user has not rated
-        not_rated_books = []
-        not_rated_books = self.rating_matrix.loc[self.userID][self.rating_matrix.loc[self.userID].isnull()].index
-        return list(not_rated_books)
-    
-    def predict_rating_user(self) -> dict:
-        not_rated_books = self.find_not_rated_books()
-        # dictionary to store the predicted rating for each book
-        prediction_dict = {}
-        top_users_percent = 0.3
-        threshold = 0.2
-        for book in not_rated_books:
-            similar_users = self.similar_users(top_users_percent, threshold)
-            # print("similar users for book {} are:".format(book))
-            # print(similar_users)
-            numerator = 0
-            denominator = 0
-            for user in similar_users:
-                if not np.isnan(self.rating_matrix.loc[user][book]):
-                    numerator += self.user_pearson_similarity_matrix.loc[self.userID][user] * \
-                        self.rating_matrix.loc[user][book]
-                    denominator += self.user_pearson_similarity_matrix.loc[self.userID][user]
-                    # print("denominator: {}".format(denominator))
-            if denominator != 0:
-                prediction_dict[book] = numerator / denominator
-            # print("----------------------------------------")
-        # sort the dictionary by the predicted rating in descending order
-        prediction_dict = {i: v for i, v in sorted(
-            prediction_dict.items(), key=lambda item: item[1], reverse=True)}
-        return prediction_dict
-    
-    def similar_items(self, itemID: str, top_items_percent: float = 0.3, threshold: float = 0.2) -> list:
-        # Item-based collaborative filtering
-        # find the most similar items to the item
-        index = self.rating_matrix.columns.get_loc(itemID)
-        row_rating = self.item_pearson_similarity_matrix.iloc[index]
-        row_rating.sort_values(ascending=False, inplace=True)
-        top_items = round(len(self.rating_matrix.columns) * top_items_percent)
-        item_list = list(row_rating.index[1:top_items+1])
-        # remove items with similarity less than threshold
-        item_list = [item for item in item_list if row_rating[item] > threshold]
-        return item_list
-    
-    def predict_rating_item(self) -> dict:
-        not_rated_books = self.find_not_rated_books()
-        # dictionary to store the predicted rating for each book
-        prediction_dict = {}
-        top_items_percent = 0.3
-        threshold = 0.2
-        for book in not_rated_books:
-            similar_items = self.similar_items(book, top_items_percent, threshold)
-            # print("similar items for book {} are:".format(book))
-            # print(similar_items)
-            numerator = 0
-            denominator = 0
-            for item in similar_items:
-                if not np.isnan(self.rating_matrix.loc[self.userID][item]):
-                    numerator += self.item_pearson_similarity_matrix.loc[book][item] * \
-                        self.rating_matrix.loc[self.userID][item]
-                    denominator += self.item_pearson_similarity_matrix.loc[book][item]
-                    # print("denominator: {}".format(denominator))
-            if denominator != 0:
-                prediction_dict[book] = numerator / denominator
-            # print("----------------------------------------")
-        # sort the dictionary by the predicted rating in descending order
-        prediction_dict = {i: v for i, v in sorted(
-            prediction_dict.items(), key=lambda item: item[1], reverse=True)}
-        return prediction_dict
-    
-    def user_based_collaborative_filtering(self, top_users_percent: float = 0.3, threshold: float = 0.2) -> dict:
-        top_users_percent = 0.3
-        mylist = self.similar_users( top_users_percent, threshold)
-        user_based_prediction = self.predict_rating_user()
-        # print("recommended books for user are: (Item: Rating Prediction)")
-        # print(user_based_prediction)
-        self.user_based_prediction = user_based_prediction
-        return user_based_prediction
-    
-    def item_based_collaborative_filtering(self, top_items_percent: float = 0.3, threshold: float = 0.2) -> dict:
-        top_items_percent = 0.3
-        item_based_prediction = self.predict_rating_item()
-        # print("recommended books for user are: (Item: Rating Prediction)")
-        # print(item_based_prediction)
-        self.item_based_prediction = item_based_prediction
-        return item_based_prediction
-    
-    def rmse(self, prediction_dict: dict, user_mean: float):
-        rmse = 0
-        for item in prediction_dict:
-            rmse += (prediction_dict[item] - user_mean) ** 2
-        rmse = sqrt(rmse / len(prediction_dict))
-        return rmse
-    
-    def average_prediction_collaborative_filtering(self, top_users_percent: float = 0.3, threshold: float = 0.2) -> dict:
-        user_mean = self.rating_matrix.loc[self.userID].mean()
-        print("user mean: {}".format(user_mean))
+    def pearson_correlation(self, user1: pd.Series, user2: pd.Series) -> float:
+        """
+        Function to calculate the pearson correlation between two users
+        :param user1: user 1
+        :param user2: user 2
+        :return: pearson correlation between the two users
+        """
+        # get the common items between the two users
+        common_items = user1.index.intersection(user2.index)
 
-        # calculating average prediction from item and user CF
-        average_prediction = {}
-        common_items = set(self.item_based_prediction.keys()).intersection(
-            set(self.user_based_prediction.keys()))
-        for item in common_items:
-            average_prediction[item] = (
-                self.item_based_prediction[item] + self.user_based_prediction[item]) / 2
+        # get the ratings of the common items for each user
+        user1_common_ratings = user1.loc[common_items]
+        user2_common_ratings = user2.loc[common_items]
 
-        print(average_prediction)
-        
+        # calculate the pearson correlation
+        pearson_correlation = user1_common_ratings.corr(user2_common_ratings)
 
-        print("RMSE for user based CF: {}".format(
-            self.rmse(self.user_based_prediction, user_mean)))
-        print("RMSE for item based CF: {}".format(
-            self.rmse(self.item_based_prediction, user_mean)))
-        print("RMSE for average prediction: {}".format(
-            self.rmse(average_prediction, user_mean)))
+        return pearson_correlation
 
-        return average_prediction
-    
-    def dict_to_sets_list(self, myDict: dict) -> list:
-    # convert the dictionary to a list of sets
-        myList = []
-        for item in myDict:
-            myList.append({item, myDict[item]})
-        return myList
+    def pearson_similiarity(self, user_id: str, ratings_matrix: pd.DataFrame) -> pd.DataFrame:
+        """
+        Function to calculate the pearson similiarity between the user and all other users
+        :param user_id: user id
+        :param ratings_matrix: ratings matrix
+        :return: pearson similiarity between the user and all other users
+        """
+        # get the user row
+        user_row = ratings_matrix.loc[user_id, :]
+
+        # get the other users rows
+        other_users_rows = ratings_matrix.drop(user_id)
+
+        # calculate the pearson similiarity
+        pearson_similiarity = other_users_rows.apply(
+            lambda row: self.pearson_correlation(user_row, row), axis=1)
+
+        return pearson_similiarity
+
+    def get_top_similiar_users(self, top_users_percent: float = CF_TOP_USERS_PERCENT) -> pd.DataFrame:
+        """
+        Function to get the top similiar users to the user
+        :param user_id: user id
+        :param top_users_percent: top users percent
+        :return: top similiar users to the user
+        """
+        # steps:
+        # 1. sort the users by their pearson similiarity
+        # 2. get the index of the sorted_pearson_similiarity
+        # 3. get the top users percent which is the min between the index of the first nan value and the top users percent
+
+        sorted_pearson_similiarity = self.users_pearson_similiarity.sort_values(
+            ascending=False)
+        first_zero_neg_index = sorted_pearson_similiarity[sorted_pearson_similiarity <= 0].index[0]
+
+        if first_zero_neg_index == 0:
+            print("No similiar users found using pearson similiarity")
+            return sorted_pearson_similiarity
+        else:
+            first_zero_neg_location = sorted_pearson_similiarity.index.get_loc(
+                first_zero_neg_index)
+        top_users_percent = min(
+            first_zero_neg_location, round(top_users_percent * len(sorted_pearson_similiarity)))
+        top_similiar_users = sorted_pearson_similiarity.iloc[:top_users_percent]
+        return top_similiar_users
+
+    def get_not_rated_books(self) -> pd.DataFrame:
+        """
+        Function to find the books that the user didn't rate
+        :param user_id: user id
+        :return: books that the user didn't rate
+        """
+        # steps:
+        # 1. get the user row
+        # 2. get the books that the user didn't rate
+        # 3. return the books that the user didn't rate
+
+        user_row = self.ratings_matrix.loc[self.user_id, :]
+        not_rated_books = user_row[user_row.isnull()].index
+        return not_rated_books
+
+    # this function follows the user-based collaborative filtering approach
+    def get_predicted_rating(self) -> dict:
+        """
+        Function to get the predicted rating for the user
+        :param user_id: user id
+        :return: predicted rating for the user
+        """
+        # steps:
+        # 1. get the top similiar users
+        # 2. get the not rated books
+        # 3. calculate the predicted rating by multiplying the top similiar users ratings for the not rated books with their pearson similiarity in the numerator
+        # and the sum of the pearson similiarity in the denominator
+        # this is done on the ratings matrix centered
+        # 4. add the mean of the target user to the predicted rating
+        # 5. return the predicted rating as a sorted dictionary where the key is the book id and the value is the predicted rating
+
+        top_similiar_users = self.get_top_similiar_users()
+        not_rated_books = self.get_not_rated_books()
+
+        numerator = self.ratings_matrix_centered.loc[top_similiar_users.index, not_rated_books].apply(
+            lambda row: row * top_similiar_users, axis=0).sum(axis=0)
+        denominator = top_similiar_users.sum()
+        predicted_rating = numerator / denominator
+
+        predicted_rating = predicted_rating + \
+            self.get_mean_current_user_rating()
+        predicted_rating = predicted_rating.sort_values(ascending=False)
+        predicted_rating_dict = predicted_rating.to_dict()
+        return predicted_rating_dict
+
+    def get_mean_current_user_rating(self):
+        """
+        Function to get the mean of the current user rating
+        :return: mean of the current user rating
+        """
+        return self.ratings_matrix.loc[self.user_id, :].mean()
+
+    def sort_prediction_around_mean(self, mean_current_user_rating: float, predicted_rating_dict: dict) -> dict:
+        """
+        Function to sort the predicted rating around the mean of the current user rating
+        :param predicted_rating_dict: predicted rating dictionary
+        :return: sorted predicted rating dictionary
+        """
+        # steps:
+        # 1. get the mean of the current user rating
+        # 2. sort the predicted rating around the mean
+        # 3. return the sorted predicted rating dictionary
+
+        sorted_predicted_rating_dict = {
+            k: v for k, v in sorted(predicted_rating_dict.items(), key=lambda item: abs(item[1] - mean_current_user_rating))}
+        return sorted_predicted_rating_dict
+
+    def user_based_collaborative_filtering(self) -> dict:
+        """
+        Function to apply the user based collaborative filtering approach
+        :return: predicted rating dictionary
+        """
+        # steps:
+        # 1. get the predicted rating
+        # 2. sort the predicted rating around the mean of the current user rating
+        # 3. return the sorted predicted rating dictionary
+
+        predicted_rating_dict = self.get_predicted_rating()
+        mean_current_user_rating = self.get_mean_current_user_rating()
+        sorted_predicted_rating_dict = self.sort_prediction_around_mean(
+            mean_current_user_rating, predicted_rating_dict)
+        return sorted_predicted_rating_dict

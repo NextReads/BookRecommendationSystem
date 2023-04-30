@@ -60,18 +60,113 @@ def mean_matrix(matrix: pd.DataFrame) -> pd.DataFrame:
 # @type: SPECIFIC
 
 
-def data_shrinking(ratings_df: pd.DataFrame) -> pd.DataFrame:
-    ratings_df = ratings_df.dropna(subset=['review_text'])
-    # remove rows with rating 0 (not rated)
-    ratings_df = ratings_df[ratings_df['rating'] != 0]
-    # there are books that have been rated only once
-    # SHRINKING THE DATASET BY REMOVING BOOKS THAT HAVE BEEN RATED LESS THAN 100 TIMES
-    counts = ratings_df['book_id'].value_counts()
-    ratings_df = ratings_df[ratings_df['book_id'].isin(
-        counts[counts >= 100].index)]
-    # there are users that have rated only once
-    # SHRINKING THE DATASET BY REMOVING USERS THAT HAVE RATED LESS THAN 10 TIMES
-    counts = ratings_df["user_id"].value_counts()
-    ratings_df = ratings_df[ratings_df["user_id"].isin(
-        counts[counts >= 10].index)]
-    return ratings_df
+def list_to_dataframe(my_list: list, column: list) -> pd.DataFrame:
+    return pd.DataFrame(my_list, columns=column)
+
+
+def check_cf_compatibilty(current_user: str, current_read_books_df: pd.DataFrame, ratings_df: pd.DataFrame) -> bool:
+    # 1- check if the data is empty or the current user is not in the dataset
+    if ratings_df.empty or current_read_books_df.empty or current_user not in ratings_df['user_id'].values:
+        print("the data is empty or the current user is not in the dataset")
+        return False
+    # 2- check if there's at least one of the books_id column in the current_read_books_df exists in the ratings_df
+    is_common_books = ratings_df['book_id'].isin(
+        current_read_books_df['book_id'])
+    if len(ratings_df[is_common_books]) == 0:
+        print("None of the books are in the dataset")
+        return False
+    # 3- check if another user has rated at least one of the current_read_books and is not the current_user
+    if len(ratings_df[is_common_books & (ratings_df['user_id'] != current_user)]) == 0:
+        print("None of the books are rated by another user")
+        return False
+    return True
+
+
+def data_shrinking(current_user: str, current_read_books_df: pd.DataFrame, ratings_df: pd.DataFrame) -> pd.DataFrame:
+    # check if the current_read_books_df length is longer than the acceptable CF_MAX_BOOK_NUMBER
+    if len(current_read_books_df) > CF_MAX_BOOK_NUMBER:
+        current_read_books_df = current_read_books_df[:CF_MAX_BOOK_NUMBER *
+                                                      CF_MAX_READ_TO_RECOMMEND_RATIO]
+
+    ##################################### GETTING THE USERS #####################################
+    # find top CF_MAX_USER_NUMBER users that have rated the most books out of the current_user's read books, these users are unique
+    # first step: find a subset of rating which includes all users that have rated any of the current_user's read books
+    # second step: get the top CF_MAX_USER_NUMBER users that have rated the most books out of the current_user's read books, add the current_user if not there
+    # third step: get a subset of the dataframe in step 1 which includes only the users in step 2
+
+    # getting the users that have rated any of the current_user's read books
+    current_books_ratings_bool = ratings_df['book_id'].isin(
+        current_read_books_df['book_id'])
+    users_books_df = ratings_df[current_books_ratings_bool]
+    number_of_users = min(CF_MAX_USER_NUMBER, len(
+        users_books_df['user_id'].unique()))
+    # getting
+    unique_users = users_books_df.groupby('user_id').count(
+    ).sort_values(by='book_id', ascending=False).head(number_of_users).index
+    # check if the current_user is in the unique_users
+    if current_user not in unique_users:
+        unique_users = unique_users.append(
+            pd.Index([current_user]))
+    # getting the highest related CF_MAX_USER_NUMBER users
+    users_books_df = users_books_df[users_books_df['user_id'].isin(
+        unique_users)]
+
+    ##################################### GETTING THE BOOKS #####################################
+    # first step: find all other books that have been rated by any user in users_books_df and not in current_read_books_df
+    # second step: add the current_read_books_df to the unique_books
+    # third step: get a subset of the original ratings_df which includes the books and users in step 1 and 2
+
+    # find all other books that have been rated by any user in users_books_df and not in current_read_books_df
+    other_books_df = ratings_df[~current_books_ratings_bool &
+                                ratings_df['user_id'].isin(users_books_df['user_id'])]
+
+    # get the top CF_MAX_BOOK_NUMBER - len(current_read_books_df) books that have been rated by any user in users_books_df and not in current_read_books_df
+    number_of_books = min(CF_MAX_BOOK_NUMBER - len(current_read_books_df), len(  # this
+        other_books_df['book_id'].unique()))
+
+    unique_books = other_books_df.groupby('book_id').count().sort_values(
+        by='user_id', ascending=False).head(number_of_books).index
+
+    # # add the current_read_books_df to the unique_books
+    unique_books = unique_books.append(
+        pd.Index(current_read_books_df['book_id']))
+    # print the number of unique books in unique_books
+
+    users_books_df = ratings_df[ratings_df['book_id'].isin(
+        unique_books) & ratings_df['user_id'].isin(unique_users)]
+
+    return users_books_df
+
+
+def dict_to_dataframe(current_user: str, current_read_books_dict: dict) -> pd.DataFrame:
+    # change the current_read_books_dict to a dataframe
+    current_books = list(current_read_books_dict.keys())
+    current_ratings = list(current_read_books_dict.values())
+    actual_user_read_books_df = pd.DataFrame(
+        {'book_id': current_books, 'user_id': current_user, 'rating': current_ratings})
+    current_read_books_df = list_to_dataframe(
+        current_books, ['book_id'])
+    return actual_user_read_books_df, current_read_books_df
+
+
+def get_cf_data(current_user: str, current_read_books_dict: dict, ratings_df: pd.DataFrame) -> pd.DataFrame:
+    # change the current_read_books_dict to a dataframe
+    actual_user_read_books_df, current_read_books_df = dict_to_dataframe(
+        current_user, current_read_books_dict)
+
+    # add the df to the ratings_df
+    ratings_df = pd.concat(
+        [actual_user_read_books_df, ratings_df], ignore_index=True)
+
+    # check if the data is compatible with the CF algorithm
+    if not check_cf_compatibilty(current_user, current_read_books_df, ratings_df):
+        return pd.DataFrame()
+    # shrink the data to be compatible with the CF algorithm
+    users_books_df = data_shrinking(
+        current_user, current_read_books_df, ratings_df)
+
+    # get the ratings matrix, mean matrix
+    ratings_matrix = create_ratings_matrix(users_books_df)
+    ratings_matrix_centered = mean_centered_rating_matrix(ratings_matrix)
+    # return the shrunk data
+    return ratings_matrix, ratings_matrix_centered
