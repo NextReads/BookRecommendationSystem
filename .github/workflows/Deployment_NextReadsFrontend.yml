@@ -7,6 +7,8 @@ on:
   push:
     branches:
       - Deployment
+    paths:
+      - Frontend/**
   workflow_dispatch:
 
 jobs:
@@ -30,8 +32,8 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         push: true
-        tags: nextreadsfrontend.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_12d171b4051f4ee2aaf0ca3ebc89c755 }}/next-reads-frontend:${{ github.sha }}
-        file: ./Dockerfile
+        tags: nextreadsfrontend.azurecr.io/next-reads-frontend:${{ github.sha }}
+        file: ./Frontend/Dockerfile
 
   deploy:
     runs-on: ubuntu-latest
@@ -48,4 +50,4 @@ jobs:
         app-name: 'NextReadsFrontend'
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_f832daa6fbfe48aba6d6a5e1436a8f7f }}
-        images: 'nextreadsfrontend.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_12d171b4051f4ee2aaf0ca3ebc89c755 }}/next-reads-frontend:${{ github.sha }}'
+        images: 'nextreadsfrontend.azurecr.io/next-reads-frontend:${{ github.sha }}'
