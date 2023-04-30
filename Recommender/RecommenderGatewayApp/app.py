@@ -174,7 +174,7 @@ def index():
     return 'Coming Soon!'
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 80))
-    app.run(debug=False, host='0.0.0.0', port=port, use_reloader=False)
+    app.run(debug=False, host='0.0.0.0', port=port)
 
 
 # add a request to get the sentiment of a review
