@@ -23,8 +23,9 @@ if os.getenv('NAME') == 'NextReadsRecommender':
 else:
     basedir = '../'
 fileLinks = {
+    basedir + 'Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv': ('https://drive.google.com/uc?id=1ue1gnrPCmqDWTFAXyNPeP0PEoEettH0L', True),
     basedir + 'RecommendationGenerator/combined_score.json': ('https://drive.google.com/uc?id=1kaHSI-CGiWycpsHFOvREo5z9qwGhWTPB', False),
-    basedir + 'Utils/dataset/books.csv': ('https://drive.google.com/uc?id=1TFBNupoC2eW0P7gyIEBNcCmYGDLoljRy', False),
+    # basedir + 'Utils/dataset/books.csv': ('https://drive.google.com/uc?id=1TFBNupoC2eW0P7gyIEBNcCmYGDLoljRy', False),
     basedir + 'Utils/dataset/genres.csv': ('https://drive.google.com/uc?id=1OpCmFSPqORthEtXEdpxbyBOXDH7n99r5', False),
     basedir + 'Utils/dataset/ratings.csv': ('https://drive.google.com/uc?id=1JZP6HAXqgj8mXnaapnOqAqNPrxXpYWoF', False), }
 
@@ -117,8 +118,11 @@ def book(book_id):
 
 
 @app.route("/RecommendUserBook", methods=['GET'])
-def recommendUserBook(user_id, books):
+def recommendUserBook():
     if request.method == 'GET':
+        user_id = request.get_json().get('user_id')
+        books = request.get_json().get('books')
+
         start_time = time.time()
 
         ratings_matrix, ratings_matrix_centered = get_cf_data(
@@ -161,12 +165,12 @@ def start():
     data = classifier.readData()
     pathRoot = os.getenv('NAME')
     if pathRoot == 'NextReadsRecommender':
-        genreData = cfcf.read_data('/app/Utils/dataset/genre.csv')
-        booksData = cfcf.read_data('/app/Utils/dataset/books.csv')
+        genreData = cfcf.read_data('/app/Utils/dataset/genres.csv')
+        # booksData = cfcf.read_data('/app/Utils/dataset/books.csv')
         ratings_df = cfcf.read_data('/app/Utils/dataset/ratings.csv')
     else:
-        genreData = cfcf.read_data('../Utils/dataset/genre.csv')
-        booksData = cfcf.read_data('../Utils/dataset/books.csv')
+        genreData = cfcf.read_data('../Utils/dataset/genres.csv')
+        # booksData = cfcf.read_data('../Utils/dataset/books.csv')
         ratings_df = cfcf.read_data('../Utils/dataset/ratings.csv')
 
     try:
