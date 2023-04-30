@@ -115,6 +115,15 @@ def book(book_id):
         NR_HISTOGRAM.observe(response_time)
         #visData = visualize_recommendations(listIds,booksData)
         return jsonify(dict(listIds))
+    
+@app.route("/RecommendUserBook", methods=['GET'])
+def recommendUserBook(user_id, books):
+    if request.method == 'GET':
+        start_time = time.time()
+        listIds = content_based_recommendation(int(book_id), genreData)
+        response_time = time.time() - start_time
+        NR_HISTOGRAM.observe(response_time)
+        return jsonify(dict(listIds))
 
 
 @app.route("/Start", methods=['POST'])
