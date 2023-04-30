@@ -6,14 +6,18 @@ import os
 
 
 def load_model(path: str):
-    rPath='../../SentimentAnalysis/models/'+path
+    pathRoot = os.getenv('NAME')
+    if pathRoot == 'NextReadsRecommender':
+        rPath='/app/SentimentAnalysis/models/'+path
+    else:
+        rPath='../SentimentAnalysis/models/'+path
     if not os.path.exists(rPath):
         raise Exception('Model not found')
     # print("model found")
     return pickle.load(open(rPath, 'rb'))
 
 
-from preprocessing import preprocessReview
+from SentimentAnalysis.preprocessing import preprocessReview
 def getReviewSentiment(text):
     clflinear = load_model('svm_linear_model.sav')
     # print("model loaded")
