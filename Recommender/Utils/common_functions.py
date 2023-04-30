@@ -138,10 +138,25 @@ def data_shrinking(current_user: str, current_read_books_df: pd.DataFrame, ratin
     return users_books_df
 
 
-def get_cf_data(current_user: str, current_read_books_list: list, ratings_df: pd.DataFrame) -> pd.DataFrame:
-    # change the current_read_books_list to a dataframe
+def dict_to_dataframe(current_user: str, current_read_books_dict: dict) -> pd.DataFrame:
+    # change the current_read_books_dict to a dataframe
+    current_books = list(current_read_books_dict.keys())
+    current_ratings = list(current_read_books_dict.values())
+    actual_user_read_books_df = pd.DataFrame(
+        {'book_id': current_books, 'user_id': current_user, 'rating': current_ratings})
     current_read_books_df = list_to_dataframe(
-        current_read_books_list, ['book_id'])
+        current_books, ['book_id'])
+    return actual_user_read_books_df, current_read_books_df
+
+
+def get_cf_data(current_user: str, current_read_books_dict: dict, ratings_df: pd.DataFrame) -> pd.DataFrame:
+    # change the current_read_books_dict to a dataframe
+    actual_user_read_books_df, current_read_books_df = dict_to_dataframe(
+        current_user, current_read_books_dict)
+
+    # add the df to the ratings_df
+    ratings_df = pd.concat(
+        [actual_user_read_books_df, ratings_df], ignore_index=True)
 
     # check if the data is compatible with the CF algorithm
     if not check_cf_compatibilty(current_user, current_read_books_df, ratings_df):
@@ -149,7 +164,7 @@ def get_cf_data(current_user: str, current_read_books_list: list, ratings_df: pd
     # shrink the data to be compatible with the CF algorithm
     users_books_df = data_shrinking(
         current_user, current_read_books_df, ratings_df)
-    
+
     # get the ratings matrix, mean matrix
     ratings_matrix = create_ratings_matrix(users_books_df)
     ratings_matrix_centered = mean_centered_rating_matrix(ratings_matrix)
