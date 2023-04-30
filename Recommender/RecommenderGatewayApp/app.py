@@ -164,7 +164,9 @@ def start():
 
     return "Done"
 
-
+@app.route("/Stop", methods=['POST'])
+def stop():
+    pass
 
 
 @app.route('/index')
