@@ -11,3 +11,4 @@ nltk
 regex
 gdown
 zipfile36
+py7zr

@@ -14,6 +14,7 @@ import pandas as pd
 from ContentBased.content_based import content_based_recommendation, visualize_recommendations
 import Utils.common_functions as cfcf
 import os
+import py7zr
 
 print("os.getenv('NAME') = ", os.getenv('NAME'))
 app = Flask(__name__)
@@ -129,9 +130,13 @@ def start():
             if url[1]:
                 # unzip the file
                 print("unzipping file")
-                with zipfile.ZipFile(output , 'r') as zip_ref:
-                    # remove unitl the last /
-                    zip_ref.extractall(file[:file.rfind('/')])
+                if url[2] == '.7z':
+                    with py7zr.SevenZipFile(output, mode='r') as z:
+                        z.extractall(file[:file.rfind('/')])
+                if url[2] == '.zip':
+                    with zipfile.ZipFile(output , 'r') as zip_ref:
+                        # remove unitl the last /
+                        zip_ref.extractall(file[:file.rfind('/')])
                 # remove the zip file
                 os.remove(output)
         else:
