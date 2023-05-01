@@ -12,9 +12,10 @@ router.post('/', [auth, manager], bookController.addBook);
 // router.get('/api/courses/:id', (req, res) => {
 //     res.send(req.params.id);
 // });
-router.post('/:id/review', auth,bookController.addReview);
-router.post('/coldstart', bookController.addRatings);
-router.post('/:id/rating', bookController.addRating);
+router.post('/:id/review', [auth],auth,bookController.addReview);
+router.post('/coldstart', [auth],bookController.addRatings);
+router.post('/:id/rating', [auth],bookController.addRating);
+router.get('/recommend', [auth],bookController.Recommender);
 // router.put('/events/info/:id',[auth,manager],bookController.editEvent);
 // router.get('/:id',bookController.getEvent);
 // router.get('/events/:bookId',bookController.getEvents);

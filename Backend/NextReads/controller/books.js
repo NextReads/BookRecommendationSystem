@@ -55,7 +55,7 @@ module.exports.addReview= async (req, res, next) => {
         userId:req.user._id
     })
   
-    const url = 'http://127.0.0.1:5000/sentiment'
+    const url = 'https://nextreadsrecommender.azurewebsites.net/sentiment'
     const body = {review:req.body.review}
     const response = await fetch(url,{method:'POST',body:JSON.stringify(body),headers: { 'Content-Type': 'application/json' }});
     sentiment = await response.json();//assuming data is json
@@ -115,26 +115,74 @@ module.exports.addRatings= async (req, res, next) => {
     // find books from the list of ids
     let books = await Book.find({ _id: { $in: req.body.ratings.map(rating=>rating.bookId) } });
     if (!books){return res.status(400).send('Book does not exist');}
+    // console.log(books);
+    // convert ratings.bookId and ratings.rating to object key value pairs
+    let ratings = req.body.ratings.reduce((acc, rating) => {
+        acc[rating.bookId] = rating.rating;
+        return acc;
+    }, {});
+    
+
+    // let ratings = req.body.ratings.reduce((acc, rating) => {
+
+    //     acc[rating.bookId] = rating.rating;
+    //     console.log(acc);
+    //     return acc;
+    // });
+    
+
     for (let book of books){
-        let rating=book.avgRating*book.ratingCount;
-        rating+=req.body.rating;
-        book.ratingCount+=1;
-        book.avgRating=rating/book.ratingCount;
+        // if rating is null set to 0
+        if (!book.avgRating) book.avgRating = 0;
+        // if rating_sum is null set to 0
+        // if (!book.rating_sum) book.rating_sum = 0;
+        // if rating_count is null set to 0
+        if (!book.rating_count) book.rating_count = 0;
+        let rating=book.avgRating*book.rating_count;
+        rating+=ratings[book._id];
+        book.rating_count+=1;
+        console.log(book.avgRating)
+        console.log(rating);
+        console.log(book.rating_count);
+        book.avgRating=rating/book.rating_count;
+        // console.log(book.rating_sum)
+        // book.rating_sum+=req.body.rating;
         const read= new Read({
-            bookId:req.params.id,
-            rating:req.body.rating
+            bookId:book._id,
+            rating:ratings[book._id]
         })
         user.read.push(read);
+        console.log(book)
+        try {
+            await book.save();
+        } catch (error) {
+            console.log(error);
+            return res.status(500).send({ error: "Internal Server error" });
+        }
     }
 
     try {
-        await book.save();
         await user.save();
         return res.status(201).send('Rating added successfully');
     } catch (error) {
         console.log(error);
         return res.status(500).send({ error: "Internal Server error" });
     }
+}
+
+
+module.exports.Recommender= async (req, res, next) => {
+    let user = await User.findById(req.user._id).populate('read').select('read.rating read.bookId');
+    if (!user){return res.status(400).send('User does not exist, please sign out and try again');}
+    
+    print(user.read);
+    let recommendedBooks=[];
+    for (let author of authors){
+        let authorBooks=await Book.find({ _id: { $in: author.books } });
+        if (!authorBooks){return res.status(400).send('Book does not exist');}
+        recommendedBooks.push(authorBooks);
+    }
+    return res.status(200).send(recommendedBooks);
 }
 
 // module.exports.editEvent= async (req, res, next) => {

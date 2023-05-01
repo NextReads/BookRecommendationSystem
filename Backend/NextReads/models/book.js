@@ -46,7 +46,7 @@ const Book = mongoose.model('Book', new mongoose.Schema({
     },
     Author:{
         type: mongoose.Schema.Types.ObjectId,
-        required: true,
+        // required: true,
         ref: 'Author'        
     },
     imageUrl:{
@@ -55,7 +55,7 @@ const Book = mongoose.model('Book', new mongoose.Schema({
         maxlength: 1024,
         required: true
     },
-    avgRating:{
+    avgRating:{ 
             type: Number,
             required: true,
             default: 0,
@@ -63,18 +63,25 @@ const Book = mongoose.model('Book', new mongoose.Schema({
             min: 0,
             max: 5
     },
-    ratingCount:{
+    rating_count:{
         type: Number,
             required: false,
             trim: true,
             default: 0,
             min: 0,
     },
+    rating_sum:{
+        type: Number,
+        required: true,
+        trim: true,
+        default: 0,
+        min: 0,
+    },
     isbn:{
         type: String,
         required: false,
         trim: true,
-        minlength: 10,
+        // minlength: 10,
         maxlength: 13
     },
     isbn13:{
