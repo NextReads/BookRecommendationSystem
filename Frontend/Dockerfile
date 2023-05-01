@@ -2,13 +2,11 @@ FROM python:3
 
 WORKDIR /app
 
-ADD . /app/
-
 EXPOSE 80
 
-COPY . /app
+COPY ./Frontend /app
 
-RUN pip install -r /app/requirements.txt --no-cache-dir
+RUN pip install -r requirements.txt --no-cache-dir
 
 ENV PYTHONUNBUFFERED=1
 
