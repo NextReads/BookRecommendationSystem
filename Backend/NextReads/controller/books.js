@@ -188,9 +188,11 @@ module.exports.Recommender= async (req, res, next) => {
     // }
     request={
         "user_id": req.user._id.toString(),
-        "books": ratings.toString()
+        "books": ratings
     }
     console.log(request);
+    console.log("====================================")
+    console.log(JSON.stringify(request));
 
     const url = 'https://nextreadsrecommender.azurewebsites.net/RecommendUserBook'
     const body = request
