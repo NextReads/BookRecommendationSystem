@@ -174,12 +174,16 @@ module.exports.addRatings= async (req, res, next) => {
 module.exports.Recommender= async (req, res, next) => {
     let user = await User.findById(req.user._id).populate('read.bookId', 'bookId');
     if (!user){return res.status(400).send('User does not exist, please sign out and try again');}
+    // change single quoted req.user._id to double quotes
+
     let ratings = user.read.reduce((acc, rating) => {
-        acc[String(rating.bookId.bookId)] = rating.rating;
+        // add book id with double quotes
+        var bookid= JSON.stringify(rating.bookId.bookId);
+        acc[bookid] = rating.rating;
         return acc;
     }, {});
     request={
-        user_id:String(req.user._id),
+        user_id:JSON.stringify(req.user._id),
         books:ratings
     }
     console.log(request);
