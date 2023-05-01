@@ -54,9 +54,9 @@ module.exports.addReview= async (req, res, next) => {
         review:req.body.review,
         userId:req.user._id
     })
-  
     const url = 'https://nextreadsrecommender.azurewebsites.net/sentiment'
     const body = {review:req.body.review}
+    console.log(body);
     const response = await fetch(url,{method:'POST',body:JSON.stringify(body),headers: { 'Content-Type': 'application/json' }});
     sentiment = await response.json();//assuming data is json
     console.log(sentiment);
@@ -178,16 +178,15 @@ module.exports.Recommender= async (req, res, next) => {
 
     let ratings = user.read.reduce((acc, rating) => {
         // add book id with double quotes
-        var bookid= JSON.stringify(rating.bookId.bookId);
+        var bookid= (rating.bookId.bookId);
         acc[bookid] = rating.rating;
         return acc;
     }, {});
     request={
-        user_id:JSON.stringify(req.user._id),
-        books:ratings
+        "user_id":(req.user._id),
+        "books":ratings
     }
     console.log(request);
-
     const url = 'https://nextreadsrecommender.azurewebsites.net/RecommendUserBook'
     const body = request
     const response = await fetch(url,{method:'POST',body:JSON.stringify(body),headers: { 'Content-Type': 'application/json' }});
