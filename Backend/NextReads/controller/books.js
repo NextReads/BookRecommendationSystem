@@ -182,9 +182,13 @@ module.exports.Recommender= async (req, res, next) => {
         acc[bookid] = rating.rating;
         return acc;
     }, {});
+    // request={
+    //     user_id:JSON.stringify(req.user._id),
+    //     books:ratings
+    // }
     request={
-        user_id:JSON.stringify(req.user._id),
-        books:ratings
+        "user_id": req.user._id.toString(),
+        "books": ratings.toString()
     }
     console.log(request);
 
