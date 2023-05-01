@@ -172,17 +172,32 @@ module.exports.addRatings= async (req, res, next) => {
 
 
 module.exports.Recommender= async (req, res, next) => {
-    let user = await User.findById(req.user._id).populate('read').select('read.rating read.bookId');
+    let user = await User.findById(req.user._id).populate('read.bookId', 'bookId');
     if (!user){return res.status(400).send('User does not exist, please sign out and try again');}
-    
-    print(user.read);
-    let recommendedBooks=[];
-    for (let author of authors){
-        let authorBooks=await Book.find({ _id: { $in: author.books } });
-        if (!authorBooks){return res.status(400).send('Book does not exist');}
-        recommendedBooks.push(authorBooks);
+    let ratings = user.read.reduce((acc, rating) => {
+        acc[String(rating.bookId.bookId)] = rating.rating;
+        return acc;
+    }, {});
+    request={
+        user_id:String(req.user._id),
+        books:ratings
     }
-    return res.status(200).send(recommendedBooks);
+    console.log(request);
+
+    const url = 'https://nextreadsrecommender.azurewebsites.net/RecommendUserBook'
+    const body = request
+    const response = await fetch(url,{method:'POST',body:JSON.stringify(body),headers: { 'Content-Type': 'application/json' }});
+    let books = await response.json();//assuming data is json
+    console.log(books);
+
+    // let recommendedBooks=[];
+    // for (let author of authors){
+
+    //     let authorBooks=await Book.find({ _id: { $in: author.books } });
+    //     if (!authorBooks){return res.status(400).send('Book does not exist');}
+    //     recommendedBooks.push(authorBooks);
+    // }
+    return res.status(200).send(user.read);
 }
 
 // module.exports.editEvent= async (req, res, next) => {

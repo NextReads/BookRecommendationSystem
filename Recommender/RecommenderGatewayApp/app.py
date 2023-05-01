@@ -125,7 +125,7 @@ def recommendUserBook():
     if request.method == 'POST':
         user_id = request.get_json().get('user_id')
         books = request.get_json().get('books')
-
+        
         start_time = time.time()
 
         ratings_matrix, ratings_matrix_centered = get_cf_data(
