@@ -175,11 +175,11 @@ module.exports.Recommender= async (req, res, next) => {
     let user = await User.findById(req.user._id).populate('read.bookId', 'bookId');
     if (!user){return res.status(400).send('User does not exist, please sign out and try again');}
     let ratings = user.read.reduce((acc, rating) => {
-        acc[rating.bookId.bookId] = rating.rating;
+        acc[String(rating.bookId.bookId)] = rating.rating;
         return acc;
     }, {});
     request={
-        user_id:req.user._id,
+        user_id:String(req.user._id),
         books:ratings
     }
     console.log(request);
@@ -192,6 +192,7 @@ module.exports.Recommender= async (req, res, next) => {
 
     // let recommendedBooks=[];
     // for (let author of authors){
+
     //     let authorBooks=await Book.find({ _id: { $in: author.books } });
     //     if (!authorBooks){return res.status(400).send('Book does not exist');}
     //     recommendedBooks.push(authorBooks);
