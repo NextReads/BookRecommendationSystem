@@ -120,9 +120,9 @@ def book(book_id):
         return jsonify(dict(listIds))
 
 
-@app.route("/RecommendUserBook", methods=['GET'])
+@app.route("/RecommendUserBook", methods=['POST'])
 def recommendUserBook():
-    if request.method == 'GET':
+    if request.method == 'POST':
         user_id = request.get_json().get('user_id')
         books = request.get_json().get('books')
 
