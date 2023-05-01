@@ -12,3 +12,5 @@ dataset/goodreads_reviews_dedup.json
 Backend/NextReads/venv
 Backend/NextReads/venv/Scripts
 Backend/NextReads/node_modules
+Recommender/SentimentAnalysis/models/tfidf.pkl
+Recommender/SentimentAnalysis/models/tfidf.pkl
