@@ -6,11 +6,9 @@ ADD . /app/
 
 EXPOSE 80
 
-COPY requirements.txt /app
+COPY . /app
 
 RUN pip3 install -r requirements.txt --no-cache-dir
-
-COPY . /app
 
 ENV PYTHONUNBUFFERED=1
 
