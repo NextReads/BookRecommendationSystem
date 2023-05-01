@@ -65,7 +65,7 @@ const Book = mongoose.model('Book', new mongoose.Schema({
     },
     rating_count:{
         type: Number,
-            required: true,
+            required: false,
             trim: true,
             default: 0,
             min: 0,
@@ -82,6 +82,13 @@ const Book = mongoose.model('Book', new mongoose.Schema({
         required: false,
         trim: true,
         // minlength: 10,
+        maxlength: 13
+    },
+    isbn13:{
+        type: String,
+        required: false,
+        trim: true,
+        minlength: 10,
         maxlength: 13
     },
     genre:{
@@ -104,6 +111,14 @@ const Book = mongoose.model('Book', new mongoose.Schema({
         trim: true,
         min: 0
         },
+    description:{
+        type: String,
+        required: false,
+        trim: true,
+        minlength: 1,
+        maxlength: 1024
+    },
+    
 
     reviews:[reviewSchema]
 }));
