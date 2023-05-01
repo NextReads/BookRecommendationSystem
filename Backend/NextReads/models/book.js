@@ -81,7 +81,7 @@ const Book = mongoose.model('Book', new mongoose.Schema({
         type: String,
         required: false,
         trim: true,
-        minlength: 10,
+        // minlength: 10,
         maxlength: 13
     },
     genre:{
@@ -108,7 +108,7 @@ const Book = mongoose.model('Book', new mongoose.Schema({
         type: String,
         required: false,
         trim: true,
-        minlength: 1,
+        // minlength: 1,
         maxlength: 1024
     },
     
