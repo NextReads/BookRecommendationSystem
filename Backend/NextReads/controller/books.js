@@ -177,8 +177,7 @@ module.exports.Recommender= async (req, res, next) => {
     // change single quoted req.user._id to double quotes
 
     let ratings = user.read.reduce((acc, rating) => {
-        // add book id with double quotes
-        var bookid= JSON.stringify(rating.bookId.bookId);
+        var bookid= rating.bookId.bookId;
         acc[bookid] = rating.rating;
         return acc;
     }, {});
