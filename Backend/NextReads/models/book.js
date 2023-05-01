@@ -116,7 +116,7 @@ const Book = mongoose.model('Book', new mongoose.Schema({
         required: false,
         trim: true,
         // minlength: 1,
-        maxlength: 1024
+        // maxlength: 1024
     },
     
 
