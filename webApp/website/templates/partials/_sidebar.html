@@ -1,0 +1,54 @@
+{% load static %}
+<nav
+id="sidebarMenu"
+class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"
+>
+<div class="position-sticky pt-3 sidebar-sticky">
+  <form class="d-flex" role="search">
+    <input
+      class="form-control mx-2"
+      type="search"
+      placeholder="Title/ISBN"
+      aria-label="Search"
+    />
+    <button class="btn btn-outline-success me-2" type="submit">
+      Search
+    </button>
+  </form>
+  <ul class="nav flex-column">
+    <li class="nav-item">
+      <a class="nav-link active" aria-current="page" href="#">
+        <span data-feather="home" class="align-text-bottom"></span>
+        Genre
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">
+        <span data-feather="file" class="align-text-bottom"></span>
+        Fiction
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">
+        <span
+          data-feather="shopping-cart"
+          class="align-text-bottom"
+        ></span>
+        Science Fiction
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">
+        <span data-feather="users" class="align-text-bottom"></span>
+        Young adult
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">
+        <span data-feather="layers" class="align-text-bottom"></span>
+        Mystery
+      </a>
+    </li>
+  </ul>
+</div>
+</nav>

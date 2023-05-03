@@ -1,0 +1,18 @@
+{% load static %}
+<div class="album bg-body-tertiary">
+    <div class="container">
+      <h5 class="text-center">
+        Rate at least 5 books to continue, or tell us about books you heard
+        about before and want to read.
+      </h5>
+      <div
+        class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3"
+      >
+      {% for book in books %}
+        {% include 'partials/rate_book_card.html'%}
+      {% endfor %}
+       
+
+      </div>
+    </div>
+  </div>
