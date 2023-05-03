@@ -8,6 +8,8 @@ from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 import json
 import requests
+from requests.exceptions import RequestException
+
 
 class EmailValidationView(View):
     def post(self, request):
@@ -59,15 +61,19 @@ class SignupView(View):
             return render(request, "authentication/signup.html", context)
         
         data={'username': username, 'email': email, 'password': password, 'firstName': firstName, 'lastName': lastName, 'role': role}
-        response = requests.post('https://nextreadsbackend.azurewebsites.net/api/users', json=data)
-        if response.status_code == 201:
-            userToken = response.headers['x-auth-token']
-            #save token in session
-            request.session['token'] = userToken
-            messages.success(request, response.text)
-            return redirect('set-goal-step')
-        else:
-            messages.error(request, response.text)
+        try:
+            response = requests.post('https://nextreadsbackend.azurewebsites.net/api/users', json=data)
+            if response.status_code == 201:
+                userToken = response.headers['x-auth-token']
+                #save token in session
+                request.session['token'] = userToken
+                messages.success(request, response.text)
+                return redirect('set-goal-step')
+            else:
+                messages.error(request, response.text)
+                return render(request, "authentication/signup.html", {})
+        except RequestException as e:
+            messages.error(request, "An error occurred while making the request. Please try again later.")
             return render(request, "authentication/signup.html", {})
         # if not User.objects.filter(username=username).exists():
         #     if not User.objects.filter(email=email).exists():
@@ -101,18 +107,21 @@ class LoginView(View):
         }
         if username and password:
             data={'username': username, 'password': password}
-        
-            response = requests.post('https://nextreadsbackend.azurewebsites.net/api/users/login', json=data)
-            
-            if response.status_code == 201:
-                userToken = response.headers['x-auth-token']
-                print("userToken", userToken)
-                #save token in session
-                request.session['token'] = userToken
-                #messages.success(request, response.text)
-                return redirect('userProfile:userhome')
-            else:
-                messages.error(request, response.text)
+            try:
+                response = requests.post('https://nextreadsbackend.azurewebsites.net/api/users/login', json=data)
+                
+                if response.status_code == 201:
+                    userToken = response.headers['x-auth-token']
+                    print("userToken", userToken)
+                    #save token in session
+                    request.session['token'] = userToken
+                    #messages.success(request, response.text)
+                    return redirect('userProfile:userhome')
+                else:
+                    messages.error(request, response.text)
+                    return render(request, "authentication/login.html", context)
+            except RequestException as e:
+                messages.error(request, "An error occurred while making the request. Please try again later.")
                 return render(request, "authentication/login.html", context)
         else:
             messages.error(request, 'Please fill all fields.')
@@ -150,105 +159,58 @@ class setGoalStepView(View):
 
 class rateBooksStepView(View):
     def get(self, request):
-        # booksResposne = requests.get('https://nextreadsbackend.azurewebsites.net/api/books')
-        # if booksResposne.status_code == 200:
-           
-        #   books = booksResposne.json()
+            page = 10
+            context = {}
+            try:
+                booksResposne = requests.get('http://localhost:80/api/books/getbooks?page='+str(page))
+                if booksResposne.status_code == 200:
+                    books = booksResposne.json()
+                    #rename _id to id
+                    for book in books:
+                        book['id'] = book.pop('_id')
 
-            # context = {
-            #     'books': books
+                    context = {
+                        'books': books
+                    }
+                    if context:
+                        return render(request, "authentication/rate-books-step.html", context)
+                    else:
+                        messages.error(request, booksResposne.text)
+                        return render(request, "authentication/rate-books-step.html", {})
+            except RequestException as e:
+                print("An error occurred while making the request. Please try again later.")
 
-            # }
-            context = {
-                'books': [
-                    {
-                        "id": "644ec6a9b3f7a2aaead1f444",
-                        "title": "The Hunger Games",
-                        "author": "Suzanne Collins",
-                        "image": "https://images.gr-assets.com/books/1447303603m/2767052.jpg",
-                        "rating": 4.33,
-                        "description": "Could you survive on your own, in the wild, with everyone out to make sure you don't live to see the morning?"
-                    },
-                    {
-                        "id": "644ec6a9b3f7a2aaead1f445",
-                        "title": "Harry Potter and the Philosopher's Stone",
-                        "author": "J.K. Rowling",
-                        "image": "https://images.gr-assets.com/books/1474154022m/3.jpg",
-                        "rating": 4.44,
-                        "description": "Harry Potter's life is miserable. His parents are dead and he's stuck with his heartless relatives, who force him to live in a tiny closet under the stairs."
-                    },
-                    {
-                        "id": "644ec6a9b3f7a2aaead1f444",
-                        "title": "The Hunger Games",
-                        "author": "Suzanne Collins",
-                        "image": "https://images.gr-assets.com/books/1447303603m/2767052.jpg",
-                        "rating": 4.33,
-                        "description": "Could you survive on your own, in the wild, with everyone out to make sure you don't live to see the morning?"
-                    },
-                    {
-                        "id": "644ec6a9b3f7a2aaead1f445",
-                        "title": "Harry Potter and the Philosopher's Stone",
-                        "author": "J.K. Rowling",
-                        "image": "https://images.gr-assets.com/books/1474154022m/3.jpg",
-                        "rating": 4.44,
-                        "description": "Harry Potter's life is miserable. His parents are dead and he's stuck with his heartless relatives, who force him to live in a tiny closet under the stairs."
-                    },
-                    {
-                        "id": "644ec6a9b3f7a2aaead1f444",
-                        "title": "The Hunger Games",
-                        "author": "Suzanne Collins",
-                        "image": "https://images.gr-assets.com/books/1447303603m/2767052.jpg",
-                        "rating": 4.33,
-                        "description": "Could you survive on your own, in the wild, with everyone out to make sure you don't live to see the morning?"
-                    },
-                    {
-                        "id": "644ec6a9b3f7a2aaead1f445",
-                        "title": "Harry Potter and the Philosopher's Stone",
-                        "author": "J.K. Rowling",
-                        "image": "https://images.gr-assets.com/books/1474154022m/3.jpg",
-                        "rating": 4.44,
-                        "description": "Harry Potter's life is miserable. His parents are dead and he's stuck with his heartless relatives, who force him to live in a tiny closet under the stairs."
-                    },
-                    
-                ]
-            }
-            if context:
-                return render(request, "authentication/rate-books-step.html", context)
-            else:
-                messages.error(request, "mfish books")
-                return render(request, "authentication/rate-books-step.html", {})
-        # else:
-        #     messages.error(request, booksResposne.text)
-        #     return render(request, "authentication/rate-books-step.html", {})
 class rateBook(View):
 
     def post(self, request):
         bookId = request.POST.get('book_id')
         rating = request.POST.get('rating')
-        # rating to int 
         print("bookId", bookId)
         print("rating", rating)
-        print("token", request.session.get('token'))
+        #print("token", request.session.get('token'))
         request.session['rateCount'] = request.session.get('rateCount', 0) + 1
-        print("rateCount", request.session['rateCount'])
+        #print("rateCount", request.session['rateCount'])
         
-        # if bookId and rating:
-        #     data={'bookId': bookId, 'rating': rating}
-        #     headers = {'x-auth-token': "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDRlYWEwZDk5MjQyNTVlNmYwYmZjMzMiLCJpc01hbmFnZXIiOmZhbHNlLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNjgyOTI0Mjk5fQ.ebI5Yzs-qID8RiUSlWxmPWI-IlC_eTwfdD4ymD7Xr5I"}
-        #     response = requests.post('https://nextreadsbackend.azurewebsites.net/api/books/{{bookId}}/rating', json=data, headers=headers)
-        #     print("response", response.text)
-        #     print("response", response.status_code)
-        #     if response.status_code == 201:
-        #         messages.success(request, "rate-saved")
-        #         return redirect('rate-books-step')
+        if bookId and rating:
+            data={'bookId': bookId, 'rating': rating}
+            headers = {'x-auth-token': request.session.get('token')}
+            try:
+                response = requests.post('http://localhost:80/api/books/'+ str(bookId)+'/rating', json=data, headers=headers)
+                print("response", response.text)
+                print("response", response.status_code)
+                if response.status_code == 201:
+                    messages.success(request, response.text)
+                    return redirect('rate-books-step')
 
-        #     else:
-        #         messages.error(request, response.text)
-        #         return redirect('rate-books-step')
+                else:
+                    messages.error(request, response.text)
+                    return redirect('rate-books-step')
+            except RequestException as e:
+                messages.error(request, "An error occurred while making the request. Please try again later.")
+                return redirect('rate-books-step')
 
-        # else:
-        #     messages.error(request, 'Please fill all fields.')
-        #     return redirect('rate-books-step')
-        messages.success(request,"rate saved")
-        return redirect('rate-books-step')
+        else:
+            messages.error(request, 'Please specify rating.')
+            return redirect('rate-books-step')
+        
 
