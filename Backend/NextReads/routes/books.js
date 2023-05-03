@@ -16,6 +16,8 @@ router.post('/:id/review', [auth],auth,bookController.addReview);
 router.post('/coldstart', [auth],bookController.addRatings);
 router.post('/:id/rating', [auth],bookController.addRating);
 router.get('/recommend', [auth],bookController.Recommender);
+router.get('/getbooks',bookController.getBooks);
+
 // router.put('/events/info/:id',[auth,manager],bookController.editEvent);
 // router.get('/:id',bookController.getEvent);
 // router.get('/events/:bookId',bookController.getEvents);
