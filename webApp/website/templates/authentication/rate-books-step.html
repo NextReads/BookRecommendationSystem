@@ -4,10 +4,9 @@
     {% include 'partials/_sidebar.html'%}
 
     <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4 mt-3">
+      {% include 'partials/_messages.html' %}
       {% if books %}
       {% include 'partials/ratebooksalbum.html' %}
-      {% else %}
-      {% include 'partials/_messages.html' %}
       {% endif %}
     </div>
   </div>

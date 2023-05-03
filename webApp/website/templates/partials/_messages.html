@@ -1,7 +1,16 @@
 {% if messages %}
 <div class="messages">
     {% for message in messages %}
-    <div{% if message.tags %} class=" alert alert-sm alert-{{ message.tags }}"{% endif %}>{{ message }}</div>
+    <div{% if message.tags %} class=" alert alert-sm alert-{{ message.tags }}" id="msg-container"{% endif %}>{{ message }}</div>
     {% endfor %}
 </div>
 {% endif %}
+<script>
+  var msgContainer = document.getElementById("msg-container");
+    if (msgContainer) {
+        setTimeout(function () {
+        msgContainer.remove();
+        }, 2000);
+    }
+
+</script>

@@ -101,11 +101,12 @@ class LoginView(View):
         }
         if username and password:
             data={'username': username, 'password': password}
+        
             response = requests.post('https://nextreadsbackend.azurewebsites.net/api/users/login', json=data)
             
-
             if response.status_code == 201:
                 userToken = response.headers['x-auth-token']
+                print("userToken", userToken)
                 #save token in session
                 request.session['token'] = userToken
                 #messages.success(request, response.text)
@@ -161,7 +162,7 @@ class rateBooksStepView(View):
             context = {
                 'books': [
                     {
-                        "id": 1,
+                        "id": "644ec6a9b3f7a2aaead1f444",
                         "title": "The Hunger Games",
                         "author": "Suzanne Collins",
                         "image": "https://images.gr-assets.com/books/1447303603m/2767052.jpg",
@@ -169,7 +170,39 @@ class rateBooksStepView(View):
                         "description": "Could you survive on your own, in the wild, with everyone out to make sure you don't live to see the morning?"
                     },
                     {
-                        "id": 2,
+                        "id": "644ec6a9b3f7a2aaead1f445",
+                        "title": "Harry Potter and the Philosopher's Stone",
+                        "author": "J.K. Rowling",
+                        "image": "https://images.gr-assets.com/books/1474154022m/3.jpg",
+                        "rating": 4.44,
+                        "description": "Harry Potter's life is miserable. His parents are dead and he's stuck with his heartless relatives, who force him to live in a tiny closet under the stairs."
+                    },
+                    {
+                        "id": "644ec6a9b3f7a2aaead1f444",
+                        "title": "The Hunger Games",
+                        "author": "Suzanne Collins",
+                        "image": "https://images.gr-assets.com/books/1447303603m/2767052.jpg",
+                        "rating": 4.33,
+                        "description": "Could you survive on your own, in the wild, with everyone out to make sure you don't live to see the morning?"
+                    },
+                    {
+                        "id": "644ec6a9b3f7a2aaead1f445",
+                        "title": "Harry Potter and the Philosopher's Stone",
+                        "author": "J.K. Rowling",
+                        "image": "https://images.gr-assets.com/books/1474154022m/3.jpg",
+                        "rating": 4.44,
+                        "description": "Harry Potter's life is miserable. His parents are dead and he's stuck with his heartless relatives, who force him to live in a tiny closet under the stairs."
+                    },
+                    {
+                        "id": "644ec6a9b3f7a2aaead1f444",
+                        "title": "The Hunger Games",
+                        "author": "Suzanne Collins",
+                        "image": "https://images.gr-assets.com/books/1447303603m/2767052.jpg",
+                        "rating": 4.33,
+                        "description": "Could you survive on your own, in the wild, with everyone out to make sure you don't live to see the morning?"
+                    },
+                    {
+                        "id": "644ec6a9b3f7a2aaead1f445",
                         "title": "Harry Potter and the Philosopher's Stone",
                         "author": "J.K. Rowling",
                         "image": "https://images.gr-assets.com/books/1474154022m/3.jpg",
@@ -192,20 +225,30 @@ class rateBook(View):
     def post(self, request):
         bookId = request.POST.get('book_id')
         rating = request.POST.get('rating')
+        # rating to int 
         print("bookId", bookId)
         print("rating", rating)
-        print("token", request.session['token'])
+        print("token", request.session.get('token'))
+        request.session['rateCount'] = request.session.get('rateCount', 0) + 1
+        print("rateCount", request.session['rateCount'])
         
         # if bookId and rating:
         #     data={'bookId': bookId, 'rating': rating}
-        #     response = requests.post('https://nextreadsbackend.azurewebsites.net/api/books/rate', json=data)
+        #     headers = {'x-auth-token': "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDRlYWEwZDk5MjQyNTVlNmYwYmZjMzMiLCJpc01hbmFnZXIiOmZhbHNlLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNjgyOTI0Mjk5fQ.ebI5Yzs-qID8RiUSlWxmPWI-IlC_eTwfdD4ymD7Xr5I"}
+        #     response = requests.post('https://nextreadsbackend.azurewebsites.net/api/books/{{bookId}}/rating', json=data, headers=headers)
+        #     print("response", response.text)
+        #     print("response", response.status_code)
         #     if response.status_code == 201:
-        #         messages.success(request, response.text)
-        #         return redirect('set-goal-step')
+        #         messages.success(request, "rate-saved")
+        #         return redirect('rate-books-step')
+
         #     else:
         #         messages.error(request, response.text)
         #         return redirect('rate-books-step')
+
         # else:
         #     messages.error(request, 'Please fill all fields.')
+        #     return redirect('rate-books-step')
+        messages.success(request,"rate saved")
         return redirect('rate-books-step')
 

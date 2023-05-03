@@ -1,58 +1,36 @@
 {% extends 'userprofile/userprofile_base.html' %} {% load static %} {% block content %}
 <div class = "inner-wrapper">
-
+{% if recommendations %}
         <div>
             <h1>Recommended for you!</h1>
         </div>
         <div class="cards-container">
+          
+          {% for book in recommendations %}
           <div class="card shadow p-3 mb-5 bg-body rounded" style="min-width: 300px">
             <div class="inner-card">
               <img
               src=https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1553383690l/2657.jpg
               alt="..." height="260" />
               <div class="card-body">
-                <h5 class="card-title">Book title</h5>
+                <h5 class="card-title">{{book.title}}</h5>
                 <p class="card-text">
-                  With supporting text below as a natural lead-in to additional
-                  content. With supporting text below as a natural lead-in to
-                  additional content. 
+                  {{book.description}}
                 </p>
                 <a href="#" class="btn btn-primary">view similar books</a>
               </div>
             </div>
           </div>
-          <div class="card shadow p-3 mb-5 bg-body rounded" style="min-width: 300px">
-            <div class="inner-card">
-              <img
-              src=https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1553383690l/2657.jpg
-              alt="..." height="260" />
-              <div class="card-body">
-                <h5 class="card-title">Book title</h5>
-                <p class="card-text">
-                  With supporting text below as a natural lead-in to additional
-                  content. With supporting text below as a natural lead-in to
-                  additional content. 
-                </p>
-                <a href="#" class="btn btn-primary">view similar books</a>
-              </div>
-            </div>
+          {% endfor %}
+
+          {% else %}
+          <div class="mb-6">
+            <h1>Sorry, we couldn't find any recommendations for you! </h1>
+            <a href="/userProfile/browsebooks" >Rate some books</a>
           </div>
-          <div class="card shadow p-3 mb-5 bg-body rounded" style="min-width: 300px">
-            <div class="inner-card">
-              <img
-              src=https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1553383690l/2657.jpg
-              alt="..." height="260" />
-              <div class="card-body">
-                <h5 class="card-title">Book title</h5>
-                <p class="card-text">
-                  With supporting text below as a natural lead-in to additional
-                  content. With supporting text below as a natural lead-in to
-                  additional content.
-                </p>
-                <a href="#" class="btn btn-primary">view similar books</a>
-              </div>
-            </div>
-          </div>
+
         </div>
-      </div>
+
+</div>
+{% endif %}
 {% endblock %}
