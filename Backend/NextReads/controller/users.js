@@ -106,16 +106,16 @@ module.exports.deleteUser= async (req, res, next) => {
 }
 
 module.exports.getReadBooks= async (req, res, next) => {
-    const books = await User.findOne({ _id: req.user._id }).select('read').populate('read').select('-__v -read.__v -read.reviews -read.reviews.userId -read.reviews.__v');
+    const books = await User.findOne({ _id: req.user._id }).select('read').populate('read').populate('read.bookId');
     return res.status(201).send(books);
 }
 
 module.exports.getWantToRead= async (req, res, next) => {
-    const books = await User.findOne({ _id: req.user._id }).select('wantToRead').populate('wantToRead').select('-__v -read.__v -read.reviews -read.reviews.userId -read.reviews.__v');
+    const books = await User.findOne({ _id: req.user._id }).select('wantToRead').populate('wantToRead').populate('read.bookId');//.select('-__v -read.__v -read.reviews -read.reviews.userId -read.reviews.__v');
     return res.status(201).send(books);
 }
 
 module.exports.getCurrentlyReading= async (req, res, next) => {
-    const books = await User.findOne({ _id: req.user._id }).select('currentlyReading').populate('currentlyReading').select('-__v -read.__v -read.reviews -read.reviews.userId -read.reviews.__v');
+    const books = await User.findOne({ _id: req.user._id }).select('currentlyReading').populate('currentlyReading').populate('read.bookId');//.select('-__v -read.__v -read.reviews -read.reviews.userId -read.reviews.__v');
     return res.status(201).send(books);
 }

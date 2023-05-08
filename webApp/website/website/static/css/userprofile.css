@@ -1,0 +1,133 @@
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    background-color: #ffffff;
+    transition: all 0.1s ease-in-out;
+    z-index: 1030;
+    
+  }
+  .header.scrolled {
+    transform: translateY(-55%);
+  }
+.main-header-container {
+  display:flex;
+/* set main axis to be vertical */
+  flex-direction: column;
+  justify-content: space-between;
+  color: #004B67;
+  min-height: 180px;
+}
+.line-bar {
+    height: 5px;
+    background-color: #1fbceb;
+  }
+.logo-container-class{
+    display: flex;
+    justify-content: space-around;
+    align-items: center ;
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+.nav-menu {
+  background-color: #3C4248;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60px;
+
+}
+
+
+.nav-list {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+
+}
+
+.nav-list-item {
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  height: 100%;
+
+}
+
+.nav-list-item a {
+  color: #ffffff;
+  text-decoration: none;
+}
+.nav-list-item:hover {
+    background-color: #1a9bc2;
+  }
+.nav-list-item.active {
+  background-color: #1a9bc2;
+}  
+.nav-list-item:hover a {
+    color: #f5f2eb;
+}
+.nav-list-item a span{
+    margin: 18px 14px 18px 14px !important;
+    padding: 4px 4px 4px 4px !important;
+}
+/*main*/
+.main-content-wrapper{
+    margin-top: 190px;
+}
+.inner-wrapper{
+    margin-left: 20%;
+    margin-right: 20%;
+  }
+.main-content-wrapper h1{
+  font-family: 'Satisfy', cursive;
+  font-family: 'Source Sans Pro', sans-serif;
+}
+.main-content{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: left; 
+    width: 100%;
+    padding: 0 ;
+    margin: 0;
+    color:#494b4d
+}
+.inner-card{
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+}
+/* footer */
+footer {
+    background-color: #004b67;
+    padding: 20px;
+    display: flex;
+    justify-content: space-evenly; 
+    color:azure;
+   /* make it always at the bottom */
+    /* position: fixed;
+    left: 0;
+    right: 0; */
+  }
+  .contact-us, .company-info {
+    display: inline-block;
+    width: 45%;
+  }
+  .company-info img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  

@@ -12,6 +12,7 @@ const fetch = require('node-fetch')
 
 
 
+
 module.exports.addBook= async (req, res, next) => {
     let { error } = validateBook(_.pick(req.body,['title','imageUrl']));
     if (error) return res.status(400).send(error.details[0].message);
@@ -73,7 +74,10 @@ module.exports.addReview= async (req, res, next) => {
     
 }
 module.exports.getBooks= async (req, res, next) => {
-    let books = await Book.find().populate('Author');
+    booksPerPage = 15;
+    if (!req.query.page) return res.status(400).send('Please specify page number');
+    let page = parseInt(req.query.page);
+    let books = await Book.find().populate('Author').skip((page-1)*booksPerPage).limit(booksPerPage);  
     if (books.length==0) return res.status(404).send('No books found');
     return res.status(200).send(books);
 }
@@ -81,14 +85,22 @@ module.exports.getBooks= async (req, res, next) => {
 module.exports.addRating= async (req, res, next) => {
     let { error } = validateRating(req.body);
     if (error) return res.status(400).send(error.details[0].message);
+    console.log("here",req.params.id)
+    console.log(req.body)
     let book = await Book.findById(req.params.id);
     if (!book){return res.status(400).send('Book does not exist');}
     let user = await User.findById(req.user._id);
     if (!user){return res.status(400).send('User does not exist, please sign out and try again');}
-    let rating=book.avgRating*book.ratingCount;
+    let rating=book.avgRating*book.rating_count;
     rating+=req.body.rating;
-    book.ratingCount+=1;
-    book.avgRating=rating/book.ratingCount;
+    book.rating_count+=1;
+    
+    if(rating/book.rating_count>5){
+        book.avgRating=5;
+    }
+    else{
+        book.avgRating=rating/book.rating_count;
+    }
     const read= new Read({
         bookId:req.params.id,
         rating:req.body.rating
@@ -177,16 +189,22 @@ module.exports.Recommender= async (req, res, next) => {
     // change single quoted req.user._id to double quotes
 
     let ratings = user.read.reduce((acc, rating) => {
-        // add book id with double quotes
-        var bookid= (rating.bookId.bookId);
+        var bookid= rating.bookId.bookId;
         acc[bookid] = rating.rating;
         return acc;
     }, {});
+    // request={
+    //     user_id:JSON.stringify(req.user._id),
+    //     books:ratings
+    // }
     request={
-        "user_id":(req.user._id),
-        "books":ratings
+        "user_id": req.user._id.toString(),
+        "books": ratings
     }
     console.log(request);
+    console.log("====================================")
+    console.log(JSON.stringify(request));
+
     const url = 'https://nextreadsrecommender.azurewebsites.net/RecommendUserBook'
     const body = request
     const response = await fetch(url,{method:'POST',body:JSON.stringify(body),headers: { 'Content-Type': 'application/json' }});
