@@ -55,9 +55,9 @@ module.exports.addReview= async (req, res, next) => {
         review:req.body.review,
         userId:req.user._id
     })
-  
     const url = 'https://nextreadsrecommender.azurewebsites.net/sentiment'
     const body = {review:req.body.review}
+    console.log(body);
     const response = await fetch(url,{method:'POST',body:JSON.stringify(body),headers: { 'Content-Type': 'application/json' }});
     sentiment = await response.json();//assuming data is json
     console.log(sentiment);
