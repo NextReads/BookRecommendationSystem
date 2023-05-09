@@ -1,4 +1,5 @@
-
+# install nltk in your system before running this file
+# pip install nltk
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
@@ -11,7 +12,34 @@ nltk.download('omw-1.4')
 import re
 from nltk.tokenize import word_tokenize
 nltk.download('punkt')
+def tokenizewords(text):
+    # Documentation
+    # this function takes a text and returns a list of words
+    # input: text
+    # output: list of sentences
+
+    text = re.sub(r'[^\'\w\s]', ' ', text)
+    # tokenize without using word_tokenize
+    delimiters = ".", "!", "?", ";", ":", " "
+    # split on whitespace, and punctuation, and delimiters
+    regexPattern = '|'.join(map(re.escape, delimiters))
+    text = re.split(regexPattern, text)
+    # remove empty strings
+    text = list(filter(None, text))
+    return text
+
+    
+    # return sent_tokenize(text)
+
+
+
+
 def TokenizeWords(text):
+    # Documentation
+    # this function takes a text and returns a list of words
+    # input: text
+    # output: list of words
+
     review=[]
     for i in text:
         sent = re.sub(r'[^\'\w\s]', ' ', i)
@@ -24,8 +52,13 @@ stopwords_english = stopwords.words('english')
 stopwords_english.append("<br />")
 stopwords_english.append("br")
 stopwords_english.append("<br /><br />")
-stopwords_english.extend(["'ll","'re","'ve","'s","'m","n't","'d","'ll","'re","'ve","'s","'m","n't","'d"])
+stopwords_english.extend(["'ll","'re","'ve","'s","'m","n't","'d","'ll","'re","'ve","'s","'m","n't","\'d"])
+# # print(stopwords_english)
 def removeSW(texts):
+    # Documentation
+    # this function takes a list of words and returns a list of words without stopwords
+    # input: list of words
+    # output: list of words without stopwords
     texts=[w for w in texts if not w.lower() in stopwords_english]
     return texts
 
@@ -33,34 +66,44 @@ def removeSW(texts):
 # split into sentences for negative phrase identification
 negative_words_english=["not","n't","no","never","none","nothing","nowhere","neither","nor","hardly","scarcely","barely","don't","doesn't","didn't","isn't","aren't","wasn't","weren't","haven't","hasn't","hadn't","won't","wouldn't","shan't","shouldn't","can't","couldn't","mustn't","mightn't","needn't","oughtn't","daren't","needn't","needn't've","oughtn't've","daren't've","aren't","aren't've","couldn't","couldn't've","didn't","didn't've","doesn't","doesn't've","don't","don't've","hadn't","hadn't've","hasn't","hasn't've","haven't","haven't've","isn't","isn't've","mightn't","mightn't've","mustn't","mustn't've","needn't","needn't've","oughtn't","oughtn't've","shan't","shan't've","shouldn't","shouldn't've","wasn't","wasn't've","weren't","weren't've","won't","won't've","wouldn't","wouldn't've","mayn't","might've","must've","needn't","oughtn't","sha'n't","shan't","shouldn't","wasn't","weren't","won't","wouldn't","mustn't","needn't","oughtn't","shan't","shouldn't","wasn't","weren't","won't","wouldn't","mustn't","needn't","oughtn't","shan't","shouldn't","wasn't","weren't","won't","wouldn't","mustn't","needn't","oughtn't","shan't","shouldn't","wasn't","weren't","won't","wouldn't","mustn't","needn't","oughtn't","shan't","shouldn't","wasn't","weren't","won't","wouldn't","mustn't","needn't","oughtn't","shan't","shouldn't","wasn't","weren't","won't","wouldn't","mustn't","needn't","oughtn't","shan"]
 def negPhraseIdentification(text):
+    # Documentation
+    # this function takes a sentence and returns True if it contains a negative phrase
+    # input: sentence
+    # output: True if it contains a negative phrase, False otherwise
+    
     # negPhrases=[]
     # for sentence in texts:
-        # print(sentence)
-    # print("inside negPhraseIdentification: ",text)
+        # # print(sentence)
+    # # print("inside negPhraseIdentification: ",text)
     text=text.split()
     for word in text:
-        # print(word)
+        # # print(word)
         if word in negative_words_english:
-            # print("Negative: ",word)
+            # # print("Negative: ",word)
             return True
                     
     return False
 def sentenceSplit(text):
-    # print(text)
+    # Documentation
+    # this function takes a text and returns a list of sentences without negative phrases
+    # input: text
+    # output: list of sentences
+    
+    # # print(text)
     # try:
-    # print(text)
+    # # print(text)
     text=text.replace('<br /><br />','').replace('(', ' ').replace(')', ' ')
     # except:
-        # print("Error: ",text)
-    # print(text)
+        # # print("Error: ",text)
+    # # print(text)
     sentences = re.split(r'[.!?,]', text)
-    # print(sentences)
+    # # print(sentences)
 
     # my_list_2 = re.split(r',|-|:|.', text)
     # if sentence has a negative phrase remove it
     sentences = [s.strip() for s in sentences if len(s) > 0]
     sentences = [s for s in sentences if not negPhraseIdentification(s)]
-    # print(sentences)
+    # # print(sentences)
     
     return sentences
 # spacy lemmatization
@@ -80,21 +123,31 @@ def sentenceSplit(text):
 from nltk.tokenize import word_tokenize, sent_tokenize
 tags=["JJ","JJR","JJS","RB","RBR","RBS","VB","VBD","VBG","VBN","VBP","VBZ"]
 def pos_tagging(review):
+    # Documentation
+    # this function takes a list of sentences and returns a list of sentences with POS tags
+    # input: list of sentences
+    # output: list of sentences with POS tags
+
     pos_tag=[]
     for sent in review:
         tag=nltk.pos_tag(sent)
         pos_tag.append(tag)
     return pos_tag
 def TagNounremoval(review):
+    # Documentation
+    # this function takes a list of sentences and returns a list of sentences without nouns   
+    # input: list of sentences
+    # output: list of sentences without nouns
+
     texts=[]
     for sent in review:
         text=[]
-        # print(sent)
+        # # print(sent)
         for word in sent:
             if word[1] in tags:
                 text.append(word)
                 
-        # print(text)
+        # # print(text)
         if len(text)>0:
             texts.append(text) 
     return texts
@@ -102,6 +155,12 @@ def TagNounremoval(review):
 # we can add negative words to hashtable and then check if the word is present in the hash table later for better performance
 
 def contractions(s):
+#  Documantation
+#  this function takes a sentence and returns a sentence with expanded contractions
+#  input: sentence
+#  output: sentence with expanded contractions
+
+
  s = re.sub(r"won't", "will not",s)
  s = re.sub(r"would't", "would not",s)
  s = re.sub(r"could't", "could not",s)
@@ -118,7 +177,7 @@ def contractions(s):
 # def preprocessingWord(review):
 #     # review=contractions(review)
 #     review = spacyLemmatize(review)
-#     # print(review)
+#     # # print(review)
 #     review=TokenizeWords(review)
 #     review=removeSW(review)
 
@@ -128,9 +187,9 @@ def contractions(s):
 
 import re
 # text="One of the other reviewers has mentioned that after watching just 1 Oz episode you'll be hooked. They are right, as this is exactly what happened with me.<br /><br />The first thing that struck me about Oz was its brutality and unflinching scenes of violence, which set in right from the word GO. Trust me, this is not a show for the faint hearted or timid. This show pulls no punches with regards to drugs, sex or violence. Its is hardcore, in the classic use of the word.<br /><br />It is called OZ as that is the nickname given to the Oswald Maximum Security State Penitentary. It focuses mainly on Emerald City, an experimental section of the prison where all the cells have glass fronts and face inwards, so privacy is not high on the agenda. Em City is home to many..Aryans, Muslims, gangstas, Latinos, Christians, Italians, Irish and more....so scuffles, death stares, dodgy dealings and shady agreements are never far away.<br /><br />I would say the main appeal of the show is due to the fact that it goes where other shows wouldn't dare. Forget pretty pictures painted for mainstream audiences, forget charm, forget romance...OZ doesn't mess around. The first episode I ever saw struck me as so nasty it was surreal, I couldn't say I was ready for it, but as I watched more, I developed a taste for Oz, and got accustomed to the high levels of graphic violence. Not just violence, but injustice (crooked guards who'll be sold out for a nickel, inmates who'll kill on order and get away with it, well mannered, middle class inmates being turned into prison bitches due to their lack of street skills or prison experience) Watching Oz, you may become comfortable with what is uncomfortable viewing....thats if you can get in touch with your darker side."
-# print(text)
-# print('--------------------------------')
-# print(preprocessingWord(text))
+# # print(text)
+# # print('--------------------------------')
+# # print(preprocessingWord(text))
 # text=sentenceSplit(text)
 
 # text=pos_tagging(text)
@@ -138,10 +197,17 @@ import re
 from itertools import chain
 
 def sentMerge(review):
+    # Documentation
+    # this function merges sentences tokens into 1 string
+    # input: list of tokens
+    # output: list of strings
     unzippedReview= list(chain(*review))
     return unzippedReview
        
 def removePosTag(review):
+    # Documentation
+    # removes pos tags after use
+    # 
     texts=[]
     for sent in review:
         text=[]
@@ -165,10 +231,10 @@ def lemmatize(review):
     lemmatizer = WordNetLemmatizer()
 
     for sent in review:
-        # print(sent)
+        # # print(sent)
         for i in range(len(sent)):
             sent[i]=(lemmatizer.lemmatize(sent[i][0],pos=get_wordnet_pos(sent[i][1])),sent[i][1])
-        # print(sent)
+        # # print(sent)
     return review
 # lemmatize(review)
 def reviewMerge(review):
@@ -180,78 +246,78 @@ def convertToString(review):
 
 def preprocessing(data):
    
-    # # print(data.iloc[:1])
+    # # # print(data.iloc[:1])
     # data['review_text']=data['review_text'].apply(convertToString)
     # data['review_text']=data['review_text'].apply(sentenceSplit)
-    # # print("sentence split is complete")
+    # # # print("sentence split is complete")
     # data['review_text']=data['review_text'].apply(TokenizeWords)
-    # # print("tokenization is complete")
+    # # # print("tokenization is complete")
     # data['review_text']=data['review_text'].apply(pos_tagging)
-    # # print(data['review_text'][0])
-    # # print("pos tagging is complete")
+    # # # print(data['review_text'][0])
+    # # # print("pos tagging is complete")
     # data['review_text']=data['review_text'].apply(TagNounremoval)
-    # # print("noun removal is complete")
+    # # # print("noun removal is complete")
     # data['review_text']=data['review_text'].apply(lemmatize)
-    # # print("lemmatization is complete")
+    # # # print("lemmatization is complete")
     # data['review_text']=data['review_text'].apply(removePosTag)
-    # # print("pos tag removal is complete")
-    # # print(data['review_text'][0])
+    # # # print("pos tag removal is complete")
+    # # # print(data['review_text'][0])
     # data['review_text']=data['review_text'].apply(sentMerge)
-    # # print("merging is complete")
-    # # print(data['review_text'][0])
+    # # # print("merging is complete")
+    # # # print(data['review_text'][0])
     # data['review_text']=data['review_text'].apply(removeSW)
-    # # print("stopword removal is complete")
+    # # # print("stopword removal is complete")
     # data['review_text']=data['review_text'].apply(reviewMerge)
-    # # print("review Merging is complete")
-    # # print(data['review'][0])
+    # # # print("review Merging is complete")
+    # # # print(data['review'][0])
     # return data
     data.loc[:, 'review_text']=data['review_text'].apply(convertToString)
-    print("string conversion is complete")
+    # print("string conversion is complete")
     data.loc[:, 'review_text']=data['review_text'].apply(sentenceSplit)
-    print("sentence split is complete")
+    # print("sentence split is complete")
     data.loc[:, 'review_text']=data['review_text'].apply(TokenizeWords)
-    print("tokenization is complete")
+    # print("tokenization is complete")
     data.loc[:, 'review_text']=data['review_text'].apply(pos_tagging)
-    print("pos tagging is complete")
+    # print("pos tagging is complete")
     data.loc[:, 'review_text']=data['review_text'].apply(TagNounremoval)
-    print("noun removal is complete")
+    # print("noun removal is complete")
     data.loc[:, 'review_text']=data['review_text'].apply(lemmatize)
-    print("lemmatization is complete")
+    # print("lemmatization is complete")
     data.loc[:, 'review_text']=data['review_text'].apply(removePosTag)
-    print("remove pos tag is complete")
+    # print("remove pos tag is complete")
     data.loc[:, 'review_text']=data['review_text'].apply(sentMerge)
-    print("merging is complete")
+    # print("merging is complete")
     data.loc[:, 'review_text']=data['review_text'].apply(removeSW)
-    print("stopword removal is complete")
+    # print("stopword removal is complete")
     data.loc[:, 'review_text']=data['review_text'].apply(reviewMerge)
-    print("review Merging is complete")
+    # print("review Merging is complete")
     return data
-# print(df.iloc[:])
+# # print(df.iloc[:])
 def preprocessReview(review):
    
-    # print(data.iloc[:1])
+    # # print(data.iloc[:1])
     review=convertToString(review)
-    print("string conversion is complete")
+    # print("string conversion is complete")
     review=sentenceSplit(review)
-    print("sentence split is complete")
+    # print("sentence split is complete")
     review=TokenizeWords(review)
-    print("tokenization is complete")
+    # print("tokenization is complete")
     review=pos_tagging(review)
-    # print(review[0])
-    print("pos tagging is complete")
+    # # print(review[0])
+    # print("pos tagging is complete")
     review=TagNounremoval(review)
-    print("noun removal is complete")
+    # print("noun removal is complete")
     review=lemmatize(review)
-    print("lemmatization is complete")
+    # print("lemmatization is complete")
     review=removePosTag(review)
-    print("pos tag removal is complete")
-    # print(review[0])
+    # print("pos tag removal is complete")
+    # # print(review[0])
     review=sentMerge(review)
-    print("merging is complete")
-    # print(review[0])
+    # print("merging is complete")
+    # # print(review[0])
     review=removeSW(review)
-    print("stopword removal is complete")
+    # print("stopword removal is complete")
     review=reviewMerge(review)
-    print("review Merging is complete")
-    # print(data['review'][0])
+    # print("review Merging is complete")
+    # # print(data['review'][0])
     return review

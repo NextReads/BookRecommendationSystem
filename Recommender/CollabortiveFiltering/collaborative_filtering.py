@@ -78,7 +78,12 @@ class CollaborativeFiltering:
 
         sorted_pearson_similiarity = self.users_pearson_similiarity.sort_values(
             ascending=False)
-        first_zero_neg_index = sorted_pearson_similiarity[sorted_pearson_similiarity <= 0].index[0]
+        sorted_pearson_similiarity1 = sorted_pearson_similiarity[sorted_pearson_similiarity <= 0]
+        # if it's not empty set the first_zero_neg_index to the first index of the sorted_pearson_similiarity1
+        if not sorted_pearson_similiarity1.empty:
+            first_zero_neg_index = sorted_pearson_similiarity1.index[0]
+        else:
+            first_zero_neg_index = 0
 
         if first_zero_neg_index == 0:
             print("No similiar users found using pearson similiarity")

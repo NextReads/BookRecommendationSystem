@@ -56,6 +56,7 @@ module.exports.addReview= async (req, res, next) => {
         userId:req.user._id
     })
     const url = 'https://nextreadsrecommender.azurewebsites.net/sentiment'
+    // const url = 'http://localhost:5000/sentiment'
     const body = {review:req.body.review}
     console.log(body);
     const response = await fetch(url,{method:'POST',body:JSON.stringify(body),headers: { 'Content-Type': 'application/json' }});
@@ -193,24 +194,18 @@ module.exports.Recommender= async (req, res, next) => {
         acc[bookid] = rating.rating;
         return acc;
     }, {});
-    // request={
-    //     user_id:JSON.stringify(req.user._id),
-    //     books:ratings
-    // }
+
     request={
-        "user_id": req.user._id.toString(),
-        "books": ratings
+        user_id: req.user._id.toString(),
+        books: ratings
     }
-    console.log(request);
-    console.log("====================================")
-    console.log(JSON.stringify(request));
 
     const url = 'https://nextreadsrecommender.azurewebsites.net/RecommendUserBook'
+    // const url = 'http://localhost:5000/RecommendUserBook'
     const body = request
     const response = await fetch(url,{method:'POST',body:JSON.stringify(body),headers: { 'Content-Type': 'application/json' }});
     let books = await response.json();//assuming data is json
-    console.log(books);
-
+    // console.log(books);
     // let recommendedBooks=[];
     // for (let author of authors){
 
@@ -218,7 +213,29 @@ module.exports.Recommender= async (req, res, next) => {
     //     if (!authorBooks){return res.status(400).send('Book does not exist');}
     //     recommendedBooks.push(authorBooks);
     // }
-    return res.status(200).send(user.read);
+    // get list of books from the dict of books
+    // console.log(Object.keys(books))
+    let recommendedBooks = await Book.find({ bookId: { $in: Object.keys(books) } }).select('bookId title author avgRating rating_count imageUrl');
+    if (!recommendedBooks){return res.status(400).send('Books does not exist');}
+    //  
+    // for every book in recommendedBooks, add the rating from the dict of books
+    let recommendedBooks2=[];
+    for (let book of recommendedBooks){
+        book={
+            ...book._doc,
+            CFrating:books[book.bookId],
+            combinedRating:book.avgRating*book.rating_count+books[book.bookId]
+        }
+        recommendedBooks2.push(book);
+        console.log(book);
+    }
+    // sort recommendedBooks by rating
+    recommendedBooks2.sort((a,b)=>b.combinedRating-a.combinedRating);
+    // console.log(recommendedBooks);
+    return res.status(200).send(recommendedBooks2);
+
+
+    // return res.status(200).send(user.read);
 }
 
 // module.exports.editEvent= async (req, res, next) => {
