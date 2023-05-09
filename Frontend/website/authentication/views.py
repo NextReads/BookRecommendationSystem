@@ -18,8 +18,7 @@ class EmailValidationView(View):
 
         if not validate_email(email):
             return JsonResponse({'email_error': 'Email is invalid.'}, status=400)
-        # if User.objects.filter(email=email).exists():
-        #     return JsonResponse({'email_error': 'Email is already taken.'}, status=409)
+        
         return JsonResponse({'email_valid': True})
            
     
@@ -31,8 +30,7 @@ class UsernamesValidationView(View):
 
         if not str(username).isalnum():
             return JsonResponse({'username_error': 'Username should only contain alphanumeric characters.'}, status=400)
-        # if User.objects.filter(username=username).exists():
-        #     return JsonResponse({'username_error': 'Username is already taken.'}, status=409)
+       
         return JsonResponse({'username_valid': True})
 
 class SignupView(View):
@@ -62,7 +60,7 @@ class SignupView(View):
         
         data={'username': username, 'email': email, 'password': password, 'firstName': firstName, 'lastName': lastName, 'role': role}
         try:
-            response = requests.post('https://nextreadsbackend.azurewebsites.net/api/users', json=data)
+            response = requests.post('http://localhost:80/api/users', json=data)
             if response.status_code == 201:
                 userToken = response.headers['x-auth-token']
                 #save token in session
@@ -108,11 +106,11 @@ class LoginView(View):
         if username and password:
             data={'username': username, 'password': password}
             try:
-                response = requests.post('https://nextreadsbackend.azurewebsites.net/api/users/login', json=data)
+                response = requests.post('http://localhost:80/api/users/login', json=data)
                 
                 if response.status_code == 201:
                     userToken = response.headers['x-auth-token']
-                    print("userToken", userToken)
+                    print("userToken", response.headers['x-auth-token'])
                     #save token in session
                     request.session['token'] = userToken
                     #messages.success(request, response.text)
@@ -161,6 +159,17 @@ class rateBooksStepView(View):
     def get(self, request):
             page = 10
             context = {}
+            headers = {'x-auth-token':request.session['token'] }
+
+            try:
+                rateCount = requests.get('http://localhost:80/api/users/ratedbooks', headers=headers)
+                if rateCount.status_code == 200:
+                    rateCount = rateCount.json()
+                    print("rateCount", rateCount)
+                    request.session['rateCount'] = rateCount
+            except RequestException as e:
+                print("An error occurred while making the request. Please try again later.") 
+
             try:
                 booksResposne = requests.get('http://localhost:80/api/books/getbooks?page='+str(page))
                 if booksResposne.status_code == 200:
@@ -187,13 +196,22 @@ class rateBook(View):
         rating = request.POST.get('rating')
         print("bookId", bookId)
         print("rating", rating)
-        #print("token", request.session.get('token'))
-        request.session['rateCount'] = request.session.get('rateCount', 0) + 1
-        #print("rateCount", request.session['rateCount'])
-        
+        headers = {'x-auth-token':request.session['token'] }
+        print("headers", headers)
+
+        # get number of rated books by user
+        try:
+            rateCount = requests.get('http://localhost:80/api/users/ratedbooks', headers=headers)
+            if rateCount.status_code == 200:
+                rateCount = rateCount.json()
+                print("rateCount", rateCount)
+                request.session['rateCount'] = rateCount
+        except RequestException as e:
+            print("An error occurred while making the request. Please try again later.")
+
+        #rate book request
         if bookId and rating:
             data={'bookId': bookId, 'rating': rating}
-            headers = {'x-auth-token': request.session.get('token')}
             try:
                 response = requests.post('http://localhost:80/api/books/'+ str(bookId)+'/rating', json=data, headers=headers)
                 print("response", response.text)
