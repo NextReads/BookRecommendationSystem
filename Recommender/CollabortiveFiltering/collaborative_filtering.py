@@ -174,7 +174,7 @@ class CollaborativeFiltering:
 
     def user_based_collaborative_filtering(self) -> dict:
         """
-        Function to apply the user based collaborative filtering approach
+        Function to apply the user based collaborative filtering approach, calls the get_predicted_rating and sort_prediction_descedingly functions
         :return: predicted rating dictionary
         """
         # steps:

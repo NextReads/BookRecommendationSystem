@@ -6,145 +6,74 @@
       <tr>
         <th>Picture</th>
         <th>Name</th>
-        <th>Author</th>
+        <th>Genres</th>
         <th>My rating</th>
         <th width="230">My review</th>
       </tr>
+      {% if books|length == 0 %}
+        <tr>
+          <td colspan="5" class="text-center">No books read yet</td>
+        </tr>
+      {% else %}
 
-      <tr>
-        <td>
-          <img
-            class="table-img"
-            src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1553383690l/2657.jpg"
-            alt=""
-          />
-        </td>
-        <td>To kill a mocking bird</td>
-        <td>Harper Lee</td>
-        <td>4/5 <br>
-          <button
-            class="btn btn-sm btn-link mt-2"
-            data-bs-toggle="modal" 
-            data-bs-target="#rateBackdrop"
-          >
-            Edit
-          </button>
-        </td>
-        <td>Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-          <button
-            class="btn btn-sm btn-link mt-2"
-            data-bs-toggle="modal" 
-            data-bs-target="#staticBackdrop"
-          >
-            Edit
-          </button>
-        </td>
-      </tr>
+        {% for book in books %}
+        <tr>
+          <td>
+            <img
+              class="table-img"
+              src="{{book.bookId.imageUrl}}"
+              alt=""
+            />
+          </td>
+          <td>{{book.bookId.title}}</td>
+          <td>{% if book.bookId.genres %}{{book.bookId.genres}}{% else %}-{% endif %}</td>
+          {% if book.rating %}
+          <td>{{book.rating}}/5 <br>
+            <button
+              class="btn btn-sm btn-link mt-2"
+              data-bs-toggle="modal" 
+              data-bs-target="#rateBackdrop"
+            >
+              Edit
+            </button>
+          </td>
+          {% else %}
+          <td>
+            <button
+              class="btn btn-sm btn-outline-primary mt-2"
+              data-bs-toggle="modal" 
+              data-bs-target="#rateBackdrop"
+            >
+              Rate
+            </button>
+          </td>
+          {% endif %}
 
-      <tr>
-        <td>
-          <img
-            class="table-img"
-            src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1553383690l/2657.jpg"
-            alt=""
-          />
-        </td>
-        <td>To kill a mocking bird</td>
-        <td>Harper Lee</td>
-        <td>
-          <button
-            class="btn btn-sm btn-outline-primary mt-2"
-            data-bs-toggle="modal" 
-            data-bs-target="#rateBackdrop"
-          >
-            Rate
-          </button>
-        </td>
-        <td>
-          <button
-            class="btn btn-sm btn-outline-primary mt-2"
-            data-bs-toggle="modal" 
-            data-bs-target="#staticBackdrop"
-          >
-            Write review
-          </button>
-        </td>
-      </tr>
+          {% if book.review %}
+          <td>{{book.review}} <br>
+            <button
+              class="btn btn-sm btn-link mt-2"
+              data-bs-toggle="modal" 
+              data-bs-target="#staticBackdrop"
+            >
+              Edit
+            </button>
+          </td>
+          {% else %}
+          <td>
+            <button
+              class="btn btn-sm btn-outline-primary mt-2"
+              data-bs-toggle="modal" 
+              data-bs-target="#staticBackdrop"
+            >
+              Write review
+            </button>
+          </td>
+          {% endif %}
 
-      <tr>
-        <td>
-          <img
-            class="table-img"
-            src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1553383690l/2657.jpg"
-            alt=""
-          />
-        </td>
-        <td>To kill a mocking bird</td>
-        <td>Harper Lee</td>
-        <td>
-          <button
-            class="btn btn-sm btn-outline-primary mt-2"
-            data-bs-toggle="modal" 
-            data-bs-target="#rateBackdrop"
-          >
-            Rate
-          </button>
-        </td>
-        <td>
-          <button
-            class="btn btn-sm btn-outline-primary mt-2"
-            data-bs-toggle="modal" 
-            data-bs-target="#staticBackdrop"
-          >
-            Write review
-          </button>
-        </td>
-      </tr>
-
-      <tr>
-        <td>
-          <img
-            class="table-img"
-            src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1553383690l/2657.jpg"
-            alt=""
-          />
-        </td>
-        <td>To kill a mocking bird</td>
-        <td>Harper Lee</td>
-        <td>4/5</td>
-        <td>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</td>
-      </tr>
-
-      <tr>
-        <td>
-          <img
-            class="table-img"
-            src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1553383690l/2657.jpg"
-            alt=""
-          />
-        </td>
-        <td>To kill a mocking bird</td>
-        <td>Harper Lee</td>
-        <td>
-          <button
-            class="btn btn-sm btn-outline-primary mt-2"
-            data-bs-toggle="modal" 
-            data-bs-target="#rateBackdrop"
-          >
-            Rate
-          </button>
-        </td>
-        <td>
-          <button
-            class="btn btn-sm btn-outline-primary mt-2"
-            data-bs-toggle="modal" 
-            data-bs-target="#staticBackdrop"
-          >
-            Write review
-          </button>
-        </td>
-      </tr>
-
+        </tr>
+        {% endfor %}
+      {% endif %}
       
     </table>
   </div>
