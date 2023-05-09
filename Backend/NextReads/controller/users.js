@@ -107,12 +107,12 @@ module.exports.deleteUser= async (req, res, next) => {
 
 module.exports.getReadBooks= async (req, res, next) => {
     const books = await User.findOne({ _id: req.user._id }).select('read').populate('read').populate('read.bookId');
-    return res.status(201).send(books);
+    return res.status(201).send(books.read);
 }
 
 module.exports.getWantToRead= async (req, res, next) => {
     const books = await User.findOne({ _id: req.user._id }).select('wantToRead').populate('wantToRead').populate('read.bookId');//.select('-__v -read.__v -read.reviews -read.reviews.userId -read.reviews.__v');
-    return res.status(201).send(books);
+    return res.status(201).send(books.wantToRead);
 }
 
 module.exports.getCurrentlyReading= async (req, res, next) => {
