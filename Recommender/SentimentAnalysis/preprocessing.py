@@ -89,7 +89,7 @@ def sentenceSplit(text):
     # input: text
     # output: list of sentences
     
-    # # print(text)
+    # print(text)
     # try:
     # # print(text)
     text=text.replace('<br /><br />','').replace('(', ' ').replace(')', ' ')

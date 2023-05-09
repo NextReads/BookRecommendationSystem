@@ -14,6 +14,18 @@ const fetch = require('node-fetch')
 
 
 module.exports.addBook= async (req, res, next) => {
+    // documentation
+    // this function is used to add a new book to the database
+    // req.body should contain the following fields
+    // title
+    // imageUrl
+    // the function will return 201 if the book is added successfully
+    // the function will return 400 if the book already exists
+    // the function will return 400 if the request body is not valid
+    // the function will return 500 if there is an internal server error
+    // the function will return 400 if the author does not exist
+
+
     let { error } = validateBook(_.pick(req.body,['title','imageUrl']));
     if (error) return res.status(400).send(error.details[0].message);
     let { error1 } = validateAuthor(_.pick(req.body,['firstNAme','middleName','lastName']));
@@ -45,6 +57,21 @@ module.exports.addBook= async (req, res, next) => {
     }
 }
 module.exports.addReview= async (req, res, next) => {
+    // documentation
+    // this function is used to add a new review to the database
+    // req.body should contain the following fields
+    // review
+    // the function will return 201 if the review is added successfully
+    // the function will return 400 if the book does not exist
+    // the function will return 400 if the request body is not valid
+    // the function will return 500 if there is an internal server error
+    // the function will return 400 if the author does not exist
+    // the function will return 400 if the user does not exist
+    // the function will return 400 if the user has already reviewed the book
+    // the function will return 400 if the user has already read the book
+    // the function will return 400 if the user has already rated the book
+    // the function will return 400 if the user has already added the book to his/her reading list
+    console.log("inside post review function")
     let { error } = validateReview(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     console.log(req.body);
@@ -75,6 +102,11 @@ module.exports.addReview= async (req, res, next) => {
     
 }
 module.exports.getBooks= async (req, res, next) => {
+    // documentation
+    // this function is used to get all books from the database
+    // the function will return 200 if the books are returned successfully
+    // the function will return 404 if there are no books in the database
+    // the function will return 500 if there is an internal server error
     booksPerPage = 15;
     if (!req.query.page) return res.status(400).send('Please specify page number');
     let page = parseInt(req.query.page);
@@ -84,6 +116,18 @@ module.exports.getBooks= async (req, res, next) => {
 }
 
 module.exports.addRating= async (req, res, next) => {
+    // documentation
+    // this function is used to add a new rating to the database
+    // req.body should contain the following fields
+    // rating
+    // the function will return 201 if the rating is added successfully
+    // the function will return 400 if the book does not exist
+    // the function will return 400 if the request body is not valid
+    // the function will return 500 if there is an internal server error
+    // the function will return 400 if the author does not exist
+    // the function will return 400 if the user does not exist
+    // the function will return 400 if the user has already rated the book
+    // the function will return 400 if the user has already read the book
     let { error } = validateRating(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     console.log("here",req.params.id)
@@ -118,6 +162,17 @@ module.exports.addRating= async (req, res, next) => {
 }
 
 module.exports.addRatings= async (req, res, next) => {
+    // documentation
+    // this function is used to add a new rating to the database
+    // req.body should contain the following fields
+    // ratings
+    // the function will return 201 if the rating is added successfully
+    // the function will return 400 if the book does not exist
+    // the function will return 400 if the request body is not valid
+    // the function will return 500 if there is an internal server error
+    // the function will return 400 if the author does not exist
+    // the function will return 400 if the user does not exist  
+    // the function will return 400 if the user has already rated the book
     for(let rating of req.body.ratings){
         console.log(rating);
         let { error } = validateRating(rating);
@@ -185,6 +240,15 @@ module.exports.addRatings= async (req, res, next) => {
 
 
 module.exports.Recommender= async (req, res, next) => {
+    // documentation
+    // this function is used to recommeend books to the user
+    // the function will take as parameter the user id
+    // the function will return a list of books sorted by rating and sentiement score
+    // the function will return 200 if the books are recommended successfully
+    // the function will return 400 if the user does not exist
+    // the function will return 500 if there is an internal server error
+
+
     let user = await User.findById(req.user._id).populate('read.bookId', 'bookId');
     if (!user){return res.status(400).send('User does not exist, please sign out and try again');}
     // change single quoted req.user._id to double quotes
