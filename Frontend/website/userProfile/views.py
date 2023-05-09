@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.views import View
+from django.contrib import messages
+
 
 import requests
 
@@ -44,11 +46,39 @@ class UserRecommendations(View):
 
 class UserBooks(View):
     def get(self,request):
-        return render(request, "userprofile/userbooks.html", {})
+        try:
+            userToken = request.session.get('token')
+            headers = {'x-auth-token': userToken}
+            booksResponse = requests.get('http://localhost:80/api/users/readbooks', headers=headers)
+            print(booksResponse.status_code)
+            if booksResponse.status_code == 201:
+                books = booksResponse.json()
+                print(books)
+                return render(request, "userprofile/userbooks.html", {'books': books})
+            else:
+                print("error occured")
+                return render(request, "userprofile/userbooks.html", {'books': []})
+        except:
+            messages.error(request, "error occured")
+            return render(request, "userprofile/userbooks.html", {'books': []})
+            
 
 class tbrBooks(View):
     def get(self,request):
-        return render(request, "userprofile/tbrBooks.html",{} )
+        try:
+            userToken = request.session.get('token')
+            headers = {'x-auth-token': userToken}
+            booksResponse = requests.get('http://localhost:80/api/users/wanttoread', headers=headers)
+            if booksResponse.status_code == 201:
+                books = booksResponse.json()
+                
+                return render(request, "userprofile/tbrbooks.html", {'books': books})
+            else:
+                print("error occured")
+                return render(request, "userprofile/tbrbooks.html", {'books': []})
+        except:
+            messages.error(request, "error occured")
+            return render(request, "userprofile/tbrbooks.html", {'books': []})
 
 class browseBooks(View):
     def get(self,request):
