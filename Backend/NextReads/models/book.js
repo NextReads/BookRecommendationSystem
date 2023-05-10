@@ -63,19 +63,12 @@ const Book = mongoose.model('Book', new mongoose.Schema({
             min: 0,
             max: 5
     },
-    rating_count:{
+    ratingCount:{
         type: Number,
             required: false,
             trim: true,
             default: 0,
             min: 0,
-    },
-    rating_sum:{
-        type: Number,
-        required: true,
-        trim: true,
-        default: 0,
-        min: 0,
     },
     isbn:{
         type: String,
@@ -118,8 +111,28 @@ const Book = mongoose.model('Book', new mongoose.Schema({
         // minlength: 1,
         // maxlength: 1024
     },
-    
-
+    sentimentCount:{
+        type: Number,
+        required: true,
+        trim: true,
+        default: 0,
+        min: 0,
+    },
+    sentimentSum:{
+        type: Number,
+        required: true,
+        trim: true,
+        default: 0,
+        min: 0,
+    },
+    sentimentAvg:{
+        type: Number,
+        required: true,
+        trim: true,
+        default: 0,
+        min: 0,
+        max: 1
+    },
     reviews:[reviewSchema]
 }));
 

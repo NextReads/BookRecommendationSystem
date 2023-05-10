@@ -136,15 +136,15 @@ module.exports.addRating= async (req, res, next) => {
     if (!book){return res.status(400).send('Book does not exist');}
     let user = await User.findById(req.user._id);
     if (!user){return res.status(400).send('User does not exist, please sign out and try again');}
-    let rating=book.avgRating*book.rating_count;
+    let rating=book.avgRating*book.ratingCount;
     rating+=req.body.rating;
-    book.rating_count+=1;
+    book.ratingCount+=1;
     
-    if(rating/book.rating_count>5){
+    if(rating/book.ratingCount>5){
         book.avgRating=5;
     }
     else{
-        book.avgRating=rating/book.rating_count;
+        book.avgRating=rating/book.ratingCount;
     }
     // if user has already rated the book, update the rating else add a new rating
     let read = user.read.find(r=>r.bookId==req.params.id);
@@ -198,30 +198,17 @@ module.exports.addRatings= async (req, res, next) => {
     }, {});
     
 
-    // let ratings = req.body.ratings.reduce((acc, rating) => {
-
-    //     acc[rating.bookId] = rating.rating;
-    //     console.log(acc);
-    //     return acc;
-    // });
-    
-
     for (let book of books){
         // if rating is null set to 0
         if (!book.avgRating) book.avgRating = 0;
         // if rating_sum is null set to 0
         // if (!book.rating_sum) book.rating_sum = 0;
         // if rating_count is null set to 0
-        if (!book.rating_count) book.rating_count = 0;
-        let rating=book.avgRating*book.rating_count;
+        if (!book.ratingCount) book.ratingCount = 0;
+        let rating=book.avgRating*book.ratingCount;
         rating+=ratings[book._id];
-        book.rating_count+=1;
-        console.log(book.avgRating)
-        console.log(rating);
-        console.log(book.rating_count);
-        book.avgRating=rating/book.rating_count;
-        // console.log(book.rating_sum)
-        // book.rating_sum+=req.body.rating;
+        book.ratingCount+=1;
+        book.avgRating=rating/book.ratingCount;
         const read= new Read({
             bookId:book._id,
             rating:ratings[book._id]
@@ -286,23 +273,32 @@ module.exports.Recommender= async (req, res, next) => {
     // }
     // get list of books from the dict of books
     // console.log(Object.keys(books))
-    let recommendedBooks = await Book.find({ bookId: { $in: Object.keys(books) } }).select('bookId title author avgRating rating_count imageUrl');
+    let recommendedBooks = await Book.find({ bookId: { $in: Object.keys(books) } }).select('bookId title author avgRating ratingCount imageUrl sentimentCount sentimentAvg');
+
     if (!recommendedBooks){return res.status(400).send('Books does not exist');}
     //  
     // for every book in recommendedBooks, add the rating from the dict of books
     let recommendedBooks2=[];
     for (let book of recommendedBooks){
+        // console.log(book.ratingCount);
+        let cRating = books[book.bookId]*3+(book.ratingCount/500000)+(book.sentimentCount/5000)+book.sentimentAvg*20;
+
         book={
             ...book._doc,
             CFrating:books[book.bookId],
-            combinedRating:book.avgRating*book.rating_count+books[book.bookId]
+            // combinedRating is a rating that combines sentiment score with Cf rating and average rating and rating count and sentiment count
+            combinedRating:cRating
         }
+        
         recommendedBooks2.push(book);
-        console.log(book);
+        // console.log(book);
+        // break;
     }
     // sort recommendedBooks by rating
     recommendedBooks2.sort((a,b)=>b.combinedRating-a.combinedRating);
     // console.log(recommendedBooks);
+    // get the top 20 books
+    recommendedBooks2=recommendedBooks2.slice(0,20);
     return res.status(200).send(recommendedBooks2);
 
 
