@@ -149,15 +149,15 @@ module.exports.addRating= async (req, res, next) => {
     // if user has already rated the book, update the rating else add a new rating
     let read = user.read.find(r=>r.bookId==req.params.id);
     if(read){
-        user.read.rating=req.body.rating;
+        user.read = user.read.filter(r=>r.bookId!=req.params.id);
     }
-    else{
-        read= new Read({
-            bookId:req.params.id,
-            rating:req.body.rating
-        })
-        user.read.push(read);
-    }
+    
+    read= new Read({
+        bookId:req.params.id,
+        rating:req.body.rating
+    })
+    user.read.push(read);
+    
     try {
         await book.save();
         await user.save();
