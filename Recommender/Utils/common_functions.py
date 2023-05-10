@@ -45,13 +45,22 @@ def create_ratings_matrix(ratings_df: pd.DataFrame, index="user_id", columns="bo
 # @return: the mean centered rating matrix
 # @type: GENERIC
 def mean_centered_rating_matrix(ratings_matrix: pd.DataFrame) -> pd.DataFrame:
-    # mean centering
+    """
+    Function to get the mean centered rating matrix
+    :param ratings_matrix: the ratings matrix to be mean centered
+    :return: the mean centered rating matrix
+    """
     ratings_matrix_mean = ratings_matrix.mean(axis=1)
     ratings_matrix_centered = ratings_matrix.sub(ratings_matrix_mean, axis=0)
     return ratings_matrix_centered
 
 
 def mean_matrix(matrix: pd.DataFrame) -> pd.DataFrame:
+    """
+    Function to get the mean center of the matrix
+    :param matrix: the matrix to be mean centered
+    :return: the mean centered matrix
+    """
     return matrix.div(matrix.sum(axis=1), axis=0)
 
 # @desc: decrease the size of the dataset by removing books that have been rated less than 100 times and users that have rated less than 10 times
@@ -65,6 +74,19 @@ def list_to_dataframe(my_list: list, column: list) -> pd.DataFrame:
 
 
 def check_cf_compatibilty(current_user: str, current_read_books_df: pd.DataFrame, ratings_df: pd.DataFrame) -> bool:
+    """
+    Function to check if the current user is compatible with the collaborative filtering algorithm
+    :param current_user: the current user
+    :param current_read_books_df: the current user's read books
+    :param ratings_df: the ratings dataset
+    :return: True if the current user is compatible with the collaborative filtering algorithm, False otherwise
+    """
+
+    # checkings include:
+    # 1- check if the data is empty or the current user is not in the dataset
+    # 2- check if there's at least one of the books_id column in the current_read_books_df exists in the ratings_df
+    # 3- check if another user has rated at least one of the current_read_books and is not the current_user
+
     # 1- check if the data is empty or the current user is not in the dataset
     if ratings_df.empty or current_read_books_df.empty or current_user not in ratings_df['user_id'].values:
         print("the data is empty or the current user is not in the dataset")
@@ -83,6 +105,15 @@ def check_cf_compatibilty(current_user: str, current_read_books_df: pd.DataFrame
 
 
 def data_shrinking(current_user: str, current_read_books_df: pd.DataFrame, ratings_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Function to decrease the size of the dataset by selecting users that have rated most of the target user's read books
+    , then select the highest N books that have been rated by these users
+    :param current_user: the current user
+    :param current_read_books_df: the current user's read books
+    :param ratings_df: the ratings dataset
+    :return: the shrunk dataset
+    """
+
     # check if the current_read_books_df length is longer than the acceptable CF_MAX_BOOK_NUMBER
     if len(current_read_books_df) > CF_MAX_BOOK_NUMBER:
         current_read_books_df = current_read_books_df[:CF_MAX_BOOK_NUMBER *
@@ -153,6 +184,21 @@ def dict_to_dataframe(current_user: str, current_read_books_dict: dict) -> pd.Da
 
 def get_cf_data(current_user: str, current_read_books_dict: dict, ratings_df: pd.DataFrame) -> pd.DataFrame:
     # change the current_read_books_dict to a dataframe
+    """
+    Function to get the data for the CF algorithm
+    :param current_user: the current user id
+    :param current_read_books_dict: the current user's read books, a dictionary of book_id:rating
+    :param ratings_df: the ratings dataframe
+    :return: the data for the CF algorithm which are the ratings matrix and the mean matrix
+    """
+    # steps:
+    # 1. change the current_read_books_dict to a dataframe
+    # 2. add the df to the ratings_df
+    # 3. check if the data is compatible with the CF algorithm
+    # 4. shrink the data to be compatible with the CF algorithm
+    # 5. get the ratings matrix, mean matrix
+    # 6. return the data
+
     actual_user_read_books_df, current_read_books_df = dict_to_dataframe(
         current_user, current_read_books_dict)
 

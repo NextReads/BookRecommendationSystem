@@ -6,6 +6,7 @@ from SentimentAnalysis.preprocessing import preprocessing,preprocessReview
 import os
 
 def readData():
+    #
     pathRoot = os.getenv('NAME')
     if pathRoot == 'NextReadsRecommender':
         print("pathRoot = ", pathRoot)
@@ -16,6 +17,11 @@ def readData():
     return df
 
 def getProductSentiment(data,book,clflinear,tfidf_vectorizer):
+    # Documentation
+    # this function takes a book id and returns the mean sentiment of the reviews of that book
+    # input: book id
+    # output: mean sentiment of the reviews of that book
+
     # get book review_text
     text=data[data['book_id']==book]
     # print(text)
@@ -31,6 +37,11 @@ def getProductSentiment(data,book,clflinear,tfidf_vectorizer):
     return mean 
 
 def getProductsSentiment(data,books,clflinear,tfidf_vectorizer):
+    # Documentation
+    # this function takes a list of book ids and returns the mean sentiment of the reviews of that books
+    # input: list of book ids
+    # output: mean sentiment of the reviews of that books
+
     # get specific books review_text
     text=data[data['book_id'].isin(books)]
     # text=data[data['book_id']==book]
@@ -62,6 +73,11 @@ def getProductsSentiment(data,books,clflinear,tfidf_vectorizer):
 # print(getProductSentiment(df,17378508,clflinear,tfidf_vectorizer))
 # books={8664353: 2.943921978404737, 6314763: 3.443921978404737, 21996: 2.778672837842172, 17378508: 3.319115269022083, 18710190: 2.943921978404737, 15797938: 2.9439219784047372, 18293427: 3.9439219784047372, 22489107: 2.77732264321156, 24612118: 2.9439219784047372, 17347389: 3.4439219784047372, 17378527: 3.321349343769989}
 def sentimentScore(data,predictons):
+    # Documentation
+    # this function takes a list of book ids and returns the mean sentiment of the reviews of that books    
+    # input: list of book ids
+    # output: mean sentiment of the reviews of that books
+
     clflinear = fe.load_model('svm_linear_model.sav')
     tfidf_vectorizer = fe.load_model('tfidf.pkl')
     sentimentScores={}
@@ -73,6 +89,11 @@ def sentimentScore(data,predictons):
 # print(sentimentScore(df,books))
 # books={8664353: 2.943921978404737, 6314763: 3.443921978404737, 21996: 2.778672837842172, 17378508: 3.319115269022083, 18710190: 2.943921978404737, 15797938: 2.9439219784047372, 18293427: 3.9439219784047372, 22489107: 2.77732264321156, 24612118: 2.9439219784047372, 17347389: 3.4439219784047372, 17378527: 3.321349343769989}
 def productsSentimentScore(data,predictions):
+    # Documentation
+    # this function takes a list of book ids and returns the mean sentiment of the reviews of that books
+    # input: list of book ids   
+    # output: mean sentiment of the reviews of that books
+
     clflinear = fe.load_model('svm_linear_model.sav')
     tfidf_vectorizer = fe.load_model('tfidf.pkl')
     sentimentScores=getProductsSentiment(data,predictions,clflinear,tfidf_vectorizer)
@@ -81,6 +102,11 @@ def productsSentimentScore(data,predictions):
 
 
 def getReviewSentiment(text):
+    # Documentation
+    # this function takes a review text and returns the sentiment of that review    
+    # input: review text
+    # output: sentiment of that review
+    
     clflinear = fe.load_model('svm_linear_model.sav')
     tfidf_vectorizer = fe.load_model('tfidf.pkl')
     # discard prints from the function

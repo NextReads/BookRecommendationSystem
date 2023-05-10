@@ -14,6 +14,18 @@ const fetch = require('node-fetch')
 
 
 module.exports.addBook= async (req, res, next) => {
+    // documentation
+    // this function is used to add a new book to the database
+    // req.body should contain the following fields
+    // title
+    // imageUrl
+    // the function will return 201 if the book is added successfully
+    // the function will return 400 if the book already exists
+    // the function will return 400 if the request body is not valid
+    // the function will return 500 if there is an internal server error
+    // the function will return 400 if the author does not exist
+
+
     let { error } = validateBook(_.pick(req.body,['title','imageUrl']));
     if (error) return res.status(400).send(error.details[0].message);
     let { error1 } = validateAuthor(_.pick(req.body,['firstNAme','middleName','lastName']));
@@ -45,6 +57,21 @@ module.exports.addBook= async (req, res, next) => {
     }
 }
 module.exports.addReview= async (req, res, next) => {
+    // documentation
+    // this function is used to add a new review to the database
+    // req.body should contain the following fields
+    // review
+    // the function will return 201 if the review is added successfully
+    // the function will return 400 if the book does not exist
+    // the function will return 400 if the request body is not valid
+    // the function will return 500 if there is an internal server error
+    // the function will return 400 if the author does not exist
+    // the function will return 400 if the user does not exist
+    // the function will return 400 if the user has already reviewed the book
+    // the function will return 400 if the user has already read the book
+    // the function will return 400 if the user has already rated the book
+    // the function will return 400 if the user has already added the book to his/her reading list
+    console.log("inside post review function")
     let { error } = validateReview(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     console.log(req.body);
@@ -56,6 +83,7 @@ module.exports.addReview= async (req, res, next) => {
         userId:req.user._id
     })
     const url = 'https://nextreadsrecommender.azurewebsites.net/sentiment'
+    // const url = 'http://localhost:5000/sentiment'
     const body = {review:req.body.review}
     console.log(body);
     const response = await fetch(url,{method:'POST',body:JSON.stringify(body),headers: { 'Content-Type': 'application/json' }});
@@ -74,6 +102,11 @@ module.exports.addReview= async (req, res, next) => {
     
 }
 module.exports.getBooks= async (req, res, next) => {
+    // documentation
+    // this function is used to get all books from the database
+    // the function will return 200 if the books are returned successfully
+    // the function will return 404 if there are no books in the database
+    // the function will return 500 if there is an internal server error
     booksPerPage = 15;
     if (!req.query.page) return res.status(400).send('Please specify page number');
     let page = parseInt(req.query.page);
@@ -83,6 +116,18 @@ module.exports.getBooks= async (req, res, next) => {
 }
 
 module.exports.addRating= async (req, res, next) => {
+    // documentation
+    // this function is used to add a new rating to the database
+    // req.body should contain the following fields
+    // rating
+    // the function will return 201 if the rating is added successfully
+    // the function will return 400 if the book does not exist
+    // the function will return 400 if the request body is not valid
+    // the function will return 500 if there is an internal server error
+    // the function will return 400 if the author does not exist
+    // the function will return 400 if the user does not exist
+    // the function will return 400 if the user has already rated the book
+    // the function will return 400 if the user has already read the book
     let { error } = validateRating(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     console.log("here",req.params.id)
@@ -91,15 +136,15 @@ module.exports.addRating= async (req, res, next) => {
     if (!book){return res.status(400).send('Book does not exist');}
     let user = await User.findById(req.user._id);
     if (!user){return res.status(400).send('User does not exist, please sign out and try again');}
-    let rating=book.avgRating*book.rating_count;
+    let rating=book.avgRating*book.ratingCount;
     rating+=req.body.rating;
-    book.rating_count+=1;
+    book.ratingCount+=1;
     
-    if(rating/book.rating_count>5){
+    if(rating/book.ratingCount>5){
         book.avgRating=5;
     }
     else{
-        book.avgRating=rating/book.rating_count;
+        book.avgRating=rating/book.ratingCount;
     }
     // if user has already rated the book, update the rating else add a new rating
     let read = user.read.find(r=>r.bookId==req.params.id);
@@ -124,6 +169,17 @@ module.exports.addRating= async (req, res, next) => {
 }
 
 module.exports.addRatings= async (req, res, next) => {
+    // documentation
+    // this function is used to add a new rating to the database
+    // req.body should contain the following fields
+    // ratings
+    // the function will return 201 if the rating is added successfully
+    // the function will return 400 if the book does not exist
+    // the function will return 400 if the request body is not valid
+    // the function will return 500 if there is an internal server error
+    // the function will return 400 if the author does not exist
+    // the function will return 400 if the user does not exist  
+    // the function will return 400 if the user has already rated the book
     for(let rating of req.body.ratings){
         console.log(rating);
         let { error } = validateRating(rating);
@@ -142,30 +198,17 @@ module.exports.addRatings= async (req, res, next) => {
     }, {});
     
 
-    // let ratings = req.body.ratings.reduce((acc, rating) => {
-
-    //     acc[rating.bookId] = rating.rating;
-    //     console.log(acc);
-    //     return acc;
-    // });
-    
-
     for (let book of books){
         // if rating is null set to 0
         if (!book.avgRating) book.avgRating = 0;
         // if rating_sum is null set to 0
         // if (!book.rating_sum) book.rating_sum = 0;
         // if rating_count is null set to 0
-        if (!book.rating_count) book.rating_count = 0;
-        let rating=book.avgRating*book.rating_count;
+        if (!book.ratingCount) book.ratingCount = 0;
+        let rating=book.avgRating*book.ratingCount;
         rating+=ratings[book._id];
-        book.rating_count+=1;
-        console.log(book.avgRating)
-        console.log(rating);
-        console.log(book.rating_count);
-        book.avgRating=rating/book.rating_count;
-        // console.log(book.rating_sum)
-        // book.rating_sum+=req.body.rating;
+        book.ratingCount+=1;
+        book.avgRating=rating/book.ratingCount;
         const read= new Read({
             bookId:book._id,
             rating:ratings[book._id]
@@ -191,6 +234,15 @@ module.exports.addRatings= async (req, res, next) => {
 
 
 module.exports.Recommender= async (req, res, next) => {
+    // documentation
+    // this function is used to recommeend books to the user
+    // the function will take as parameter the user id
+    // the function will return a list of books sorted by rating and sentiement score
+    // the function will return 200 if the books are recommended successfully
+    // the function will return 400 if the user does not exist
+    // the function will return 500 if there is an internal server error
+
+
     let user = await User.findById(req.user._id).populate('read.bookId', 'bookId');
     if (!user){return res.status(400).send('User does not exist, please sign out and try again');}
     // change single quoted req.user._id to double quotes
@@ -200,24 +252,18 @@ module.exports.Recommender= async (req, res, next) => {
         acc[bookid] = rating.rating;
         return acc;
     }, {});
-    // request={
-    //     user_id:JSON.stringify(req.user._id),
-    //     books:ratings
-    // }
+
     request={
-        "user_id": req.user._id.toString(),
-        "books": ratings
+        user_id: req.user._id.toString(),
+        books: ratings
     }
-    console.log(request);
-    console.log("====================================")
-    console.log(JSON.stringify(request));
 
     const url = 'https://nextreadsrecommender.azurewebsites.net/RecommendUserBook'
+    // const url = 'http://localhost:5000/RecommendUserBook'
     const body = request
     const response = await fetch(url,{method:'POST',body:JSON.stringify(body),headers: { 'Content-Type': 'application/json' }});
     let books = await response.json();//assuming data is json
-    console.log(books);
-
+    // console.log(books);
     // let recommendedBooks=[];
     // for (let author of authors){
 
@@ -225,7 +271,38 @@ module.exports.Recommender= async (req, res, next) => {
     //     if (!authorBooks){return res.status(400).send('Book does not exist');}
     //     recommendedBooks.push(authorBooks);
     // }
-    return res.status(200).send(user.read);
+    // get list of books from the dict of books
+    // console.log(Object.keys(books))
+    let recommendedBooks = await Book.find({ bookId: { $in: Object.keys(books) } }).select('bookId title author avgRating ratingCount imageUrl sentimentCount sentimentAvg');
+
+    if (!recommendedBooks){return res.status(400).send('Books does not exist');}
+    //  
+    // for every book in recommendedBooks, add the rating from the dict of books
+    let recommendedBooks2=[];
+    for (let book of recommendedBooks){
+        // console.log(book.ratingCount);
+        let cRating = books[book.bookId]*3+(book.ratingCount/500000)+(book.sentimentCount/5000)+book.sentimentAvg*20;
+
+        book={
+            ...book._doc,
+            CFrating:books[book.bookId],
+            // combinedRating is a rating that combines sentiment score with Cf rating and average rating and rating count and sentiment count
+            combinedRating:cRating
+        }
+        
+        recommendedBooks2.push(book);
+        // console.log(book);
+        // break;
+    }
+    // sort recommendedBooks by rating
+    recommendedBooks2.sort((a,b)=>b.combinedRating-a.combinedRating);
+    // console.log(recommendedBooks);
+    // get the top 20 books
+    recommendedBooks2=recommendedBooks2.slice(0,20);
+    return res.status(200).send(recommendedBooks2);
+
+
+    // return res.status(200).send(user.read);
 }
 
 // module.exports.editEvent= async (req, res, next) => {

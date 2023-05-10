@@ -125,7 +125,8 @@ def recommendUserBook():
     if request.method == 'POST':
         user_id = request.get_json().get('user_id')
         books = request.get_json().get('books')
-        
+        ratings_df = cfcf.read_data('../Utils/dataset/ratings.csv')
+
         start_time = time.time()
 
         ratings_matrix, ratings_matrix_centered = get_cf_data(
@@ -136,7 +137,7 @@ def recommendUserBook():
 
         response_time = time.time() - start_time
         NR_HISTOGRAM.observe(response_time)
-        return jsonify((predicted_books))
+        return (predicted_books)
 
 
 @app.route("/Start", methods=['POST'])
@@ -179,6 +180,7 @@ def start():
         genreData = cfcf.read_data('../Utils/dataset/genres.csv')
         # booksData = cfcf.read_data('../Utils/dataset/books.csv')
         ratings_df = cfcf.read_data('../Utils/dataset/ratings.csv')
+
 
     try:
         if pathRoot == 'NextReadsRecommender':
