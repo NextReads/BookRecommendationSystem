@@ -109,17 +109,19 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form>
+          <form method="POST" action="{%  url 'userProfile:ratebook' %}">
+            {% csrf_token %}
             <div class="mb-3">
+              <input type="hidden" name="book_id" value="{{ bookId.id }}" /> 
               <label for="message-text" class="col-form-label">Rate:</label>
-              <input class="inputNumber" placeholder="#" min="0" max="5" type="number" />
+              <input class="inputNumber" placeholder="#" min="0" max="5" type="number" name="rating" required/>
+            </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Save</button>
             </div>
           </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save</button>
-        </div>
       </div>
     </div>
   </div>
