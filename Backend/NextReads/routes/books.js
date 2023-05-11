@@ -26,6 +26,7 @@ router.get('/book/:id',bookController.getBook);
 // the search should be a fuzzy search
 // the search should be a full text search
 router.get('/search',bookController.searchBooks);
+router.get('/genre',bookController.getByGenre);
 // router.get('/search',bookController.searchBooks);
 
 // router.put('/events/info/:id',[auth,manager],bookController.editEvent);
