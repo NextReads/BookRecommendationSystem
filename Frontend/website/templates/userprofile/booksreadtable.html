@@ -32,17 +32,18 @@
             <button
               class="btn btn-sm btn-link mt-2"
               data-bs-toggle="modal" 
-              data-bs-target="#rateBackdrop"
+              data-bs-target="#rateBackdrop{{book.bookId.id}}"
             >
               Edit
             </button>
+            {% include 'partials/_rate_modal.html'%}
           </td>
           {% else %}
           <td>
             <button
               class="btn btn-sm btn-outline-primary mt-2"
               data-bs-toggle="modal" 
-              data-bs-target="#rateBackdrop"
+              data-bs-target="#rateBackdrop{{book.bookId.id}}"
             >
               Rate
             </button>
@@ -54,7 +55,7 @@
             <button
               class="btn btn-sm btn-link mt-2"
               data-bs-toggle="modal" 
-              data-bs-target="#staticBackdrop"
+              data-bs-target="#staticBackdrop{{book.bookId.id}}"
             >
               Edit
             </button>
@@ -64,66 +65,19 @@
             <button
               class="btn btn-sm btn-outline-primary mt-2"
               data-bs-toggle="modal" 
-              data-bs-target="#staticBackdrop"
+              data-bs-target="#staticBackdrop{{book.bookId.id}}"
             >
               Write review
             </button>
+            {% include 'partials/_review_modal.html'%}
           </td>
           {% endif %}
-
         </tr>
         {% endfor %}
       {% endif %}
       
     </table>
   </div>
- <!-- model review -->
-  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="staticBackdropLabel">Write a review</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form>
-            <div class="mb-3">
-              <label for="message-text" class="col-form-label">Review:</label>
-              <textarea class="form-control" id="message-text"></textarea>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- model rate -->
-  <div class="modal fade" id="rateBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="rateBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="rateBackdropLabel">Rate book</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form>
-            <div class="mb-3">
-              <label for="message-text" class="col-form-label">Rate:</label>
-              <input class="inputNumber" placeholder="#" min="0" max="5" type="number" />
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save</button>
-        </div>
-      </div>
-    </div>
-  </div>
-<!-- -->
 </div>
 
 

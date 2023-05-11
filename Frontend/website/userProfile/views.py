@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.views import View
 from django.contrib import messages
@@ -50,16 +50,20 @@ class UserBooks(View):
             userToken = request.session.get('token')
             headers = {'x-auth-token': userToken}
             booksResponse = requests.get('http://localhost:80/api/users/readbooks', headers=headers)
-            print(booksResponse.status_code)
             if booksResponse.status_code == 201:
                 books = booksResponse.json()
-                print(books)
+                #book has bookId which includes all the details of the book
+                #rename bookId[_id] to bookId[id]
+
+                for book in books:
+                    book['bookId']['id'] = book['bookId'].pop('_id')
+
                 return render(request, "userprofile/userbooks.html", {'books': books})
             else:
                 print("error occured")
                 return render(request, "userprofile/userbooks.html", {'books': []})
         except:
-            messages.error(request, "error occured")
+            print(request, "error occured")
             return render(request, "userprofile/userbooks.html", {'books': []})
             
 
@@ -71,15 +75,52 @@ class tbrBooks(View):
             booksResponse = requests.get('http://localhost:80/api/users/wanttoread', headers=headers)
             if booksResponse.status_code == 201:
                 books = booksResponse.json()
-                
                 return render(request, "userprofile/tbrbooks.html", {'books': books})
             else:
                 print("error occured")
                 return render(request, "userprofile/tbrbooks.html", {'books': []})
         except:
-            messages.error(request, "error occured")
+            print(request, "error occured")
             return render(request, "userprofile/tbrbooks.html", {'books': []})
+    
+class rateBook(View):
+    def post(self,request):
+        bookId = request.POST.get('fe_eh')
+        rating = request.POST.get('rating')
+        print("bookId zsfsdgds ",bookId)
+        print("rating ",rating)
+        try:
+            userToken = request.session.get('token')
+            headers = {'x-auth-token': userToken}
+            data = {'bookId': bookId, 'rating': rating}
+            response = requests.post('http://localhost:80/api/books/'+ str(bookId)+'/rating', json=data, headers=headers)
+            if response.status_code == 201:
+                return redirect('userProfile:userbooks')
+            else:
+                print(response.status_code)
+                return redirect('userProfile:userbooks')
+        except:
+            return redirect('userProfile:userbooks')
+        
+class reviewBook(View):
+    def post(self,request):
+        bookId = request.POST.get('bookIdentifier')
+        review = request.POST.get('reviewText')
+        print("bookId",bookId)
+        print("review",review)
 
+        try:
+            userToken = request.session.get('token')
+            headers = {'x-auth-token': userToken}
+            data = {'review': review}
+            response = requests.post('http://localhost:80/api/books/'+ str(bookId)+'/review', json=data, headers=headers)
+            if response.status_code == 201:
+                return redirect('userProfile:userbooks')
+            else:
+                print(response.status_code, response.text)
+                return redirect('userProfile:userbooks')
+        except:
+            return redirect('userProfile:userbooks')
 class browseBooks(View):
     def get(self,request):
         return render(request, "userprofile/browseBooks.html",{} )

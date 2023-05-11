@@ -1,0 +1,27 @@
+{% load static %}
+<!-- model rate -->
+<div class="modal fade" id="rateBackdrop{{book.bookId.id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="rateBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="rateBackdropLabel">Rate book</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form method="POST" action="{%  url 'userProfile:ratebook' %}">
+            {% csrf_token %}
+            <input type="hidden" name="fe_eh" value={{book.bookId.id}} /> 
+            <div class="mb-3">
+              <label for="message-text" class="col-form-label" style="color:black">Rate:</label>
+              <input class="inputNumber" placeholder="#" min="1" max="5" type="number" name="rating" required/>
+            </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+          </form>
+      </div>
+    </div>
+  </div>
+  <!-- -->
