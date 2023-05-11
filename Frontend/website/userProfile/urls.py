@@ -10,5 +10,6 @@ urlpatterns = [
     path('tbrbooks', views.tbrBooks.as_view(), name='tbrbooks'),
     path('browsebooks',views.browseBooks.as_view(), name='browseBooks'),
     path('userbooks/ratebook', views.rateBook.as_view(), name='ratebook'),
+    path('userbooks/reviewbook', views.reviewBook.as_view(), name='reviewbook'),
 
 ]

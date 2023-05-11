@@ -102,7 +102,25 @@ class rateBook(View):
         except:
             return redirect('userProfile:userbooks')
         
+class reviewBook(View):
+    def post(self,request):
+        bookId = request.POST.get('bookIdentifier')
+        review = request.POST.get('reviewText')
+        print("bookId",bookId)
+        print("review",review)
 
+        try:
+            userToken = request.session.get('token')
+            headers = {'x-auth-token': userToken}
+            data = {'review': review}
+            response = requests.post('http://localhost:80/api/books/'+ str(bookId)+'/review', json=data, headers=headers)
+            if response.status_code == 201:
+                return redirect('userProfile:userbooks')
+            else:
+                print(response.status_code, response.text)
+                return redirect('userProfile:userbooks')
+        except:
+            return redirect('userProfile:userbooks')
 class browseBooks(View):
     def get(self,request):
         return render(request, "userprofile/browseBooks.html",{} )
