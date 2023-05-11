@@ -139,7 +139,7 @@ module.exports.addRating= async (req, res, next) => {
     let rating=book.avgRating*book.ratingCount;
     rating+=req.body.rating;
     book.ratingCount+=1;
-    
+
     if(rating/book.ratingCount>5){
         book.avgRating=5;
     }
@@ -156,7 +156,7 @@ module.exports.addRating= async (req, res, next) => {
         bookId:req.params.id,
         rating:req.body.rating
     })
-    user.read.push(read);
+    user.read.unshift(read);
     
     try {
         await book.save();
