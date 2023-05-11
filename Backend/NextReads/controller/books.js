@@ -71,10 +71,10 @@ module.exports.addReview= async (req, res, next) => {
     // the function will return 400 if the user has already read the book
     // the function will return 400 if the user has already rated the book
     // the function will return 400 if the user has already added the book to his/her reading list
-    console.log("inside post review function")
+    // console.log("inside post review function")
     let { error } = validateReview(req.body);
     if (error) return res.status(400).send(error.details[0].message);
-    console.log(req.body);
+    // console.log(req.body);
     let book = await Book.findById(req.params.id);
     if (!book){return res.status(400).send('Book does not exist');}
     let sentiment;
@@ -85,15 +85,12 @@ module.exports.addReview= async (req, res, next) => {
     const url = 'https://nextreadsrecommender.azurewebsites.net/sentiment'
     // const url = 'http://localhost:5000/sentiment'
     const body = {review:req.body.review}
-    console.log(body);
     const response = await fetch(url,{method:'POST',body:JSON.stringify(body),headers: { 'Content-Type': 'application/json' }});
     sentiment = await response.json();//assuming data is json
-    console.log(sentiment);
     review.sentiment=sentiment;
     book.reviews.push(review);
     try {
         await book.save();
-        console.log(review);
         return res.status(201).send('Review added successfully');
     } catch (error) {
         console.log(error);
@@ -130,8 +127,7 @@ module.exports.addRating= async (req, res, next) => {
     // the function will return 400 if the user has already read the book
     let { error } = validateRating(req.body);
     if (error) return res.status(400).send(error.details[0].message);
-    console.log("here",req.params.id)
-    console.log(req.body)
+
     let book = await Book.findById(req.params.id);
     if (!book){return res.status(400).send('Book does not exist');}
     let user = await User.findById(req.user._id);
@@ -181,7 +177,6 @@ module.exports.addRatings= async (req, res, next) => {
     // the function will return 400 if the user does not exist  
     // the function will return 400 if the user has already rated the book
     for(let rating of req.body.ratings){
-        console.log(rating);
         let { error } = validateRating(rating);
         if (error) return res.status(400).send(error.details[0].message);
     }
@@ -190,7 +185,6 @@ module.exports.addRatings= async (req, res, next) => {
     // find books from the list of ids
     let books = await Book.find({ _id: { $in: req.body.ratings.map(rating=>rating.bookId) } });
     if (!books){return res.status(400).send('Book does not exist');}
-    // console.log(books);
     // convert ratings.bookId and ratings.rating to object key value pairs
     let ratings = req.body.ratings.reduce((acc, rating) => {
         acc[rating.bookId] = rating.rating;
@@ -214,7 +208,7 @@ module.exports.addRatings= async (req, res, next) => {
             rating:ratings[book._id]
         })
         user.read.push(read);
-        console.log(book)
+        // console.log(book)
         try {
             await book.save();
         } catch (error) {
@@ -263,24 +257,14 @@ module.exports.Recommender= async (req, res, next) => {
     const body = request
     const response = await fetch(url,{method:'POST',body:JSON.stringify(body),headers: { 'Content-Type': 'application/json' }});
     let books = await response.json();//assuming data is json
-    // console.log(books);
-    // let recommendedBooks=[];
-    // for (let author of authors){
-
-    //     let authorBooks=await Book.find({ _id: { $in: author.books } });
-    //     if (!authorBooks){return res.status(400).send('Book does not exist');}
-    //     recommendedBooks.push(authorBooks);
-    // }
     // get list of books from the dict of books
-    // console.log(Object.keys(books))
-    let recommendedBooks = await Book.find({ bookId: { $in: Object.keys(books) } }).select('bookId title author avgRating ratingCount imageUrl sentimentCount sentimentAvg');
+    let recommendedBooks = await Book.find({ bookId: { $in: Object.keys(books) } }).select('bookId title authors avgRating ratingCount imageUrl sentimentCount sentimentAvg');
 
     if (!recommendedBooks){return res.status(400).send('Books does not exist');}
     //  
     // for every book in recommendedBooks, add the rating from the dict of books
     let recommendedBooks2=[];
     for (let book of recommendedBooks){
-        // console.log(book.ratingCount);
         let cRating = books[book.bookId]*3+(book.ratingCount/500000)+(book.sentimentCount/5000)+book.sentimentAvg*20;
 
         book={
@@ -291,14 +275,24 @@ module.exports.Recommender= async (req, res, next) => {
         }
         
         recommendedBooks2.push(book);
-        // console.log(book);
         // break;
     }
     // sort recommendedBooks by rating
     recommendedBooks2.sort((a,b)=>b.combinedRating-a.combinedRating);
-    // console.log(recommendedBooks);
     // get the top 20 books
     recommendedBooks2=recommendedBooks2.slice(0,20);
+    let authors=recommendedBooks2.map(book => book.authors);
+    // unpack list of authors and save them in authors array
+    authors = authors.reduce((acc, val) => acc.concat(val), []);
+    authors_full_name = await Author.find({ author_id: { $in: authors } }).select('full_name author_id');
+    
+    // map each authors_full_name to each entry in list of book authors
+    recommendedBooks2.forEach(book => {
+        book.authors = book.authors.map(author => authors_full_name.find(author_full_name => author_full_name.author_id == author).full_name);
+    });
+
+
+
     return res.status(200).send(recommendedBooks2);
 
 
@@ -313,11 +307,9 @@ module.exports.getBook= async (req, res,next) =>{
     // the function will return 500 if there is an internal server error
     let book = await Book.findById(req.params.id).select('bookId title authors avgRating imageUrl');
     if (!book){return res.status(404).send('Book does not exist');}
-    console.log(book.authors);
     // get book authors by author id
     let authors = await Author.find({ author_id: { $in: book.authors } }).select('full_name');
     if (!authors){return res.status(404).send('Author does not exist');}
-    console.log(authors);
     book={
         ...book._doc,
         authors:authors
