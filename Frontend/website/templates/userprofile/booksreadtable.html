@@ -32,10 +32,11 @@
             <button
               class="btn btn-sm btn-link mt-2"
               data-bs-toggle="modal" 
-              data-bs-target="#rateBackdrop"
+              data-bs-target="#rateBackdrop{{book.bookId.id}}"
             >
               Edit
             </button>
+            {% include 'partials/_rate_modal.html'%}
           </td>
           {% else %}
           <td>
@@ -70,14 +71,14 @@
             </button>
           </td>
           {% endif %}
-
         </tr>
         {% endfor %}
       {% endif %}
       
     </table>
   </div>
- <!-- model review -->
+  
+  <!-- model review -->
   <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -100,32 +101,7 @@
       </div>
     </div>
   </div>
-  <!-- model rate -->
-  <div class="modal fade" id="rateBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="rateBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="rateBackdropLabel">Rate book</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form method="POST" action="{%  url 'userProfile:ratebook' %}">
-            {% csrf_token %}
-            <div class="mb-3">
-              <input type="hidden" name="book_id" value="{{ bookId.id }}" /> 
-              <label for="message-text" class="col-form-label">Rate:</label>
-              <input class="inputNumber" placeholder="#" min="0" max="5" type="number" name="rating" required/>
-            </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="submit" class="btn btn-primary">Save</button>
-            </div>
-          </form>
-      </div>
-    </div>
-  </div>
-<!-- -->
+  <!-- -->
 </div>
 
 

@@ -54,6 +54,7 @@ class UserBooks(View):
                 books = booksResponse.json()
                 #book has bookId which includes all the details of the book
                 #rename bookId[_id] to bookId[id]
+
                 for book in books:
                     book['bookId']['id'] = book['bookId'].pop('_id')
 
@@ -62,7 +63,7 @@ class UserBooks(View):
                 print("error occured")
                 return render(request, "userprofile/userbooks.html", {'books': []})
         except:
-            messages.error(request, "error occured")
+            print(request, "error occured")
             return render(request, "userprofile/userbooks.html", {'books': []})
             
 
@@ -74,21 +75,19 @@ class tbrBooks(View):
             booksResponse = requests.get('http://localhost:80/api/users/wanttoread', headers=headers)
             if booksResponse.status_code == 201:
                 books = booksResponse.json()
-                
                 return render(request, "userprofile/tbrbooks.html", {'books': books})
             else:
                 print("error occured")
                 return render(request, "userprofile/tbrbooks.html", {'books': []})
         except:
-            messages.error(request, "error occured")
+            print(request, "error occured")
             return render(request, "userprofile/tbrbooks.html", {'books': []})
     
 class rateBook(View):
     def post(self,request):
-        bookId = request.POST.get('book_Id')
+        bookId = request.POST.get('fe_eh')
         rating = request.POST.get('rating')
-        bookId ="644ec6a9b3f7a2aaead1f4d0"
-        print("bookId ",bookId)
+        print("bookId zsfsdgds ",bookId)
         print("rating ",rating)
         try:
             userToken = request.session.get('token')
