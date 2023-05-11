@@ -305,67 +305,77 @@ module.exports.Recommender= async (req, res, next) => {
     // return res.status(200).send(user.read);
 }
 
-// module.exports.editEvent= async (req, res, next) => {
-//     let { error } = validateScreeningRoom(_.pick(req.body,['screeningRoom']));
-//     if (error) return res.status(400).send(error.details[0].message);
-//     // let date1=new Date(req.body.date);
-//     // const offset=date1.getTimezoneOffset();
-//     // date1=new Date(date1.getTime()-(offset*60*1000));
-//     const startTime=req.body.startTime;
-//     const endTime=req.body.endTime;
-//     const range = [startTime.hour, startTime.hour+1 ,endTime.hour];
-//     let events = await Event.find({_id: { $ne: req.params.id } ,"screeningRoom":req.body.screeningRoom, 'date':req.body.date,'startTime.hour': range,'endTime.hour': range});
-//     if (events.length>0) {
-//         // if((event.startTime.hour<req.body.startTime.hour && event.endTime.hour>req.body.startTime.hour )
-//         //     || (event.startTime.hour<req.body.endTime.hour && event.endTime.hour>req.body.endTime.hour))
-//         return res.status(400).send('Event already exists at requested timeslot');
-//     }
-//     let seats;
-//     if(req.body.screeningRoom=="1")
-//     {
-//         seats=20;
-//     }
-//     else
-//     {
-//         seats=30;
-//     }
-//     let event = await Event.findOneAndUpdate({"_id":req.params.id},
-//     { 'startTime': req.body.startTime,
-//     'endTime': req.body.endTime,
-//     'date': req.body.date,
-//     'screeningRoom': req.body.screeningRoom,
-//     'seatsAmount':seats
-//     });
+module.exports.getBook= async (req, res,next) =>{
+    // this function is used to get a book by id
+    // the function will take as parameter the book id
+    // the function will return 200 if the book is found
+    // the function will return 404 if the book does not exist
+    // the function will return 500 if there is an internal server error
+    let book = await Book.findById(req.params.id).select('bookId title authors avgRating imageUrl');
+    if (!book){return res.status(404).send('Book does not exist');}
+    console.log(book.authors);
+    // get book authors by author id
+    let authors = await Author.find({ author_id: { $in: book.authors } }).select('full_name');
+    if (!authors){return res.status(404).send('Author does not exist');}
+    console.log(authors);
+    book={
+        ...book._doc,
+        authors:authors
+    }
+
+    return res.status(200).send(book);
+}
+module.exports.searchBooks= async (req, res,next) =>{
+    // this function is used to search for books by title, author, genre, or description by page 
+    // the function will take as parameter the search query
+    // the function will return 200 if the books are found
+    // the function will return 404 if the books do not exist
+    // the function will return 500 if there is an internal server error
+    // the function will return 400 if the search query is empty
+    // the function will return 400 if the page number is not a number
+    // the function will return 400 if the page number is less than 1
+    // the function will return 400 if the page number is greater than the number of pages
+    // the function will return 400 if the page number is not an integer 
+
+    // the request should be as follows
+    // http://localhost:3000/api/books/search?search=the&pageNumber=1
+    // the route handler will be as follows
+    // router.get('/search',auth,booksController.searchBooks);
+    // console.log(req.query.search);
+    // console.log(req);
+    pageNumber = req.query.pageNumber;
+    // console.log(req.query.search);
+    // console.log(pageNumber);
+    if (!pageNumber){return res.status(400).send('Page number is required');}
+    if (isNaN(pageNumber)){return res.status(400).send('Page number must be a number');}
+    if (pageNumber<1){return res.status(400).send('Page number must be greater than 0');}
+    let booksPerPage=20;
+    const books = await Book.find({ title: { $regex: req.query.search, $options: "i" } })
+        // .or([{ title: { $regex: req.query.search, $options: "i" } }, { description: { $regex: req.query.search, $options: "i" } }])
+        // .populate('Avatar', 'photoUrl -_id')
+        .select('bookId title authors avgRating ratingCount imageUrl sentimentCount sentimentAvg genres')
+        // .sort({ avgRating: -1 })
+        .skip((pageNumber-1)*booksPerPage).limit(booksPerPage);
+    if (!books){return res.status(404).send('Books do not exist');}
+    // get list of authors from books.aurhors
+    let authors=books.map(book => book.authors);
+    // console.log(authors);
+    // unpack list of authors and save them in authors array
+    authors = authors.reduce((acc, val) => acc.concat(val), []);
+    // console.log(authors);
+    authors_full_name = await Author.find({ author_id: { $in: authors } }).select('full_name author_id');
+    // console.log(authors_full_name);
+    // map each authors_full_name to each entry in list of book authors
+    books.forEach(book => {
+        book.authors = book.authors.map(author => authors_full_name.find(author_full_name => author_full_name.author_id == author).full_name);
+    });
+
+    // sort books where title includes search query then description includes search query
+    // books=books.sort((a,b)=>(a.title.includes(req.query.search)?0:1)-(b.title.includes(req.query.search)?0:1)||(a.description.includes(req.query.search)?0:1)-(b.description.includes(req.query.search)?0:1));
+    let numberOfBooks = await Book.countDocuments({ title: { $regex: req.query.search, $options: "i" } });
+    let numberOfPages=Math.ceil(numberOfBooks/booksPerPage);
+    if (pageNumber>numberOfPages){return res.status(400).send('Page number must be less than or equal to '+numberOfPages);}
+    return res.status(200).send({books:books,numberOfPages:numberOfPages});
+    // return res.status(200).send(books);
     
-//     try {
-//         await event.save();
-//         return res.status(201).send('Event edited successfully');
-//     } catch (error) {
-//         console.log(error);
-//         return res.status(500).send({ error: "Internal Server error" });
-//     }
-// }
-
-// module.exports.getEvents=async (req, res, next)=>{
-//     let events=await Event.find({'movieId':req.params.movieId}).select('-__v');
-//     // console.log(events);
-//     // for(let i=0; i<events.length; i++)
-//     // {
-//     //     let dateold=events[i].date.toISOString().slice(0,10);
-//     //     delete events[i].date;
-//     //     events[i]["datee"]=dateold;
-//     //     console.log(events[i]["datee"]);
-//     // }
-//     return res.status(201).send(events);
-// }
-
-// module.exports.getEvent=async (req, res, next)=>{
-//     let events=await Event.find({_id:req.params.id}).populate('movieId','title imageUrl').select('-__v');
-//     return res.status(201).send(events);
-// }
-
-// module.exports.getSeats= async (req, res, next) => {
-//     const seats=await Event.findById(req.params.eventId).select('reservedSeats.seat');
-//     console.log(seats);
-//     return res.status(201).send(seats.reservedSeats);
-// }
+}
