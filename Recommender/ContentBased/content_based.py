@@ -23,7 +23,7 @@ def content_based_recommendation(book_id: int, genre_df: pd.DataFrame, N=CB_TOP_
     return book_recommendations
 
 
-def rating_matrix_books_via_CB(book_id: list, genre_df: pd.DataFrame, N=CB_TOP_N_BOOKS) -> pd.Series:
+def content_based_recommendation_mulitple_books(book_id: list, genre_df: pd.DataFrame, N=CB_TOP_N_BOOKS) -> pd.Series:
     """
     Function to get books for the rating matrix for the books in the book_id list using content based recommendation
     :params book_id: list of book ids

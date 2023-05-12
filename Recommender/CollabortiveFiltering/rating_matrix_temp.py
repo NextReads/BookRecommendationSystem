@@ -5,11 +5,7 @@ import pandas as pd
 from Utils.common_functions import *
 from Utils.constants import *
 
-
-
-
-
-
+#
 
 
 def data_shrinking(current_user: str, current_read_books_df: pd.DataFrame, ratings_df: pd.DataFrame) -> pd.DataFrame:
@@ -75,8 +71,6 @@ def data_shrinking(current_user: str, current_read_books_df: pd.DataFrame, ratin
         unique_books) & ratings_df['user_id'].isin(unique_users)]
 
     return users_books_df
-
-
 
 
 def get_cf_data(current_user: str, current_read_books_dict: dict, ratings_df: pd.DataFrame) -> pd.DataFrame:
