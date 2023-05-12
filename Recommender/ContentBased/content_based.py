@@ -16,7 +16,7 @@ def content_based_recommendation(book_id: int, genre_df: pd.DataFrame, N=CB_TOP_
     """
     genre_df_copy = genre_df.copy()
     genre_df_copy = map_index_to_key(genre_df_copy)
-    genre_df_copy = remove_row_has_negative(genre_df_copy)
+    # genre_df_copy = remove_row_has_negative(genre_df_copy)
     tf_idf = TF_IDF_matrix(genre_df_copy)
     similarity = cosine_similarity(book_id, tf_idf)
     book_recommendations = book_recommendation(similarity)
@@ -51,8 +51,8 @@ def create_genres_df_subset(book_id: list, genre_df: pd.DataFrame) -> pd.DataFra
     :return: the dataframe that contains the genres of the books in the book_id list
     """
     genres_df_subset = genre_df[genre_df['book_id'].isin(book_id)]
-    if len(genres_df_subset) != 0:
-        genres_df_subset = remove_row_has_negative(genres_df_subset)
+    # if len(genres_df_subset) != 0:
+    #     genres_df_subset = remove_row_has_negative(genres_df_subset)
     return genres_df_subset
 
 
