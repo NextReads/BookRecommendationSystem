@@ -36,12 +36,16 @@
               <button class="fa fa-star rmv-btn star5" value="5" title="it was amazing"type="submit" name="rating"></button>
             </div> -->
           </form>
-          <button
-            type="button"
-            class="btn btn-sm btn-outline-secondary mt-2 "
-          >
-            Want to read
-          </button>
+          <form method="POST" action="{% url 'want-to-read' %}">
+            {% csrf_token %}
+            <input type="hidden" name="book_id" value="{{ book.id }}" />
+            <button
+              type="submit"
+              class="btn btn-sm btn-outline-secondary mt-2 "
+            >
+              Want to read
+            </button>
+          </form>
         </div>
       </div>
     </div>

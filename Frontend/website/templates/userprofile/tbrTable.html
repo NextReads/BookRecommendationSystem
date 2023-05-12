@@ -1,4 +1,5 @@
 {% load static %}
+{% include 'partials/_messages.html' %}
 <div class="table">
     <div class="table-header">Want to read</div>
     <table cellspacing="0">
@@ -19,12 +20,12 @@
         <td>
           <img
             class="table-img"
-            src="{{book.bookId.imageUrl}}"
+            src="{{book.imageUrl}}"
             alt=""
           />
         </td>
-        <td>{{book.bookId.title}}</td>
-        <td>{% if book.bookId.genres %}{{book.bookId.genres}}{% else %}-{% endif %}</td>
+        <td>{{book.title}}</td>
+        <td>{% if book.genres %}{{book.genres}}{% else %}-{% endif %}</td>
         <td><button class="btn btn-sm btn-outline-primary mt-2">similar books</button></td>
         <td>
           <button class="btn btn-sm btn-outline-primary mt-2">set as currently reading</button>

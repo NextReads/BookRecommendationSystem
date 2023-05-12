@@ -168,7 +168,9 @@ class rateBooksStepView(View):
                     print("rateCount", rateCount)
                     request.session['rateCount'] = rateCount
             except RequestException as e:
-                print("An error occurred while making the request. Please try again later.") 
+                messages.error(request, "An error occurred while making the request. Please try again later.")
+                return render(request, "authentication/rate-books-step.html", {})
+
 
             try:
                 booksResposne = requests.get('http://localhost:80/api/books/getbooks?page='+str(page))
@@ -187,7 +189,8 @@ class rateBooksStepView(View):
                         messages.error(request, booksResposne.text)
                         return render(request, "authentication/rate-books-step.html", {})
             except RequestException as e:
-                print("An error occurred while making the request. Please try again later.")
+                messages.error(request, "An error occurred while making the request. Please try again later.")
+                return render(request, "authentication/rate-books-step.html", {})
 
 class rateBook(View):
 
@@ -230,5 +233,27 @@ class rateBook(View):
         else:
             messages.error(request, 'Please specify rating.')
             return redirect('rate-books-step')
-        
 
+class wantToRead(View):
+    def post (self, request):
+        bookId = request.POST.get('book_id')
+        print("bookId", bookId)
+        try:
+            headers = {'x-auth-token':request.session['token'] }
+            response = requests.post('http://localhost:80/api/users/'+ str(bookId)+'/wantToRead', headers=headers)
+            print("response", response.text)
+            print("response", response.status_code)
+            if response.status_code == 201:
+                messages.success(request, response.text)
+                return redirect('rate-books-step')
+
+            else:
+                messages.error(request, response.text)
+                return redirect('rate-books-step')
+        except RequestException as e:
+            messages.error(request, "An error occurred while making the request. Please try again later.")
+            return redirect('rate-books-step')
+        
+       
+
+        
