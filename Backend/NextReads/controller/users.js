@@ -147,3 +147,18 @@ module.exports.getRatedBooks= async (req, res, next) => {
     });
     return res.status(200).send({count:count});
 }
+module.exports.addToWantToRead= async (req, res, next) => {
+    const book=await Book.findById( req.params.bookId);
+    if(!book) return res.status(404).send('The book with the given ID was not found.');
+    
+    try{
+        const user = await User.findOne({ _id: req.user._id });
+        if(user.wantToRead.includes(book._id)) return res.status(400).send('Book already in want to read list');
+        user.wantToRead.push(book);
+        await user.save();
+        return res.status(201).send("book added successfully");
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ error: "Internal Server error" });
+    }
+}

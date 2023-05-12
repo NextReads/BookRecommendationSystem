@@ -112,7 +112,19 @@ module.exports.getBooks= async (req, res, next) => {
     booksPerPage = 15;
     if (!req.query.page) return res.status(400).send('Please specify page number');
     let page = parseInt(req.query.page);
-    let books = await Book.find().populate('Author').skip((page-1)*booksPerPage).limit(booksPerPage);  
+    let books = await Book.find().skip((page-1)*booksPerPage).limit(booksPerPage);
+    //get book authors
+    for (let i=0;i<books.length;i++){
+        books[i]._doc.populatedAuthors = [];
+        for (let j=0;j<books[i].authors.length;j++){
+            let author = await Author.find({"author_id":books[i].authors[j]})
+            let x = {
+                "author_id":author[0].author_id,
+                "name":author[0].full_name,
+            }
+            books[i]._doc.populatedAuthors.push(x);
+        }
+    }  
     if (books.length==0) return res.status(404).send('No books found');
     return res.status(200).send(books);
 }

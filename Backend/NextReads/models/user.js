@@ -87,11 +87,11 @@ const userSchema = new mongoose.Schema({
         required: true,
         ref: 'Book'
     }],
-    currentlyReading:[{
+    currentlyReading:{
         type: mongoose.Schema.Types.ObjectId,
-        required: true,
+        //required: true,
         ref: 'Book'
-    }],
+    },
     imageUrl: {
         type: String,
         // required: true,
@@ -105,6 +105,11 @@ const userSchema = new mongoose.Schema({
         trim: true,
         minlength: 1,
         maxlength: 1024
+    },
+    toReadNext:{
+        type: mongoose.Schema.Types.ObjectId,
+        //required: true,
+        ref: 'Book'
     }
 });
 userSchema.methods.generateAuthToken = function() { 
