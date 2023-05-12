@@ -186,6 +186,3 @@ class CollaborativeFiltering:
         sorted_predicted_rating_dict = self.sort_prediction_descedingly(
             predicted_rating_dict)
         return sorted_predicted_rating_dict
-
-
-

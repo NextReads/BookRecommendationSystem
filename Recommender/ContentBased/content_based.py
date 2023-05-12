@@ -65,11 +65,11 @@ def new_genre_entry(genres_df_subset: pd.DataFrame) -> pd.DataFrame:
 
     row_weights = genres_df_subset.sum(axis=1) / genres_df_subset.sum().sum()
     genres_df_subset = genres_df_subset.mul(row_weights, axis=0)
-    new_genre_entry = genres_df_subset.sum(axis=0)
-    new_genre_entry = new_genre_entry.astype(int)
+    new_entry = genres_df_subset.sum(axis=0)
+    new_entry = new_entry.astype(int)
     # the book_id is set to CB_IMAGINARY_BOOK_ID
-    new_genre_entry['book_id'] = CB_IMAGINARY_BOOK_ID
-    return new_genre_entry
+    new_entry['book_id'] = CB_IMAGINARY_BOOK_ID
+    return new_entry
 
 
 def map_index_to_key(genre_mean: pd.DataFrame, key="book_id") -> pd.DataFrame:
