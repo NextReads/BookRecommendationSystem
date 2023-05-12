@@ -19,7 +19,7 @@ def content_based_recommendation(book_id: int, genre_df: pd.DataFrame, N=CB_TOP_
     # genre_df_copy = remove_row_has_negative(genre_df_copy)
     tf_idf = TF_IDF_matrix(genre_df_copy)
     similarity = cosine_similarity(book_id, tf_idf)
-    book_recommendations = book_recommendation(similarity)
+    book_recommendations = book_recommendation(similarity, N)
     return book_recommendations
 
 
@@ -32,11 +32,8 @@ def rating_matrix_books_via_CB(book_id: list, genre_df: pd.DataFrame, N=CB_TOP_N
     """
     genre_df_copy = genre_df.copy()
     genres_df_subset = create_genres_df_subset(book_id, genre_df_copy)
-    if len(genres_df_subset) == 0:
-        return pd.DataFrame()
     new_entry = new_genre_entry(genres_df_subset)
-    if len(new_entry) == 0:
-        return pd.DataFrame()
+    # TODO:: checking if the all of the values of the new entry are zero/nan
     genre_df_copy = genre_df_copy.append(new_entry, ignore_index=True)
     cb_recommendation = content_based_recommendation(
         CB_IMAGINARY_BOOK_ID, genre_df_copy, N)
