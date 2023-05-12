@@ -47,11 +47,12 @@
             >
               Rate
             </button>
+            {% include 'partials/_rate_modal.html'%}
           </td>
           {% endif %}
 
-          {% if book.review %}
-          <td>{{book.review}} <br>
+          {% if book.userReview %}
+          <td>{{book.userReview}} <br>
             <button
               class="btn btn-sm btn-link mt-2"
               data-bs-toggle="modal" 
@@ -59,6 +60,7 @@
             >
               Edit
             </button>
+            {% include 'partials/_review_modal.html'%}
           </td>
           {% else %}
           <td>
