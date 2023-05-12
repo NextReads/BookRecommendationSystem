@@ -4,35 +4,35 @@ const mongoose = require('mongoose');
 
 
 const authorSchema = new mongoose.Schema({
-    firstName: {
+    first_name: {
         type: String,
         required: true,
         trim: true,
         minlength: 1,
         maxlength: 50
     },
-    middleName: {
+    middle_name: {
         type: String,
         required: false,
         trim: true,
         minlength: 1,
         maxlength: 50
     },
-    lastName: {
+    last_name: {
         type: String,
         required: false,
         trim: true,
         minlength: 1,
         maxlength: 50
     },
-    fullName: {
+    full_name: {
         type: String,
         required: true,
         trim: true,
         minlength: 1,
         maxlength: 150
     },
-    authorId:{
+    author_id:{
         type: String,
         required: true,
         trim: true,
