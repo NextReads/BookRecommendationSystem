@@ -125,7 +125,7 @@ def TF_IDF_matrix(genre_mean: pd.DataFrame) -> pd.DataFrame:
     :return: the tf-idf matrix
     """
     tf_matrix = mean_matrix(genre_mean)
-    tf_matrix = remove_row_has_one(tf_matrix)
+    # tf_matrix = remove_row_has_one(tf_matrix)
     idf_matrix = IDF_matrix(tf_matrix)
     rf_idf__matrix = tf_matrix.mul(idf_matrix, axis=1)
     return rf_idf__matrix
