@@ -33,8 +33,12 @@ def content_based_recommendation_mulitple_books(book_id: list, genre_df: pd.Data
     genre_df_copy = genre_df.copy()
     genres_df_subset = create_genres_df_subset(book_id, genre_df_copy)
     new_entry = new_genre_entry(genres_df_subset)
+    new_entry_df = pd.DataFrame(new_entry).T
     # TODO:: checking if the all of the values of the new entry are zero/nan
-    genre_df_copy = genre_df_copy.append(new_entry, ignore_index=True)
+    # genre_df_copy = genre_df_copy.append(new_entry, ignore_index=True)
+    # concatenate the new entry to the genre_df_copy
+    genre_df_copy = pd.concat([new_entry_df, genre_df_copy], ignore_index=True)
+
     cb_recommendation = content_based_recommendation(
         CB_IMAGINARY_BOOK_ID, genre_df_copy, N)
     return cb_recommendation

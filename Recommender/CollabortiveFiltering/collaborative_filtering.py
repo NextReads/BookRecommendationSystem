@@ -35,13 +35,18 @@ class CollaborativeFiltering:
         """
         # get the common items between the two users
         common_items = user1.index.intersection(user2.index)
+        # print(" common_items: ", common_items)
 
         # get the ratings of the common items for each user
         user1_common_ratings = user1.loc[common_items]
         user2_common_ratings = user2.loc[common_items]
+        # print(" user1_common_ratings: ", user1_common_ratings)
+        # print(" user2_common_ratings: ", user2_common_ratings)
 
         # calculate the pearson correlation
         pearson_correlation = user1_common_ratings.corr(user2_common_ratings)
+        # print(" pearson_correlation: ", pearson_correlation)
+        # print("----------------------------------------")
 
         return pearson_correlation
 
@@ -54,6 +59,7 @@ class CollaborativeFiltering:
         """
         # get the user row
         user_row = ratings_matrix.loc[user_id, :]
+        # print(" user_row: ", user_row.T)
 
         # get the other users rows
         other_users_rows = ratings_matrix.drop(user_id)
@@ -78,8 +84,10 @@ class CollaborativeFiltering:
 
         sorted_pearson_similiarity = self.users_pearson_similiarity.sort_values(
             ascending=False)
+        # print(" sorted_pearson_similiarity: ", sorted_pearson_similiarity)
         sorted_pearson_similiarity1 = sorted_pearson_similiarity[sorted_pearson_similiarity <= 0]
         # if it's not empty set the first_zero_neg_index to the first index of the sorted_pearson_similiarity1
+        # print(" sorted_pearson_similiarity1: ", sorted_pearson_similiarity1)
         if not sorted_pearson_similiarity1.empty:
             first_zero_neg_index = sorted_pearson_similiarity1.index[0]
         else:

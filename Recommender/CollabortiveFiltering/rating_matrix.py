@@ -133,6 +133,7 @@ class RatingMatrix:
         users = users_df.groupby('user_id').count().sort_values(
             'book_id', ascending=False).head(users_number).index
 
+        # NOTE:: to be removed?
         if current_user not in users:
             users = users.append(pd.Index([current_user]))
 
@@ -215,9 +216,46 @@ class RatingMatrix:
     # 				1- The single book_ID (by collaborative filtering)
     # 				2- Users (users who read most of the books in step 1)
 
-    def cf_user__content_specific(self, current_user: str, current_read_books_df: pd.DataFrame, ratings_df: pd.DataFrame, genres_df: pd.DataFrame, book_id: str) -> pd.DataFrame:
-        # check if the given book_id has all nan values in the genres_df
-        if genres_df[genres_df['book_id'] == int(book_id)].isnull().all().all():
+    # def cf_user__content_specific(self, current_user: str, current_read_books_df: pd.DataFrame, ratings_df: pd.DataFrame, genres_df: pd.DataFrame, book_id: str) -> pd.DataFrame:
+    #     # check if the given book_id has all nan values in the genres_df
+    #     if genres_df[genres_df['book_id'] == int(book_id)].isnull().all().all():
+    #         return pd.DataFrame()
+    #     # this has a similar structure to cf_user__content_all but using content_based_recommendation instead
+    #     from_user_number, from_content_number = self.divide_max_book_number(
+    #         len(current_read_books_df))
+    #     # get the books from the content_based_recommendation
+    #     books_cb = content_based_recommendation(
+    #         book_id, genres_df, from_content_number)
+
+    #     from_content_number = len(books_cb)
+
+    # # 			B- Case book_ID no genre (follow steps from 2-I)
+
+    def get_cf_rating_matrix(self, current_user: str, current_read_books_dict: dict, ratings_df: pd.DataFrame, genres_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        """
+
+        actual_user_read_books_df, current_read_books_df = self.dict_to_dataframe(
+            current_user, current_read_books_dict)
+
+        # add the df to the ratings_df
+        ratings_df = pd.concat(
+            [actual_user_read_books_df, ratings_df], ignore_index=True)
+
+        # check if the data is compatible with the CF algorithm
+        if not self.check_cf_compatibilty(current_user, current_read_books_df, ratings_df):
+            print("The data is not compatible with the CF algorithm")
+            # TODO:: calling the content_based_recommendation
             return pd.DataFrame()
 
-            # 			B- Case book_ID no genre (follow steps from 2-I)
+        users_books_df = self.cf_user__content_all(
+            current_user, current_read_books_df, ratings_df, genres_df)
+        if users_books_df.empty:
+            print("cf_user called: case: user + books (have no equivalent genre)")
+            users_books_df = self.cf_user(
+                current_user, current_read_books_df, ratings_df)
+        print("cf_user__content_all called: case: user + books (have equivalent genre)")
+        
+        ratings_matrix = create_ratings_matrix(users_books_df)
+        ratings_matrix_centered = mean_centered_rating_matrix(ratings_matrix)
+        return ratings_matrix, ratings_matrix_centered
