@@ -87,11 +87,11 @@ const userSchema = new mongoose.Schema({
         required: true,
         ref: 'Book'
     }],
-    currentlyReading:{
+    currentlyReading:[{
         type: mongoose.Schema.Types.ObjectId,
         //required: true,
         ref: 'Book'
-    },
+    }],
     imageUrl: {
         type: String,
         // required: true,

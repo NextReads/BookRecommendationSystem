@@ -162,3 +162,22 @@ module.exports.addToWantToRead= async (req, res, next) => {
         res.status(500).send({ error: "Internal Server error" });
     }
 }
+module.exports.toReadNext= async (req, res, next) => {
+    const book=await Book.findById( req.params.bookId);
+    if(!book) return res.status(404).send('The book with the given ID was not found.');
+    
+    try{
+        const user = await User.findOne({ _id: req.user._id });
+        user.toReadNext=book;
+        await user.save();
+        return res.status(201).send("book added successfully");
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ error: "Internal Server error" });
+    }
+}
+module.exports.getToReadNext= async (req, res, next) => {
+    const book=await User.findOne({ _id: req.user._id }).select('toReadNext').populate('toReadNext');
+    if (!book) return res.status(404).send('book not found');
+    return res.status(200).send(book.toReadNext);
+}
