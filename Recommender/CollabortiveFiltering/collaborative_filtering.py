@@ -25,6 +25,10 @@ class CollaborativeFiltering:
         self.ratings_matrix_centered = ratings_matrix_centered
         self.users_pearson_similiarity = self.pearson_similiarity(
             user_id, ratings_matrix)
+        # check if pearson similiarity all values are nan
+        self.sentiment = True
+        if self.users_pearson_similiarity.isnull().all():
+            self.sentiment = False
 
     def pearson_correlation(self, user1: pd.Series, user2: pd.Series) -> float:
         """
@@ -189,8 +193,12 @@ class CollaborativeFiltering:
         # 1. get the predicted rating
         # 2. sort the predicted rating around the mean of the current user rating
         # 3. return the sorted predicted rating dictionary
-
-        predicted_rating_dict = self.get_predicted_rating()
-        sorted_predicted_rating_dict = self.sort_prediction_descedingly(
-            predicted_rating_dict)
-        return sorted_predicted_rating_dict
+        sorted_predicted_rating_dict = {}
+        if self.sentiment == True:
+            predicted_rating_dict = self.get_predicted_rating()
+            # remove all nan values from predicted_rating_dict
+            predicted_rating_dict = {
+                k: v for k, v in predicted_rating_dict.items() if not np.isnan(v)}
+            sorted_predicted_rating_dict = self.sort_prediction_descedingly(
+                predicted_rating_dict)
+        return sorted_predicted_rating_dict, self.sentiment

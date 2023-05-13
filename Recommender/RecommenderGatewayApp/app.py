@@ -130,7 +130,7 @@ def recommendUserBook():
 
         start_time = time.time()
         rm = RatingMatrix()
-        ratings_matrix, ratings_matrix_centered = rm.get_cf_rating_matrix(
+        ratings_matrix, ratings_matrix_centered, books_cb = rm.get_cf_rating_matrix(
             user_id, books, ratings_df_copy, genre_data_copy)
 
         cf_model = CollaborativeFiltering(

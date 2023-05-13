@@ -109,7 +109,7 @@ class RatingMatrix:
             current_read_books_df, genres_df, from_content_number)
 
         if books_cb.empty:
-            return pd.DataFrame()
+            return pd.DataFrame(), pd.DataFrame()
         from_content_number = len(books_cb)
         books_cb = books_cb.index.to_list()
 
@@ -139,7 +139,7 @@ class RatingMatrix:
         ratings = ratings_df[ratings_df['user_id'].isin(
             users) & ratings_df['book_id'].isin(books_cb + books_user)]
 
-        return ratings
+        return ratings, books_cb
 
     # 			B- cf_user (Case books has no genres)
     # 				1- Users (users who read most of the target user books)
@@ -250,7 +250,7 @@ class RatingMatrix:
             # TODO:: calling the content_based_recommendation
             return pd.DataFrame()
 
-        users_books_df = self.cf_user__content_all(
+        users_books_df, books_cb = self.cf_user__content_all(
             current_user, current_read_books_rating_df, ratings_df, genres_df)
         if users_books_df.empty:
             print("cf_user called: case: user + books (have no equivalent genre)")
@@ -262,4 +262,4 @@ class RatingMatrix:
 
         ratings_matrix = create_ratings_matrix(users_books_df)
         ratings_matrix_centered = mean_centered_rating_matrix(ratings_matrix)
-        return ratings_matrix, ratings_matrix_centered
+        return ratings_matrix, ratings_matrix_centered, books_cb
