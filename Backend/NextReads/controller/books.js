@@ -268,13 +268,23 @@ module.exports.Recommender= async (req, res, next) => {
     if (!recommendedBooks){return res.status(400).send('Books does not exist');}
     //  
     // for every book in recommendedBooks, add the rating from the dict of books
+    let sentimentHeaderCheck = response.headers.get('sentiment');
+    console.log(sentimentHeaderCheck);
     let recommendedBooks2=[];
     for (let book of recommendedBooks){
-        let cRating = books[book.bookId]*3+(book.ratingCount/500000)+(book.sentimentCount/5000)+book.sentimentAvg*20;
+        cfRatingRet = books[book.bookId];
+        // if sentimentHeaderCheck is true, add sentiment score to book
+        if (bool(sentimentHeaderCheck)){
+            cfRatingRet = books[book.bookId]
+        }
+        else{
+            cfRatingRet = 0;
+        }
+        let cRating = cfRatingRet*3+(book.ratingCount/500000)+(book.sentimentCount/5000)+book.sentimentAvg*20;
 
         book={
             ...book._doc,
-            CFrating:books[book.bookId],
+            CFrating:cfRatingRet,
             // combinedRating is a rating that combines sentiment score with Cf rating and average rating and rating count and sentiment count
             combinedRating:cRating
         }
