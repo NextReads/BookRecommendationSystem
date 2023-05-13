@@ -13,6 +13,7 @@
               </div>
             </div>
             <div class="col">
+              <a href="#" style="text-decoration: none;">
               <div class="card mx-5 shadow-sm" style="width: 12rem">
                 <img
                   src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1553383690l/2657.jpg"
@@ -32,17 +33,19 @@
                   </div>
                 </div>
               </div>
+              </a>
             </div>
             <div class="col">
+              <a href="#" style="text-decoration: none;">
               <div class="card mx-5 shadow-sm" style="width: 12rem">
                 <img
-                  src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1553383690l/2657.jpg"
+                  src="{{toReadNext.imageUrl}}"
                   class="bd-placeholder-img card-img-top"
                   height="260"
                 />
                 <div class="card-header">Want to read next</div>
                 <div class="card-body text-center">
-                  <h5 class="card-title">Book title</h5>
+                  <h5 class="card-title">{{toReadNext.title}}</h5>
                   <div class="justify-content-between align-items-center">
                     <button
                       type="button"
@@ -53,7 +56,9 @@
                   </div>
                 </div>
               </div>
+              </a>
             </div>
           </div>
         </div>
 {% endblock %}       
+<!-- {% url 'userProfile:to-read-next' %} -->

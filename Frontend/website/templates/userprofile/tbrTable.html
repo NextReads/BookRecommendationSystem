@@ -28,7 +28,11 @@
         <td>{% if book.genres %}{{book.genres}}{% else %}-{% endif %}</td>
         <td><button class="btn btn-sm btn-outline-primary mt-2">similar books</button></td>
         <td>
-          <button class="btn btn-sm btn-outline-primary mt-2">set as currently reading</button>
+          <form method="POST" action="{% url 'userProfile:to-read-next' %}">
+            {% csrf_token %}
+            <input type="hidden" name="book_id" value="{{ book.id }}" />
+            <button type = "submit" class="btn btn-sm btn-outline-primary mt-2">To Read Next</button>
+          </form>
         </td>
       </tr>
       {% endfor %}

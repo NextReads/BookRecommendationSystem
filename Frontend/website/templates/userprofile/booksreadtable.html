@@ -10,6 +10,7 @@
         <th>Genres</th>
         <th>My rating</th>
         <th width="230">My review</th>
+        <th>View book</th>
       </tr>
       {% if books|length == 0 %}
         <tr>
@@ -75,6 +76,9 @@
             {% include 'partials/_review_modal.html'%}
           </td>
           {% endif %}
+          <td>
+            <a href="{% url 'userProfile:book-details' book_id=book.bookId.id %}"class="btn btn-sm btn-outline-primary mt-2">View</a>
+          </td>
         </tr>
         {% endfor %}
       {% endif %}

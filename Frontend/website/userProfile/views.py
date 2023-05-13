@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.views import View
 from django.contrib import messages
+from django.http import JsonResponse
+
 
 
 import requests
@@ -11,7 +13,20 @@ import requests
 
 # Create your views here.
 def UserProfile(request):
-    return render(request, "userprofile/userhome.html", {})
+    # get to read next book
+    def getToReadNext():
+        userToken = request.session.get('token')
+        headers = {'x-auth-token': userToken}
+        toReadNextResponse = requests.get('http://localhost:80/api/users/toreadnext', headers=headers)
+        if toReadNextResponse.status_code == 200:
+            toReadNext = toReadNextResponse.json()
+            #change bookId[_id] to bookId[id]
+            toReadNext['id'] = toReadNext.pop('_id')
+            return toReadNext
+        else:
+            return JsonResponse({'message_error': 'error in getting to read next book.'}, status=400)
+        
+    return render(request, "userprofile/userhome.html", {'toReadNext': getToReadNext()})
 
 class UserRecommendations(View):
     def get(self, request):
@@ -75,6 +90,8 @@ class tbrBooks(View):
             booksResponse = requests.get('http://localhost:80/api/users/wanttoread', headers=headers)
             if booksResponse.status_code == 201:
                 books = booksResponse.json()
+                for book in books:
+                    book['id'] = book.pop('_id')
                 return render(request, "userprofile/tbrbooks.html", {'books': books})
             else:
                 print("error occured")
@@ -95,11 +112,13 @@ class rateBook(View):
             data = {'bookId': bookId, 'rating': rating}
             response = requests.post('http://localhost:80/api/books/'+ str(bookId)+'/rating', json=data, headers=headers)
             if response.status_code == 201:
+                messages.success(request, 'Book rated successfully')
                 return redirect('userProfile:userbooks')
             else:
-                print(response.status_code)
+                messages.error(request, 'Error occured while rating book')
                 return redirect('userProfile:userbooks')
         except:
+            messages.error(request, 'Error occured while rating book')
             return redirect('userProfile:userbooks')
         
 class reviewBook(View):
@@ -121,6 +140,43 @@ class reviewBook(View):
                 return redirect('userProfile:userbooks')
         except:
             return redirect('userProfile:userbooks')
+        
+class setToReadNext(View):
+    def post(self,request):
+        bookId = request.POST.get('book_id')
+        print("bookId",bookId)
+        try:
+            userToken = request.session.get('token')
+            headers = {'x-auth-token': userToken}
+            response = requests.post('http://localhost:80/api/users/'+ str(bookId) +'/toreadnext', headers=headers)
+            if response.status_code == 201:
+                messages.success(request, 'set to read next successfully')
+                return redirect('userProfile:tbrbooks')
+            else:
+                messages.error(request,response.text)
+                return redirect('userProfile:tbrbooks')
+        except:
+            messages.error(request, response.text)
+            return redirect('userProfile:tbrbooks')
+        
 class browseBooks(View):
     def get(self,request):
         return render(request, "userprofile/browseBooks.html",{} )
+    
+## bookDetails as function
+def bookDetails(request, book_id):
+    #print("bookId",book_id)
+    try:
+        response = requests.get('http://localhost:80/api/books/book/'+ str(book_id))
+        if response.status_code == 200:
+            book = response.json()
+            print(book)
+            return render(request, "bookDetails.html", {'book': book})
+        else:
+            messages.error(request, response.text)
+            return redirect('userProfile:userbooks')
+        
+    except: 
+        return redirect('userProfile:userbooks')
+    
+#645aa639dfa36522587195d2

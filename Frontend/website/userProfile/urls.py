@@ -11,5 +11,7 @@ urlpatterns = [
     path('browsebooks',views.browseBooks.as_view(), name='browseBooks'),
     path('userbooks/ratebook', views.rateBook.as_view(), name='ratebook'),
     path('userbooks/reviewbook', views.reviewBook.as_view(), name='reviewbook'),
+    path('userhome/to-read-next', views.setToReadNext.as_view(), name='to-read-next'),
+    path('book/<str:book_id>', views.bookDetails, name='book-details'),
 
 ]

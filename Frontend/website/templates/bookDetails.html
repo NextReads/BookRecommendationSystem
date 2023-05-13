@@ -1,0 +1,246 @@
+{% extends 'userprofile/userprofile_base.html' %} {% load static %} 
+{% block content %}
+
+<head>
+    <title>Book Details Page</title>
+    <style>
+      /* Custom CSS */
+      .book-image {
+        max-width: 100%;
+        height: auto;
+      }
+      .rating-stars {
+        margin-top: 10px;
+      }
+      .similar-books {
+        margin-top: 30px;
+      }
+      .carousel-control-prev-icon,
+      .carousel-control-next-icon {
+        filter: invert(100%); /* Invert the color to black */
+    }
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 5%;
+    }
+    .carousel-item img {
+        width: 130px;
+        height: auto;
+        border-radius: 5px;
+    }
+    .responsive-img {
+        display: block;
+        height: auto;
+        width: 200px;
+        border-radius: 5px;
+    }
+    
+    .stars .fa-star {
+  color: grey;
+}
+.rmv-btn {
+  padding: 0;
+  border: none;
+  border-color: transparent !important;
+  background: transparent !important;
+
+}
+
+/* prev siblings should be orange */
+.stars:hover .fa-star{
+  color: orange;
+}
+
+.stars .fa-star:hover ~ .fa-star {
+  color: grey;
+}
+
+.star-rating {
+  margin: 0px 0 0px;
+  font-size: 0;
+  white-space: nowrap;
+  display: inline-block;
+  width: 175px;
+  height: 35px;
+  overflow: hidden;
+  position: relative;
+  background: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB3aWR0aD0iMjBweCIgaGVpZ2h0PSIyMHB4IiB2aWV3Qm94PSIwIDAgMjAgMjAiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDIwIDIwIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cG9seWdvbiBmaWxsPSIjREREREREIiBwb2ludHM9IjEwLDAgMTMuMDksNi41ODMgMjAsNy42MzkgMTUsMTIuNzY0IDE2LjE4LDIwIDEwLDE2LjU4MyAzLjgyLDIwIDUsMTIuNzY0IDAsNy42MzkgNi45MSw2LjU4MyAiLz48L3N2Zz4=');
+  background-size: contain;
+ }
+
+.star-rating i {
+  opacity: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 20%;
+  z-index: 1;
+  background: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB3aWR0aD0iMjBweCIgaGVpZ2h0PSIyMHB4IiB2aWV3Qm94PSIwIDAgMjAgMjAiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDIwIDIwIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cG9seWdvbiBmaWxsPSIjRkZERjg4IiBwb2ludHM9IjEwLDAgMTMuMDksNi41ODMgMjAsNy42MzkgMTUsMTIuNzY0IDE2LjE4LDIwIDEwLDE2LjU4MyAzLjgyLDIwIDUsMTIuNzY0IDAsNy42MzkgNi45MSw2LjU4MyAiLz48L3N2Zz4=');
+  background-size: contain;
+}
+
+.star-rating input {
+  opacity: 0;
+  display: inline-block;
+  width: 20%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  z-index: 2;
+  position: relative;
+}
+
+.star-rating input:hover + i,
+.star-rating input:checked + i {
+  opacity: 1;
+}
+.star-rating i ~ i {
+  width: 40%;
+}
+.star-rating i ~ i ~ i {
+  width: 60%;
+}
+.star-rating i ~ i ~ i ~ i {
+  width: 80%;
+}
+.star-rating i ~ i ~ i ~ i ~ i {
+  width: 100%;
+}
+
+
+
+
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <!-- First Column -->
+        <div class="col-md-4">
+          <img   class="responsive-img" src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524322945i/34499221.jpg" alt="Book Image" class="book-image">
+          <div class="rating-stars">
+            <!-- Rating Star Form -->
+            <form method="POST" >
+                {% csrf_token %}
+
+                <input type="hidden" name="book_id" value="{{ book.id }}" />
+                <span class="star-rating">
+                  <input  type="radio" name="rating" value="1"><i></i>
+                  <input  type="radio" name="rating" value="2"><i></i>
+                  <input  type="radio" name="rating" value="3"><i></i>
+                  <input  type="radio" name="rating" value="4"><i></i>
+                  <input  type="radio" name="rating" value="5"><i></i>
+                </span>
+                <button type="submit"  class="btn btn-sm btn-outline-secondary mt-2 ">Save rate</button>
+                
+            </form>
+          </div>
+          <div>
+            <!-- Buttons -->
+            <div class="dropdown">
+                <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                  Want to read
+                </a>
+              
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                  <li><a class="dropdown-item" href="#">Want to read</a></li>
+                  <li><a class="dropdown-item" href="#">Currently reading</a></li>
+                  <li><a class="dropdown-item" href="#">read</a></li>
+                </ul>
+              </div>
+            
+          </div>
+        </div>
+        <!-- Second Column -->
+        <div class="col-md-8">
+          <h1>Book Title</h1>
+          <p>Description of the book goes here.</p>
+          <p>Other details about the book.</p>
+          <div class="similar-books my-5">
+            <h3>Similar Books</h3>
+
+            <!-- Sliding Section for Similar Books -->
+            <div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-controls">
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleSlidesOnly" data-bs-slide="prev">
+                      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleSlidesOnly" data-bs-slide="next">
+                      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Next</span>
+                    </button>
+                  </div> 
+
+              <div class="carousel-inner px-5">
+                
+                <div class="carousel-item active">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-6 col-sm-6 my-2">
+                          <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524322945i/34499221.jpg" class="d-block" alt="Book 1">
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-6 my-2">
+                          <img  src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524322945i/34499221.jpg" class="d-block" alt="Book 2">
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-6 my-2">
+                          <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524322945i/34499221.jpg"  class="d-block" alt="Book 3">
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-6 my-2">
+                            <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524322945i/34499221.jpg"  class="d-block" alt="Book 3">
+                          </div>
+                      </div>
+                </div>
+
+
+                <div class="carousel-item">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-6 col-sm-6 my-2">
+                          <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524322945i/34499221.jpg" class="d-block" alt="Book 1">
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-6 my-2">
+                          <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524322945i/34499221.jpg" class="d-block" alt="Book 2">
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-6 my-2">
+                          <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524322945i/34499221.jpg" class="d-block" alt="Book 3">
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-6 my-2">
+                            <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524322945i/34499221.jpg"  class="d-block" alt="Book 3">
+                          </div>
+                      </div>
+                </div>
+
+
+                <div class="carousel-item">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-6 col-sm-6 my-2">
+                          <img  src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524322945i/34499221.jpg"  class="d-block" alt="Book 1">
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-6 my-2">
+                          <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524322945i/34499221.jpg"  class="d-block" alt="Book 2">
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-6 my-2">
+                          <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524322945i/34499221.jpg"  class="d-block" alt="Book 3">
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-6 my-2">
+                            <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524322945i/34499221.jpg"  class="d-block" alt="Book 3">
+                          </div>
+                      </div>
+                </div>
+
+              </div>
+              
+          
+            </div> <!-- End of Sliding Section -->
+            
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+  </body>
+{% endblock %}
+<!-- <link href="{% static 'css/bootstrap.css'%}" rel="stylesheet" /> -->
+
+<!-- <script src="{% static 'js/bootstrap.bundle.min.js'%}"></script> -->
