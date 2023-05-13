@@ -56,9 +56,7 @@ class RatingMatrix:
 
         actual_user_read_books_df = pd.DataFrame(
             {'book_id': current_books, 'user_id': current_user, 'rating': current_ratings})
-        current_read_books_df = list_to_dataframe(
-            current_books, ['book_id'])
-        return actual_user_read_books_df, current_read_books_df
+        return actual_user_read_books_df
 
     # rating matrix is used for the collaborative filtering algorithm, hence we need to check if the current user is compatible with the algorithm
 
@@ -104,11 +102,11 @@ class RatingMatrix:
     # 				2- Users (users who read most of the books in step 1)
     def cf_user__content_all(self, current_user: str, current_read_books_df: pd.DataFrame, ratings_df: pd.DataFrame, genres_df: pd.DataFrame) -> pd.DataFrame:
         from_user_number, from_content_number = self.divide_max_book_number(
-            len(current_read_books_df))
+            (current_read_books_df.shape[0]))
         # 1-a Books (by conent based)
         current_read_books = current_read_books_df['book_id'].to_list()
         books_cb = content_based_recommendation_mulitple_books(
-            current_read_books, genres_df, from_content_number)
+            current_read_books_df, genres_df, from_content_number)
 
         if books_cb.empty:
             return pd.DataFrame()
@@ -233,8 +231,14 @@ class RatingMatrix:
 
     def get_cf_rating_matrix(self, current_user: str, current_read_books_dict: dict, ratings_df: pd.DataFrame, genres_df: pd.DataFrame) -> pd.DataFrame:
 
-        actual_user_read_books_df, current_read_books_df = self.dict_to_dataframe(
+        actual_user_read_books_df = self.dict_to_dataframe(
             current_user, current_read_books_dict)
+
+        # current_read_books_df is the actual_user_read_books_df with id and rating columns dropped
+        current_read_books_df = actual_user_read_books_df.drop(
+            ['user_id', 'rating'], axis=1)
+        current_read_books_rating_df = actual_user_read_books_df.drop(
+            ['user_id'], axis=1)
 
         # add the df to the ratings_df
         ratings_df = pd.concat(
@@ -247,7 +251,7 @@ class RatingMatrix:
             return pd.DataFrame()
 
         users_books_df = self.cf_user__content_all(
-            current_user, current_read_books_df, ratings_df, genres_df)
+            current_user, current_read_books_rating_df, ratings_df, genres_df)
         if users_books_df.empty:
             print("cf_user called: case: user + books (have no equivalent genre)")
             users_books_df = self.cf_user(
@@ -259,5 +263,3 @@ class RatingMatrix:
         ratings_matrix = create_ratings_matrix(users_books_df)
         ratings_matrix_centered = mean_centered_rating_matrix(ratings_matrix)
         return ratings_matrix, ratings_matrix_centered
-
-
