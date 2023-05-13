@@ -2,6 +2,7 @@ from flask import Flask
 from flask import request, jsonify
 from DataProcessing.preprocessing import *
 from CollabortiveFiltering.collaborative_filtering import *
+from CollabortiveFiltering.rating_matrix import *
 from Evaluation.evaluation import *
 from prometheus_flask_exporter import PrometheusMetrics
 from prometheus_client import Counter, Gauge, Histogram
@@ -27,10 +28,9 @@ fileLinks = {basedir + 'Dataset/GoodReadsShrink/goodreads_reviews_shrink.csv': [
              basedir + 'CollabortiveFiltering/dataset/goodreads_books_shrink.csv': ['https://drive.google.com/uc?id=1cvM5KArllmpjtg0CIoyLZdW_m_VGmwD5', False],
              basedir + 'CollabortiveFiltering/dataset/goodreads_genres_shrink.csv': ['https://drive.google.com/uc?id=1LCjmQ0vEBRiZtkckV6IxCoAf3V9CLKrJ', False],
              basedir + 'RecommendationGenerator/combined_score.json': ['https://drive.google.com/uc?id=1kaHSI-CGiWycpsHFOvREo5z9qwGhWTPB', False],
-            basedir + 'Utils/dataset/genres.csv': ['https://drive.google.com/uc?id=1OpCmFSPqORthEtXEdpxbyBOXDH7n99r5',False],
-             basedir + 'Utils/dataset/ratings.csv': ['https://drive.google.com/uc?id=1JZP6HAXqgj8mXnaapnOqAqNPrxXpYWoF',False],
-             basedir + 'SentimentAnalysis/models/tfidf.pkl': ['https://drive.google.com/uc?id=1AJmpb9J7yzZTWRJUuCrMIt8a79_oPHoP', True,'.7z'],}
-
+             basedir + 'Utils/dataset/genres.csv': ['https://drive.google.com/uc?id=1WLdXEXnqsEkJRasE31ErfnYnE58xb3Y2', False],
+             basedir + 'Utils/dataset/ratings.csv': ['https://drive.google.com/uc?id=1JZP6HAXqgj8mXnaapnOqAqNPrxXpYWoF', False],
+             basedir + 'SentimentAnalysis/models/tfidf.pkl': ['https://drive.google.com/uc?id=1AJmpb9J7yzZTWRJUuCrMIt8a79_oPHoP', True, '.7z'], }
 
 # initialize the prometheus metrics
 metrics = PrometheusMetrics(app)
@@ -125,12 +125,14 @@ def recommendUserBook():
     if request.method == 'POST':
         user_id = request.get_json().get('user_id')
         books = request.get_json().get('books')
-        ratings_df = cfcf.read_data('../Utils/dataset/ratings.csv')
+        ratings_df_copy = ratings_df.copy()
+        genre_data_copy = genreData.copy()
 
         start_time = time.time()
+        rm = RatingMatrix()
+        ratings_matrix, ratings_matrix_centered = rm.get_cf_rating_matrix(
+            user_id, books, ratings_df_copy, genre_data_copy)
 
-        ratings_matrix, ratings_matrix_centered = get_cf_data(
-            user_id, books, ratings_df)
         cf_model = CollaborativeFiltering(
             user_id, ratings_matrix, ratings_matrix_centered)
         predicted_books = cf_model.user_based_collaborative_filtering()
@@ -158,7 +160,7 @@ def start():
                     with py7zr.SevenZipFile(output, mode='r') as z:
                         z.extractall(file[:file.rfind('/')])
                 if url[2] == '.zip':
-                    with zipfile.ZipFile(output , 'r') as zip_ref:
+                    with zipfile.ZipFile(output, 'r') as zip_ref:
                         # remove unitl the last /
                         zip_ref.extractall(file[:file.rfind('/')])
                 # remove the zip file
@@ -180,7 +182,6 @@ def start():
         genreData = cfcf.read_data('../Utils/dataset/genres.csv')
         # booksData = cfcf.read_data('../Utils/dataset/books.csv')
         ratings_df = cfcf.read_data('../Utils/dataset/ratings.csv')
-
 
     try:
         if pathRoot == 'NextReadsRecommender':
