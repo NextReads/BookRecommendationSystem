@@ -4,10 +4,11 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="staticBackdropLabel">Write a review</h5>
+          <h5 class="modal-title" id="staticBackdropLabel">Write a review for:</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
+          <p style="color:black" > {{book.bookId.title}}</p>
           <form method="POST" action="{%  url 'userProfile:reviewbook' %}">
             {% csrf_token %}
             <input type="hidden" name="bookIdentifier" value={{book.bookId.id}} /> 

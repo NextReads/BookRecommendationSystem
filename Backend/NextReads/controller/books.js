@@ -78,7 +78,12 @@ module.exports.addReview= async (req, res, next) => {
     let book = await Book.findById(req.params.id);
     if (!book){return res.status(400).send('Book does not exist');}
     let sentiment;
-    const review = new Review({
+    //if user already reviewed the book, remove the review and add the new one
+    let review = book.reviews.find(r=>r.userId==req.user._id);
+    if (review){
+        book.reviews.pull(review);
+    }
+    review = new Review({
         review:req.body.review,
         userId:req.user._id
     })
@@ -88,7 +93,7 @@ module.exports.addReview= async (req, res, next) => {
     const response = await fetch(url,{method:'POST',body:JSON.stringify(body),headers: { 'Content-Type': 'application/json' }});
     sentiment = await response.json();//assuming data is json
     review.sentiment=sentiment;
-    book.reviews.push(review);
+    book.reviews.unshift(review);
     try {
         await book.save();
         return res.status(201).send('Review added successfully');

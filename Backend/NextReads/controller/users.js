@@ -107,7 +107,23 @@ module.exports.deleteUser= async (req, res, next) => {
 
 module.exports.getReadBooks= async (req, res, next) => {
     const books = await User.findOne({ _id: req.user._id }).select('read').populate('read').populate('read.bookId');
-    return res.status(201).send(books.read);
+    
+    //check if user rated the book
+    let readBooksCount = books.read.length;
+    readbooks = books.read;
+    
+
+    for (let i = 0; i < readBooksCount; i++) {
+        let reviewsCount = readbooks[i].bookId.reviews.length;
+        for (let j = 0; j < reviewsCount; j++) {
+            if (readbooks[i].bookId.reviews[j].userId == req.user._id) {
+                let review =readbooks[i].bookId.reviews[j].review
+                readbooks[i]._doc.userReview = review;
+                break;
+            }
+        }
+    }
+    return res.status(201).send(readbooks);
 }
 
 module.exports.getWantToRead= async (req, res, next) => {
