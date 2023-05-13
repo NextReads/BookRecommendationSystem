@@ -232,8 +232,6 @@ class RatingMatrix:
     # # 			B- Case book_ID no genre (follow steps from 2-I)
 
     def get_cf_rating_matrix(self, current_user: str, current_read_books_dict: dict, ratings_df: pd.DataFrame, genres_df: pd.DataFrame) -> pd.DataFrame:
-        """
-        """
 
         actual_user_read_books_df, current_read_books_df = self.dict_to_dataframe(
             current_user, current_read_books_dict)
@@ -261,3 +259,5 @@ class RatingMatrix:
         ratings_matrix = create_ratings_matrix(users_books_df)
         ratings_matrix_centered = mean_centered_rating_matrix(ratings_matrix)
         return ratings_matrix, ratings_matrix_centered
+
+
