@@ -254,8 +254,10 @@ class RatingMatrix:
             print("cf_user called: case: user + books (have no equivalent genre)")
             users_books_df = self.cf_user(
                 current_user, current_read_books_df, ratings_df)
-        print("cf_user__content_all called: case: user + books (have equivalent genre)")
-        
+        else:
+            print(
+                "cf_user__content_all called: case: user + books (have equivalent genre)")
+
         ratings_matrix = create_ratings_matrix(users_books_df)
         ratings_matrix_centered = mean_centered_rating_matrix(ratings_matrix)
         return ratings_matrix, ratings_matrix_centered
