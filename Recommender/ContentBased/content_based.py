@@ -64,8 +64,7 @@ def new_genre_entry(genres_df_subset: pd.DataFrame) -> pd.DataFrame:
     :return: the dataframe that contains the new entry for the imaginary book
     """
 
-    # TODO:: drop the book_id column
-
+    genres_df_subset = genres_df_subset.drop('book_id', axis=1)
     row_weights = genres_df_subset.sum(axis=1) / genres_df_subset.sum().sum()
     genres_df_subset = genres_df_subset.mul(row_weights, axis=0)
     new_entry = genres_df_subset.sum(axis=0)
@@ -84,23 +83,15 @@ def new_genre_entry_normalized(genres_df_subset: pd.DataFrame, N=CB_SUM_OF_GENRE
     :params N: the value to multiply the normalized values by
     :return: the dataframe that contains the new entry for the imaginary book
     """
-    # print values of the genres of the books in the book_id list
-    print("genres of books in the book_id list: ")
-    for index, row in genres_df_subset.iterrows():
-        print( row)
-        print("--------------------")
-
     # drop the book_id column
     genres_df_subset = genres_df_subset.drop('book_id', axis=1)
     # normalizing every row separately
     normalized_values = genres_df_subset.div(
         genres_df_subset.sum(axis=1), axis=0)
-    
+    # TODO:: multiply by the rating of the book
     new_entry = normalized_values.sum(axis=0)
     new_entry = new_entry / new_entry.sum()
     new_entry = (new_entry * N).astype(int)
-    # the book_id is set to CB_IMAGINARY_BOOK_ID
-    print("genres of new entry: ", new_entry)
     new_entry['book_id'] = CB_IMAGINARY_BOOK_ID
     return new_entry
 
