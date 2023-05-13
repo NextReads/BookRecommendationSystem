@@ -13,6 +13,10 @@ progressNext.addEventListener("click", () => {
         window.location.pathname = "/authentication/rate-books-step";
         progressNext.disabled = true;
     }
+    if (active == 3){
+        window.location.pathname = "/userProfile/userhome";
+        progressNext.disabled = false;
+    }
     updateProgress();
   });
   
@@ -59,7 +63,7 @@ progressNext.addEventListener("click", () => {
       progressNext.disabled = true;
     } else {
       progressPrev.disabled = false;
-      progressNext.disabled = false;
+      progressNext.disabled = true;
     }
   };
   //upateprogrss if url is /authentication/rate-books-step
@@ -70,5 +74,16 @@ progressNext.addEventListener("click", () => {
         updateProgress();
         progressNext.disabled = true;
     }
+
+window.onload = checkRateCount();
+function checkRateCount() {
+  var rateCount = document.getElementById("rateCount").value;
+  console.log("skfdlkf",rateCount)
+  if (rateCount >= 5) {
+    document.getElementById("progress-next").disabled = false;
+  } else {
+    document.getElementById("progress-next").disabled = true;
+  }
+}
 
 

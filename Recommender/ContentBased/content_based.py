@@ -7,58 +7,113 @@ from Utils.constants import *
 
 
 def content_based_recommendation(book_id: int, genre_df: pd.DataFrame, N=CB_TOP_N_BOOKS) -> pd.Series:
+    """
+    Function to get the top N books for the given book id using content based recommendation
+    :params book_id: book id
+    :params genre_df: the dataframe that contains the genres of all books
+    :params N: number of books to recommend: default value is CB_TOP_N_BOOKS
+    :return: the top N books for the given book id using content based recommendation
+    """
     genre_df_copy = genre_df.copy()
     genre_df_copy = map_index_to_key(genre_df_copy)
-    genre_df_copy = remove_row_has_negative(genre_df_copy)
+    # genre_df_copy = remove_row_has_negative(genre_df_copy)
     tf_idf = TF_IDF_matrix(genre_df_copy)
     similarity = cosine_similarity(book_id, tf_idf)
-    book_recommendations = book_recommendation(similarity)
+    book_recommendations = book_recommendation(similarity, N)
     return book_recommendations
 
 
-def rating_matrix_books_via_CB(book_id: list, genre_df: pd.DataFrame, N=CB_TOP_N_BOOKS) -> pd.Series:
+def content_based_recommendation_mulitple_books(book_id_rating: pd.DataFrame, genre_df: pd.DataFrame, N=CB_TOP_N_BOOKS) -> pd.Series:
+    """
+    Function to get books for the rating matrix for the books in the book_id list using content based recommendation
+    :params book_id: list of book ids
+    :params genre_df: the dataframe that contains the genres of all books
+    :return: the books for the rating matrix for the books in the book_id list using content based recommendation
+    """
     genre_df_copy = genre_df.copy()
-    genres_df_subset = create_genres_df_subset(book_id, genre_df_copy)
-    if len(genres_df_subset) == 0:
-        return pd.DataFrame()
-    new_entry = new_genre_entry(genres_df_subset)
-    if len(new_entry) == 0:
-        return pd.DataFrame()
-    genre_df_copy = genre_df_copy.append(new_entry, ignore_index=True)
+    genres_df_subset = create_genres_df_subset(
+        book_id_rating['book_id'].tolist(), genre_df_copy)
+    new_entry = new_genre_entry_normalized(book_id_rating, genres_df_subset)
+    new_entry_df = pd.DataFrame(new_entry).T
+    # TODO:: checking if the all of the values of the new entry are zero/nan
+    # genre_df_copy = genre_df_copy.append(new_entry, ignore_index=True)
+    # concatenate the new entry to the genre_df_copy
+    genre_df_copy = pd.concat([new_entry_df, genre_df_copy], ignore_index=True)
+
     cb_recommendation = content_based_recommendation(
         CB_IMAGINARY_BOOK_ID, genre_df_copy, N)
     return cb_recommendation
 
 
 def create_genres_df_subset(book_id: list, genre_df: pd.DataFrame) -> pd.DataFrame:
-    # this function creates a genres_df based on the book_id list
-    # it selects the rows that have the book_id in the book_id list
+    """
+    Function to create a dataframe that contains the genres of the books in the book_id list
+    :params book_id: list of book ids
+    :params genre_df: the dataframe that contains the genres of all books
+    :return: the dataframe that contains the genres of the books in the book_id list
+    """
     genres_df_subset = genre_df[genre_df['book_id'].isin(book_id)]
-    if len(genres_df_subset) != 0:
-        genres_df_subset = remove_row_has_negative(genres_df_subset)
+    # if len(genres_df_subset) != 0:
+    #     genres_df_subset = remove_row_has_negative(genres_df_subset)
     return genres_df_subset
 
 
 def new_genre_entry(genres_df_subset: pd.DataFrame) -> pd.DataFrame:
-    # based on the provided susbet, a new genre row is created for an equivalent book_id = 0
-    # this works alot like weighted macro average
-    # first step is to calculate weight of every row based on the row's sum/total sum_of_df
-    # second step is to multiply every row with its weight
-    # third step is to sum all the rows, make sure that they all coulmn values are integers
+    """
+    Function to create a new entry for the imaginary book
+    :params genres_df_subset: the dataframe that contains the genres of the books in the book_id list
+    :return: the dataframe that contains the new entry for the imaginary book
+    """
 
+    genres_df_subset = genres_df_subset.drop('book_id', axis=1)
     row_weights = genres_df_subset.sum(axis=1) / genres_df_subset.sum().sum()
     genres_df_subset = genres_df_subset.mul(row_weights, axis=0)
-    new_genre_entry = genres_df_subset.sum(axis=0)
-    new_genre_entry = new_genre_entry.astype(int)
+    new_entry = genres_df_subset.sum(axis=0)
+    new_entry = new_entry.astype(int)
     # the book_id is set to CB_IMAGINARY_BOOK_ID
-    new_genre_entry['book_id'] = CB_IMAGINARY_BOOK_ID
-    return new_genre_entry
+    print("genres of new entry: ", new_entry)
+
+    new_entry['book_id'] = CB_IMAGINARY_BOOK_ID
+    return new_entry
+
+
+def new_genre_entry_normalized(book_id_rating: pd.DataFrame, genres_df_subset: pd.DataFrame, N=CB_SUM_OF_GENRES) -> pd.DataFrame:
+    """
+    Function to create a new entry for the imaginary book by normalizing the values then multiplying by N
+    :params genres_df_subset: the dataframe that contains the genres of the books in the book_id list
+    :params N: the value to multiply the normalized values by
+    :return: the dataframe that contains the new entry for the imaginary book
+    """
+    # we will use the rating of the book to multiply the values of the genres after normalizing them
+    # adding the rating column to the genres_df_subset
+    genres_df_subset = genres_df_subset.merge(
+        book_id_rating, on='book_id', how='left')
+    ratings = genres_df_subset['rating']
+
+    # drop the book_id  and rating columns
+    genres_df_subset = genres_df_subset.drop(['book_id', 'rating'], axis=1)
+    # normalize the values
+    genres_df_subset = genres_df_subset.div(
+        genres_df_subset.sum(axis=1), axis=0)
+    # multiply the values by the rating
+    genres_df_subset = genres_df_subset.mul(ratings, axis=0)
+
+    new_entry = genres_df_subset.sum(axis=0)
+    new_entry = new_entry / new_entry.sum()
+    new_entry = (new_entry * N).astype(int)
+    new_entry['book_id'] = CB_IMAGINARY_BOOK_ID
+    print("genres of new entry: ")
+    print(new_entry.T)
+    return new_entry
 
 
 def map_index_to_key(genre_mean: pd.DataFrame, key="book_id") -> pd.DataFrame:
-    # this function returns a dataframe with the book_id as index
-    # this is done so that we can easily access the book_id of the book we want to recommend
-    # and also to easily access the book_id of the books that we recommend
+    """
+    Function to map the index to the key
+    :params genre_mean: the dataframe that contains the mean of the genres for each book
+    :params key: the key to map the index to
+    :return: the dataframe that contains the mean of the genres for each book with the index mapped to the key
+    """
     book_ids = genre_mean[key]
     genre_mean = genre_mean.drop(key, axis=1)
     genre_mean.index = book_ids
@@ -99,14 +154,25 @@ def IDF_matrix(genre_mean: pd.DataFrame) -> pd.DataFrame:
 
 
 def TF_IDF_matrix(genre_mean: pd.DataFrame) -> pd.DataFrame:
+    """
+    Function to calculate the tf-idf matrix
+    :params genre_mean: the dataframe that contains the mean of the genres for each book
+    :return: the tf-idf matrix
+    """
     tf_matrix = mean_matrix(genre_mean)
-    tf_matrix = remove_row_has_one(tf_matrix)
+    # tf_matrix = remove_row_has_one(tf_matrix)
     idf_matrix = IDF_matrix(tf_matrix)
     rf_idf__matrix = tf_matrix.mul(idf_matrix, axis=1)
     return rf_idf__matrix
 
 
 def cosine_similarity(book_id: int, genre_mean: pd.DataFrame) -> pd.DataFrame:
+    """
+    Function to calculate the cosine similarity between the book_id and the other books
+    :params book_id: the id of the book
+    :params genre_mean: the dataframe that contains the mean of the genres for each book
+    :return: the cosine similarity between the book_id and the other books
+    """
     # fill the nan values with 0 so that the np function work
     genre_mean = genre_mean.fillna(0)
 
@@ -126,10 +192,13 @@ def cosine_similarity(book_id: int, genre_mean: pd.DataFrame) -> pd.DataFrame:
 
 
 def book_recommendation(cosine_similarity: pd.Series, N=CB_TOP_N_BOOKS) -> pd.Series:
+    # number of nan values in the cosine similarity
+    nan_count = cosine_similarity.isna().sum()
+    zero_count = (cosine_similarity == 0).sum().sum()
+    rec_len = len(cosine_similarity) - nan_count - zero_count
     # get the top N similar books
-    book_recommendations_len = min(N, len(cosine_similarity))
+    book_recommendations_len = min(N, rec_len)
     book_recommendations = cosine_similarity.head(book_recommendations_len)
-    print(book_recommendations)
     return book_recommendations
 
 

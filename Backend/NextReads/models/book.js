@@ -5,7 +5,7 @@ const reviewSchema = new mongoose.Schema({
     // define review rating
     rating: {
         type: Number,
-        required: true,
+        // required: true,
         trim: true,
         min: 0,
         max: 5
@@ -44,11 +44,13 @@ const Book = mongoose.model('Book', new mongoose.Schema({
         minlength: 5,
         maxlength: 255
     },
-    Author:{
-        type: mongoose.Schema.Types.ObjectId,
-        // required: true,
-        ref: 'Author'        
-    },
+    authors:[{
+        type: String,
+        required: true,
+        trim: true,
+        minlength: 1,
+        maxlength: 255
+    }],
     imageUrl:{
         type: String,
         minlength: 5,
@@ -56,6 +58,7 @@ const Book = mongoose.model('Book', new mongoose.Schema({
         required: true
     },
     avgRating:{ 
+        // type float
             type: Number,
             required: true,
             default: 0,
@@ -63,19 +66,12 @@ const Book = mongoose.model('Book', new mongoose.Schema({
             min: 0,
             max: 5
     },
-    rating_count:{
+    ratingCount:{
         type: Number,
             required: false,
             trim: true,
             default: 0,
             min: 0,
-    },
-    rating_sum:{
-        type: Number,
-        required: true,
-        trim: true,
-        default: 0,
-        min: 0,
     },
     isbn:{
         type: String,
@@ -118,8 +114,28 @@ const Book = mongoose.model('Book', new mongoose.Schema({
         // minlength: 1,
         // maxlength: 1024
     },
-    
-
+    sentimentCount:{
+        type: Number,
+        required: true,
+        trim: true,
+        default: 0,
+        min: 0,
+    },
+    sentimentSum:{
+        type: Number,
+        required: true,
+        trim: true,
+        default: 0,
+        min: 0,
+    },
+    sentimentAvg:{
+        type: Number,
+        required: true,
+        trim: true,
+        default: 0,
+        min: 0,
+        max: 1
+    },
     reviews:[reviewSchema]
 }));
 

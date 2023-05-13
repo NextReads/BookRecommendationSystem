@@ -1,0 +1,23 @@
+{% load static %}
+<div class="album bg-body-tertiary">
+    <div class="container">
+      <h5 class="text-center">
+        Rate at least 5 books to continue
+      </h5>
+      <input type="hidden" id="rateCount" value="{{request.session.rateCount.count}}" />
+      {% if request.session.rateCount.count %}
+      <p class="text-center">You have rated {{request.session.rateCount.count}} books</p>
+      {% else %}
+      <p class="text-center">You have rated 0 books</p>
+      {% endif %}
+      <div
+        class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3"
+      >
+      {% for book in books %}
+        {% include 'partials/rate_book_card.html'%}
+      {% endfor %}
+       
+
+      </div>
+    </div>
+  </div>

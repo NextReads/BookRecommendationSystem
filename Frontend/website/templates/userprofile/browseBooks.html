@@ -1,0 +1,11 @@
+{% extends 'userprofile/userprofile_base.html' %} {% load static %} {% block content %}
+<link href="{% static 'css/table.css'%}" rel="stylesheet" />
+<div class="container-fluid">
+    <div class="row">
+        {% include 'partials/_sidebar.html'%}
+        <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4 mt-3">
+            {% include 'partials/browsebooksalbum.html' %}
+        </div>
+</div>
+</div>
+{% endblock %}       

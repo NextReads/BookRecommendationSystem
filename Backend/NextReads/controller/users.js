@@ -106,16 +106,44 @@ module.exports.deleteUser= async (req, res, next) => {
 }
 
 module.exports.getReadBooks= async (req, res, next) => {
-    const books = await User.findOne({ _id: req.user._id }).select('read').populate('read').select('-__v -read.__v -read.reviews -read.reviews.userId -read.reviews.__v');
-    return res.status(201).send(books);
+    const books = await User.findOne({ _id: req.user._id }).select('read').populate('read').populate('read.bookId');
+    
+    //check if user rated the book
+    let readBooksCount = books.read.length;
+    readbooks = books.read;
+    
+
+    for (let i = 0; i < readBooksCount; i++) {
+        let reviewsCount = readbooks[i].bookId.reviews.length;
+        for (let j = 0; j < reviewsCount; j++) {
+            if (readbooks[i].bookId.reviews[j].userId == req.user._id) {
+                let review =readbooks[i].bookId.reviews[j].review
+                readbooks[i]._doc.userReview = review;
+                break;
+            }
+        }
+    }
+    return res.status(201).send(readbooks);
 }
 
 module.exports.getWantToRead= async (req, res, next) => {
-    const books = await User.findOne({ _id: req.user._id }).select('wantToRead').populate('wantToRead').select('-__v -read.__v -read.reviews -read.reviews.userId -read.reviews.__v');
-    return res.status(201).send(books);
+    const books = await User.findOne({ _id: req.user._id }).select('wantToRead').populate('wantToRead').populate('read.bookId');//.select('-__v -read.__v -read.reviews -read.reviews.userId -read.reviews.__v');
+    return res.status(201).send(books.wantToRead);
 }
 
 module.exports.getCurrentlyReading= async (req, res, next) => {
-    const books = await User.findOne({ _id: req.user._id }).select('currentlyReading').populate('currentlyReading').select('-__v -read.__v -read.reviews -read.reviews.userId -read.reviews.__v');
+    const books = await User.findOne({ _id: req.user._id }).select('currentlyReading').populate('currentlyReading').populate('read.bookId');//.select('-__v -read.__v -read.reviews -read.reviews.userId -read.reviews.__v');
     return res.status(201).send(books);
+}
+//get number of rated books by user
+module.exports.getRatedBooks= async (req, res, next) => {
+    const books = await User.findOne({ _id: req.user._id }).select('read').populate('read').populate('read.bookId');
+    let count=0;
+    books.read.forEach(book => {
+        if(book.rating!=0)
+        {
+            count++;
+        }
+    });
+    return res.status(200).send({count:count});
 }
