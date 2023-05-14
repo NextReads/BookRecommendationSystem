@@ -104,6 +104,9 @@ class RatingMatrix:
         from_user_number, from_content_number = self.divide_max_book_number(
             (current_read_books_df.shape[0]))
         # 1-a Books (by conent based)
+        print("from_content_number: ", from_content_number)
+        print("from_user_number: ", from_user_number)
+        
         current_read_books = current_read_books_df['book_id'].to_list()
         books_cb = content_based_recommendation_mulitple_books(
             current_read_books_df, genres_df, from_content_number)
@@ -111,6 +114,7 @@ class RatingMatrix:
         if books_cb.empty:
             return pd.DataFrame(), pd.DataFrame()
         from_content_number = len(books_cb)
+        print("from_content_number after: ", from_content_number)
         books_cb = books_cb.index.to_list()
 
         # 1-b Books (books read by the user)
