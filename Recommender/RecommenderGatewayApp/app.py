@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import request, jsonify
+from flask import request, jsonify, Response
 from DataProcessing.preprocessing import *
 from CollabortiveFiltering.collaborative_filtering import *
 from CollabortiveFiltering.rating_matrix import *
@@ -16,6 +16,8 @@ from ContentBased.content_based import content_based_recommendation, visualize_r
 import Utils.common_functions as cfcf
 import os
 import py7zr
+import shutil
+import json
 
 print("os.getenv('NAME') = ", os.getenv('NAME'))
 app = Flask(__name__)
@@ -135,11 +137,16 @@ def recommendUserBook():
 
         cf_model = CollaborativeFiltering(
             user_id, ratings_matrix, ratings_matrix_centered)
-        predicted_books = cf_model.user_based_collaborative_filtering()
+        predicted_books, sentiment = cf_model.user_based_collaborative_filtering()
+
 
         response_time = time.time() - start_time
         NR_HISTOGRAM.observe(response_time)
-        return (predicted_books)
+        print("here")
+        # attach to response header the sentiment 
+        response = predicted_books if sentiment is True else json.dumps(books_cb)
+        print (response)
+        return (response, 200, {'sentiment': sentiment})
 
 
 @app.route("/Start", methods=['POST'])
@@ -157,8 +164,12 @@ def start():
                 # unzip the file
                 print("unzipping file")
                 if url[2] == '.7z':
+                    path = file[:file.rfind('/')]
+                    pathName = file[file.rfind('/')+1:]
                     with py7zr.SevenZipFile(output, mode='r') as z:
-                        z.extractall(file[:file.rfind('/')])
+                        z.extractall()
+                        # cut file from current directory and paste it in the path
+                        shutil.move("./"+pathName, path)
                 if url[2] == '.zip':
                     with zipfile.ZipFile(output, 'r') as zip_ref:
                         # remove unitl the last /
