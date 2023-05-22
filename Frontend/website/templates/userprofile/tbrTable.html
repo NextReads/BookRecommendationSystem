@@ -1,5 +1,19 @@
 {% load static %}
 {% include 'partials/_messages.html' %}
+<form class="d-flex" role="search" method="POST" action="{%  url 'userProfile:search-in-tbr' %}">
+  {% csrf_token %}
+  <input type="hidden" name="current_page" value={{request.path}} />
+  <input
+    class="form-control mx-2"
+    type="search"
+    placeholder="Title/ISBN"
+    aria-label="Search"
+    name ="query"
+  />
+  <button class="btn btn-outline-success me-2" type="submit">
+    Search
+  </button>
+</form>
 <div class="table">
     <div class="table-header">Want to read</div>
     <table cellspacing="0">

@@ -9,12 +9,7 @@ from django.http import JsonResponse
 import requests
 
 # Create your views here.
-
-
-# Create your views here.
-def UserProfile(request):
-    # get to read next book
-    def getToReadNext():
+def getToReadNext(request):
         try:
             userToken = request.session.get('token')
             headers = {'x-auth-token': userToken}
@@ -29,8 +24,11 @@ def UserProfile(request):
         except:
             return JsonResponse({'message_error': 'error in getting to read next book.'}, status=400)
         
-        
-    return render(request, "userprofile/userhome.html", {'toReadNext': getToReadNext()})
+
+# Create your views here.
+def UserProfile(request):
+    # get to read next book
+    return render(request, "userprofile/userhome.html", {'toReadNext': getToReadNext(request)})
 
 class UserRecommendations(View):
     def get(self, request):
@@ -297,16 +295,62 @@ def searchBooks(request):
     search = request.POST.get('query')
     print("search ",search)
     try:
-        response = requests.get('http://localhost:80/api/books/search/', params={'pageNumber': 1, 'search': search})
+
+        response = requests.get("http://localhost:80/api/books/search/", params={'pageNumber': 1, 'search': search})
         if response.status_code == 200:
             books = response.json()
-            print("books ",books)
+            
             for x in books['books']:
                 x['id'] = x.pop('_id')
             messages.success(request, 'Search results for ' + search)
             return render(request, "userprofile/browseBooks.html", {'books': books['books']})
+        
+                                
         else:
-            messages.error(request, 'Error occured while searching for books')
-            return render(request, "userprofile/browseBooks.html", {'books': []})
+                messages.error(request, response.text)
+                return render(request, "userprofile/browseBooks.html", {'books': []})
+            
     except:
         return render(request, "userprofile/browseBooks.html", {'books': []})
+        
+        
+    
+def searchInRead(request):
+    search = request.POST.get('query')
+    print("search ",search)
+    try:
+        userToken = request.session.get('token')
+        headers = {'x-auth-token': userToken}
+        response = requests.get('http://localhost:80/api/users/searchinread', params={'pageNumber': 1, 'search': search}, headers=headers)
+        if response.status_code == 200:
+            books = response.json()
+            print("books ",books)
+            for x in books:
+                x['bookId']['id'] = x['bookId'].pop('_id')
+            messages.success(request, 'Search results for ' + search)
+            return render(request, "userprofile/userbooks.html", {'books': books})
+        else:
+            messages.error(request, 'Error occured while searching for books')
+            return render(request, "userprofile/userbooks.html", {'books': []})
+    except:
+        return render(request, "userprofile/userbooks.html", {'books': []})
+    
+def searchInTbr(request):
+    search = request.POST.get('query')
+    print("search ",search)
+    try:
+        userToken = request.session.get('token')
+        headers = {'x-auth-token': userToken}
+        response = requests.get('http://localhost:80/api/users/searchintbr', params={'pageNumber': 1, 'search': search}, headers=headers)
+        if response.status_code == 200:
+            books = response.json()
+            print("books ",books)
+            for x in books:
+                x['id'] = x.pop('_id')
+            messages.success(request, 'Search results for ' + search)
+            return render(request, "userprofile/tbrbooks.html", {'books': books})
+        else:
+            messages.error(request, 'Error occured while searching for books')
+            return render(request, "userprofile/tbrbooks.html", {'books': []})
+    except:
+        return render(request, "userprofile/tbrbooks.html", {'books': []})
