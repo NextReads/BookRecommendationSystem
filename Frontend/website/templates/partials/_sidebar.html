@@ -4,12 +4,15 @@ id="sidebarMenu"
 class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"
 >
 <div class="position-sticky pt-3 sidebar-sticky">
-  <form class="d-flex" role="search">
+  <form class="d-flex" role="search" method="POST" action="{%  url 'userProfile:search-books' %}">
+    {% csrf_token %}
+
     <input
       class="form-control mx-2"
       type="search"
       placeholder="Title/ISBN"
       aria-label="Search"
+      name ="query"
     />
     <button class="btn btn-outline-success me-2" type="submit">
       Search
@@ -72,6 +75,12 @@ class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"
       <a class="nav-link" href="{% url 'userProfile:get-genre' genre='paranormal' %}">
         <span data-feather="layers" class="align-text-bottom"></span>
         Paranormal
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'userProfile:get-genre' genre='thriller' %}">
+        <span data-feather="layers" class="align-text-bottom"></span>
+        Thriller
       </a>
     </li>
     <li class="nav-item">

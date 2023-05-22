@@ -281,7 +281,7 @@ def wantToReadBrowse(request):
     book_id = request.POST.get('book_id')
 
     response = addToWantToRead(request, book_id)
-    print("response ",response)
+    #print("response ",response)
     if response:
         if 'message_success' in response:
             messages.success(request, response['message_success'])
@@ -292,3 +292,21 @@ def wantToReadBrowse(request):
     else:
         messages.error(request, 'Error occured while adding book to want to read')
         return redirect('userProfile:get-genre', genre='all')
+    
+def searchBooks(request):
+    search = request.POST.get('query')
+    print("search ",search)
+    try:
+        response = requests.get('http://localhost:80/api/books/search/', params={'pageNumber': 1, 'search': search})
+        if response.status_code == 200:
+            books = response.json()
+            print("books ",books)
+            for x in books['books']:
+                x['id'] = x.pop('_id')
+            messages.success(request, 'Search results for ' + search)
+            return render(request, "userprofile/browseBooks.html", {'books': books['books']})
+        else:
+            messages.error(request, 'Error occured while searching for books')
+            return render(request, "userprofile/browseBooks.html", {'books': []})
+    except:
+        return render(request, "userprofile/browseBooks.html", {'books': []})
