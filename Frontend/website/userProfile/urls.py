@@ -8,10 +8,12 @@ urlpatterns = [
     path('userhome', views.UserProfile, name='userhome'),
     path('userbooks', views.UserBooks.as_view(), name='userbooks'),
     path('tbrbooks', views.tbrBooks.as_view(), name='tbrbooks'),
-    path('browsebooks',views.browseBooks.as_view(), name='browseBooks'),
+    #path('browsebooks',views.browseBooks.as_view(), name='browseBooks'),
     path('userbooks/ratebook', views.rateBook.as_view(), name='ratebook'),
     path('userbooks/reviewbook', views.reviewBook.as_view(), name='reviewbook'),
     path('userhome/to-read-next', views.setToReadNext.as_view(), name='to-read-next'),
     path('book/<str:book_id>', views.bookDetails, name='book-details'),
+    path('browseBooks/genre/<str:genre>', views.getGenre, name='get-genre'),
+    path('browseBooka/want-to-read-browse', views.wantToReadBrowse, name='want-to-read-browse'),
 
 ]

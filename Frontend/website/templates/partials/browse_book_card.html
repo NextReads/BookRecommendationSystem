@@ -1,47 +1,61 @@
 {% load static %}
+<a href="{% url 'userProfile:book-details' book_id=book.id %}" style="text-decoration: none;">
 <div class="col">
     <div class="card shadow-sm h-100">
+      <div class="mx-3 my-3">
       <img
-        src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1553383690l/2657.jpg"
+        src="{{book.imageUrl}}"
         class="bd-placeholder-img card-img-top"
-        height="260"
-        width="100%"
+        height="270"
       />
+      </div>
       <div class="card-body text-center">
-        <p class="card-text">supporting text below</p>
+        <p class="card-text">{{book.title}}</p>
         <div class="justify-content-between align-items-center">
-          <div class="stars" data-rating="0">
-            <span class="fa fa-star" title="did not like it"></span>
-            <span class="fa fa-star" title="it was ok"></span>
-            <span class="fa fa-star" title="liked it"></span>
-            <span class="fa fa-star" title="really liked it"></span>
-            <span class="fa fa-star" title="it was amazing"></span>
-          </div>
-          <button
-            type="button"
-            class="btn btn-sm btn-outline-secondary mt-2"
-          >
-            Want to read
-          </button>
+          <form method="POST" action="{% url 'userProfile:ratebook' %}">
+            {% csrf_token %}
+            <!-- <div class="mb-3">
+              <input type="hidden" name="book_id" value="{{ book.id }}" />
+              <label for="message-text" class="col-form-label">Rate:</label>
+              <input class="inputNumber" placeholder="rate" min="0" max="5" type="number" name="rating" required/>
+              <button type="submit" >Save</button>
+            </div> -->
+            <input type="hidden" name="fe_eh" value="{{ book.id }}" />
+            <span class="star-rating">
+              <input  type="radio" name="rating" value="1"><i></i>
+              <input  type="radio" name="rating" value="2"><i></i>
+              <input  type="radio" name="rating" value="3"><i></i>
+              <input  type="radio" name="rating" value="4"><i></i>
+              <input  type="radio" name="rating" value="5"><i></i>
+            </span>
+            <button type="submit"  class="btn btn-sm btn-outline-secondary mt-2 ">Save rate</button>
+            
+            <!-- <div class="stars" data-rating="0">
+              <button class="fa fa-star rmv-btn star1" value="1" title="did not like it" type="submit" name="rating"  ></button>
+              <button class="fa fa-star rmv-btn star2" value="2" title="it was ok" type="submit" name="rating" ></button>
+              <button class="fa fa-star rmv-btn star3" value="3" title="liked it" type="submit" name="rating"></button>
+              <button class="fa fa-star rmv-btn star4" value="4" title="really liked it" type="submit" name="rating"></button>
+              <button class="fa fa-star rmv-btn star5" value="5" title="it was amazing"type="submit" name="rating"></button>
+            </div> -->
+          </form>
+          <form method="POST" action="{% url 'userProfile:want-to-read-browse' %}">
+            {% csrf_token %}
+            <input type="hidden" name="book_id" value="{{ book.id }}" />
+            <button
+              type="submit"
+              class="btn btn-sm btn-outline-secondary mt-2 "
+            >
+              Want to read
+            </button>
+          </form>
         </div>
       </div>
     </div>
   </div>
-  <link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-/>
+</a>
 <style>
-  .stars .fa-star {
-  color: grey;
-}
-
-/* prev siblings should be orange */
-.stars:hover .fa-star{
-  color: orange;
-}
-
-.stars .fa-star:hover ~ .fa-star {
-  color: grey;
-}
+  .card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 11px rgba(33,33,33,.7); 
+  }
 </style>

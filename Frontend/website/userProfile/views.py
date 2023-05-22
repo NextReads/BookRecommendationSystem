@@ -123,18 +123,18 @@ class rateBook(View):
                 messages.success(request, 'Book rated successfully')
                 return redirect('userProfile:userbooks')
             else:
-                messages.error(request, 'Error occured while rating book')
+                messages.error(request, 'Error occured while rating book1')
                 return redirect('userProfile:userbooks')
         except:
-            messages.error(request, 'Error occured while rating book')
+            messages.error(request, 'Error occured while rating book2')
             return redirect('userProfile:userbooks')
         
 class reviewBook(View):
     def post(self,request):
         bookId = request.POST.get('bookIdentifier')
         review = request.POST.get('reviewText')
-        print("bookId",bookId)
-        print("review",review)
+        #print("bookId",bookId)
+        #print("review",review)
 
         try:
             userToken = request.session.get('token')
@@ -182,9 +182,43 @@ class browseBooks(View):
         except:
             print(response.status_code, response.text)
             return render(request, "userprofile/browseBooks.html", {'books': []})
-
+##################################
+def similarBooks(genre):
+        try:
+            response = requests.get('http://localhost:80/api/books/genre/', params={'pageNumber': 1, 'genre': genre})
+            if response.status_code == 200:
+                books = response.json()
+                return books
+            else:
+                return None
+        except: 
+            return None
+def getAllGenreBooks():
+    try:
+        page = 5
+        response =  requests.get('http://localhost:80/api/books/getbooks?page='+str(page))
+        if response.status_code == 200:
+            books = response.json()
+            return books
+        else:
+            return None
+    except: 
+        return None  
     
-## bookDetails as function
+def addToWantToRead(request, book_id):
+    try:
+        userToken = request.session.get('token')
+        headers = {'x-auth-token': userToken}
+        response = requests.post('http://localhost:80/api/users/'+ str(book_id)+'/wantToRead', headers=headers)
+        print("response ",response.text)
+        if response.status_code == 201:
+            return {'message_success': response.text}
+        else:
+            return {'message_error': response.text}
+    except:
+        return None
+        
+#################################         
 def bookDetails(request, book_id):
     print("bookId",book_id)
     def getbookdetails(book_id):
@@ -197,17 +231,6 @@ def bookDetails(request, book_id):
                 return None
         except: 
             return None
-
-    def similarBooks(genre):
-        try:
-            response = requests.get('http://localhost:80/api/books/genre/', params={'pageNumber': 1, 'genre': genre})
-            if response.status_code == 200:
-                books = response.json()
-                return books
-            else:
-                return None
-        except: 
-            return None
            
     book = getbookdetails(book_id)
     genres = book['genres'].split(',')
@@ -216,12 +239,15 @@ def bookDetails(request, book_id):
     #first part is the first 3 sentences
     #second part is the rest of the description
     description = book['description'].split('.')
-    book['description1'] = description[0] + '.' + description[1] + '.' + description[2] + '.'
-    book['description2'] = '.'.join(description[3:]) + '.'
+    if len(description) > 3:
+        book['description1'] = description[0] + '.' + description[1] + '.' + description[2] + '.'
+        book['description2'] = '.'.join(description[3:]) + '.'
+    else:
+        book['description1'] = book['description']
+        book['description2'] = ''
     book['id'] = book.pop('_id')
-    print("book ",book)
+    #print("book ",book)
     
-
     similarbooks = similarBooks(genre)
     #print("similarbooks ",similarbooks['books'])    
     #convert bookId[_id] to bookId[id]
@@ -234,3 +260,35 @@ def bookDetails(request, book_id):
         messages.error(request, 'Error occured while getting book details')
         return redirect('userProfile:userbooks')
     
+def getGenre(request,genre):
+    if(genre == 'all'):
+        books = getAllGenreBooks()
+        for x in books:
+            x['id'] = x.pop('_id')
+        return render(request, "userprofile/browseBooks.html", {'books': books})
+    else:
+        #print("genre ",genre)
+        books = similarBooks(genre)
+        for x in books['books']:
+            x['id'] = x.pop('_id')
+        if books:
+            return render(request, "userprofile/browseBooks.html", {'books': books['books']})
+        else:
+            messages.error(request, 'Error occured while getting books')
+            return render(request, "userprofile/browseBooks.html", {'books': []})
+
+def wantToReadBrowse(request):
+    book_id = request.POST.get('book_id')
+
+    response = addToWantToRead(request, book_id)
+    print("response ",response)
+    if response:
+        if 'message_success' in response:
+            messages.success(request, response['message_success'])
+            return redirect('userProfile:get-genre', genre='all')
+        else:
+            messages.error(request, response['message_error'])
+            return redirect('userProfile:get-genre', genre='all')
+    else:
+        messages.error(request, 'Error occured while adding book to want to read')
+        return redirect('userProfile:get-genre', genre='all')
