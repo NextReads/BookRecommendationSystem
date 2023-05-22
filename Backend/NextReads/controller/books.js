@@ -453,13 +453,3 @@ module.exports.getByGenre= async (req, res,next) =>{
     // return res.status(200).send(books);
     
 }
-// module.exports.getByGenresArray= async (req, res,next) =>{
-//     pageNumber = req.query.pageNumber;
-//     console.log(req.query.genres);
-//     console.log(pageNumber);
-//     if (!pageNumber){return res.status(400).send('Page number is required');}
-//     if (isNaN(pageNumber)){return res.status(400).send('Page number must be a number');}
-//     if (pageNumber<1){return res.status(400).send('Page number must be greater than 0');}
-//     let booksPerPage=20;
-//     const books = await Book.find({ genres: { $in: req.query.genres } })
-//         // .or([{ title: { $regex: req.query.search, $options: "i" } }, { description: { $regex: req.query.search, $options: "i" } }])
