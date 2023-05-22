@@ -26,7 +26,9 @@
         </td>
         <td>{{book.title}}</td>
         <td>{% if book.genres %}{{book.genres}}{% else %}-{% endif %}</td>
-        <td><button class="btn btn-sm btn-outline-primary mt-2">similar books</button></td>
+        <td>
+          <a href="{% url 'userProfile:book-details' book_id=book.id %}"class="btn btn-sm btn-outline-primary mt-2">View</a>
+        </td>
         <td>
           <form method="POST" action="{% url 'userProfile:to-read-next' %}">
             {% csrf_token %}

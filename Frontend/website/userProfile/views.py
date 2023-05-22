@@ -15,49 +15,57 @@ import requests
 def UserProfile(request):
     # get to read next book
     def getToReadNext():
-        userToken = request.session.get('token')
-        headers = {'x-auth-token': userToken}
-        toReadNextResponse = requests.get('http://localhost:80/api/users/toreadnext', headers=headers)
-        if toReadNextResponse.status_code == 200:
-            toReadNext = toReadNextResponse.json()
-            #change bookId[_id] to bookId[id]
-            toReadNext['id'] = toReadNext.pop('_id')
-            return toReadNext
-        else:
+        try:
+            userToken = request.session.get('token')
+            headers = {'x-auth-token': userToken}
+            toReadNextResponse = requests.get('http://localhost:80/api/users/toreadnext', headers=headers)
+            if toReadNextResponse.status_code == 200:
+                toReadNext = toReadNextResponse.json()
+                #change bookId[_id] to bookId[id]
+                toReadNext['id'] = toReadNext.pop('_id')
+                return toReadNext
+            else:
+                return JsonResponse({'message_error': 'error in getting to read next book.'}, status=400)
+        except:
             return JsonResponse({'message_error': 'error in getting to read next book.'}, status=400)
+        
         
     return render(request, "userprofile/userhome.html", {'toReadNext': getToReadNext()})
 
 class UserRecommendations(View):
     def get(self, request):
-        userToken = request.session.get('token')
-        print("offffffff ",userToken)
-        #headers = {'x-auth-token': userToken}
-        #recommendationsResponse = requests.get('https://nextreadsbackend.azurewebsites.net/api/recommendations', headers=headers)
-        #if recommendationsResponse.status_code == 200:
-            #recommendations = recommendationsResponse.json()
-        recommendations = [
-                    {
-                        "id": 1,
-                        "title": "The Hunger Games",
-                        "author": "Suzanne Collins",
-                        "image": "https://images.gr-assets.com/books/1447303603m/2767052.jpg",
-                        "rating": 4.33,
-                        "description": "Could you survive on your own, in the wild, with everyone out to make sure you don't live to see the morning?"
-                    },
-                    {
-                        "id": 2,
-                        "title": "Harry Potter and the Philosopher's Stone",
-                        "author": "J.K. Rowling",
-                        "image": "https://images.gr-assets.com/books/1474154022m/3.jpg",
-                        "rating": 4.44,
-                        "description": "Harry Potter's life is miserable. His parents are dead and he's stuck with his heartless relatives, who force him to live in a tiny closet under the stairs."
-                    },
+        try:
+            userToken = request.session.get('token')
+            #print("offffffff ",userToken)
+            headers = {'x-auth-token': userToken}
+            recommendationsResponse = requests.get('http://localhost:80/api/books/recommend', headers=headers)
+            if recommendationsResponse.status_code == 200:
+                recommendations = recommendationsResponse.json()
+                #print("recommendations ",recommendations)
+                return render(request, "userprofile/recommendations.html", {'recommendations': recommendations})
+            else:
+                return render(request, "userprofile/recommendations.html", {'recommendations': []})
+        except:
+            return render(request, "userprofile/recommendations.html", {'recommendations': []})
+        # recommendations = [
+        #             {
+        #                 "id": 1,
+        #                 "title": "The Hunger Games",
+        #                 "author": "Suzanne Collins",
+        #                 "image": "https://images.gr-assets.com/books/1447303603m/2767052.jpg",
+        #                 "rating": 4.33,
+        #                 "description": "Could you survive on your own, in the wild, with everyone out to make sure you don't live to see the morning?"
+        #             },
+        #             {
+        #                 "id": 2,
+        #                 "title": "Harry Potter and the Philosopher's Stone",
+        #                 "author": "J.K. Rowling",
+        #                 "image": "https://images.gr-assets.com/books/1474154022m/3.jpg",
+        #                 "rating": 4.44,
+        #                 "description": "Harry Potter's life is miserable. His parents are dead and he's stuck with his heartless relatives, who force him to live in a tiny closet under the stairs."
+        #             },
                     
-                ]
-        return render(request, "userprofile/recommendations.html", {'recommendations': recommendations})
-        #else:
-            # return render(request, "userprofile/recommendations.html", {'recommendations': []})
+        #         ]
 
 class UserBooks(View):
     def get(self,request):
@@ -161,22 +169,68 @@ class setToReadNext(View):
         
 class browseBooks(View):
     def get(self,request):
-        return render(request, "userprofile/browseBooks.html",{} )
+        #let page = request.GET.get('page')
+        page = 5
+        try:
+            response = requests.get('http://localhost:80/api/books/getbooks?page='+str(page))
+            if response.status_code == 200:
+                books = response.json()
+                return render(request, "userprofile/browseBooks.html", {'books': books})
+            else:
+                print(response.status_code, response.text)
+                return render(request, "userprofile/browseBooks.html", {'books': []})
+        except:
+            print(response.status_code, response.text)
+            return render(request, "userprofile/browseBooks.html", {'books': []})
+
     
 ## bookDetails as function
 def bookDetails(request, book_id):
-    #print("bookId",book_id)
-    try:
-        response = requests.get('http://localhost:80/api/books/book/'+ str(book_id))
-        if response.status_code == 200:
-            book = response.json()
-            print(book)
-            return render(request, "bookDetails.html", {'book': book})
-        else:
-            messages.error(request, response.text)
-            return redirect('userProfile:userbooks')
-        
-    except: 
+    print("bookId",book_id)
+    def getbookdetails(book_id):
+        try:
+            response = requests.get('http://localhost:80/api/books/book/'+ str(book_id))
+            if response.status_code == 200:
+                book = response.json()
+                return book
+            else:
+                return None
+        except: 
+            return None
+
+    def similarBooks(genre):
+        try:
+            response = requests.get('http://localhost:80/api/books/genre/', params={'pageNumber': 1, 'genre': genre})
+            if response.status_code == 200:
+                books = response.json()
+                return books
+            else:
+                return None
+        except: 
+            return None
+           
+    book = getbookdetails(book_id)
+    genres = book['genres'].split(',')
+    genre = genres[0]
+    # split the description to 2 parts to display in the book details page
+    #first part is the first 3 sentences
+    #second part is the rest of the description
+    description = book['description'].split('.')
+    book['description1'] = description[0] + '.' + description[1] + '.' + description[2] + '.'
+    book['description2'] = '.'.join(description[3:]) + '.'
+    book['id'] = book.pop('_id')
+    print("book ",book)
+    
+
+    similarbooks = similarBooks(genre)
+    #print("similarbooks ",similarbooks['books'])    
+    #convert bookId[_id] to bookId[id]
+    for x in similarbooks['books']:
+        x['id'] = x.pop('_id')
+
+    if book:
+        return render(request, "bookDetails.html", {'book': book, 'similarbooks': similarbooks['books']})
+    else:
+        messages.error(request, 'Error occured while getting book details')
         return redirect('userProfile:userbooks')
     
-#645aa639dfa36522587195d2

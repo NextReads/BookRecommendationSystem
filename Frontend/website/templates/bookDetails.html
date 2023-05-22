@@ -118,13 +118,12 @@
       <div class="row">
         <!-- First Column -->
         <div class="col-md-4">
-          <img   class="responsive-img" src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524322945i/34499221.jpg" alt="Book Image" class="book-image">
+          <img   class="responsive-img" src="{{book.imageUrl}}" alt="Book Image" class="book-image">
           <div class="rating-stars">
-            <!-- Rating Star Form -->
-            <form method="POST" >
+            <form method="POST" action="{%  url 'userProfile:ratebook' %}">
                 {% csrf_token %}
 
-                <input type="hidden" name="book_id" value="{{ book.id }}" />
+                <input type="hidden" name="fe_eh" value="{{ book.id }}" />
                 <span class="star-rating">
                   <input  type="radio" name="rating" value="1"><i></i>
                   <input  type="radio" name="rating" value="2"><i></i>
@@ -133,7 +132,6 @@
                   <input  type="radio" name="rating" value="5"><i></i>
                 </span>
                 <button type="submit"  class="btn btn-sm btn-outline-secondary mt-2 ">Save rate</button>
-                
             </form>
           </div>
           <div>
@@ -149,14 +147,29 @@
                   <li><a class="dropdown-item" href="#">read</a></li>
                 </ul>
               </div>
-            
-          </div>
+            </div>
         </div>
         <!-- Second Column -->
         <div class="col-md-8">
-          <h1>Book Title</h1>
-          <p>Description of the book goes here.</p>
-          <p>Other details about the book.</p>
+          <h1>{{book.title}}</h1>
+          <p>{{book.description1}}</p>
+          <div class="collapse" id="collapseExample">
+            {{book.description2}}
+          </div>
+          <div class="mb-3">
+            <a class= "link" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+              continue reading
+            </a>
+          </div>
+          <p><strong style="color:#2D9EDE">Authors: </strong>          
+            {% for author in book.authors %}
+            {{author.full_name}}, 
+            {% endfor %}
+          </p>
+         
+          <p><strong style="color:#2D9EDE">Genres: </strong> {{book.genres}}</p>
+
+
           <div class="similar-books my-5">
             <h3>Similar Books</h3>
 
@@ -175,19 +188,41 @@
 
               <div class="carousel-inner px-5">
                 
+                {% for book in similarbooks %}
+                {% if forloop.counter0|divisibleby:4 %}
+                <div class="carousel-item {% if forloop.counter0 == 0 %} active {% endif %}">
+                    <div class="row">
+                        {% endif %}
+                        <div class="col-lg-3 col-md-6 col-sm-6 my-2 h-100">
+                          <a href="{% url 'userProfile:book-details' book_id=book.id %}">
+                            <img src="{{book.imageUrl}}" class="d-block" alt="Book 1">
+                          </a>
+                          <p>{{book.title}}</p>
+                        </div>
+                        {% if forloop.counter|divisibleby:4 %}
+                      </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+
+<!--                 
                 <div class="carousel-item active">
                     <div class="row">
                         <div class="col-lg-3 col-md-6 col-sm-6 my-2">
                           <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524322945i/34499221.jpg" class="d-block" alt="Book 1">
+                          <p>book title</p>
                         </div>
                         <div class="col-lg-3 col-md-6 col-sm-6 my-2">
                           <img  src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524322945i/34499221.jpg" class="d-block" alt="Book 2">
+                          <p>book title</p>
                         </div>
                         <div class="col-lg-3 col-md-6 col-sm-6 my-2">
                           <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524322945i/34499221.jpg"  class="d-block" alt="Book 3">
+                          <p>book title</p>
                         </div>
                         <div class="col-lg-3 col-md-6 col-sm-6 my-2">
                             <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524322945i/34499221.jpg"  class="d-block" alt="Book 3">
+                          <p>book title</p>
                           </div>
                       </div>
                 </div>
@@ -197,15 +232,19 @@
                     <div class="row">
                         <div class="col-lg-3 col-md-6 col-sm-6 my-2">
                           <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524322945i/34499221.jpg" class="d-block" alt="Book 1">
+                          <p>book title</p>
                         </div>
                         <div class="col-lg-3 col-md-6 col-sm-6 my-2">
                           <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524322945i/34499221.jpg" class="d-block" alt="Book 2">
+                          <p>book title</p>
                         </div>
                         <div class="col-lg-3 col-md-6 col-sm-6 my-2">
                           <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524322945i/34499221.jpg" class="d-block" alt="Book 3">
+                          <p>book title</p>
                         </div>
                         <div class="col-lg-3 col-md-6 col-sm-6 my-2">
                             <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524322945i/34499221.jpg"  class="d-block" alt="Book 3">
+                            <p>book title</p>
                           </div>
                       </div>
                 </div>
@@ -215,18 +254,22 @@
                     <div class="row">
                         <div class="col-lg-3 col-md-6 col-sm-6 my-2">
                           <img  src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524322945i/34499221.jpg"  class="d-block" alt="Book 1">
+                          <p>book title</p>
                         </div>
                         <div class="col-lg-3 col-md-6 col-sm-6 my-2">
                           <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524322945i/34499221.jpg"  class="d-block" alt="Book 2">
+                          <p>book title</p>
                         </div>
                         <div class="col-lg-3 col-md-6 col-sm-6 my-2">
                           <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524322945i/34499221.jpg"  class="d-block" alt="Book 3">
+                          <p>book title</p>
                         </div>
                         <div class="col-lg-3 col-md-6 col-sm-6 my-2">
                             <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1524322945i/34499221.jpg"  class="d-block" alt="Book 3">
+                            <p>book title</p>
                           </div>
                       </div>
-                </div>
+                </div> -->
 
               </div>
               
