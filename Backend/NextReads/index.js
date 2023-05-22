@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const app = require('./app');
 const config = require('config');
-// $env:cinema_JWTPRIVATEKEY="mySecureKey"   ---command to set environment variable 
+// $env:JWTPRIVATEKEY="mySecureKey"   ---command to set environment variable 
 console.log(process.env['JWTPRIVATEKEY']);
 if (!process.env['JWTPRIVATEKEY']) {
     console.error('FATAL ERROR: JWTPRIVATEKEY is not defined.');

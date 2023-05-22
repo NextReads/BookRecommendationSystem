@@ -112,19 +112,20 @@ module.exports.getBooks= async (req, res, next) => {
     booksPerPage = 15;
     if (!req.query.page) return res.status(400).send('Please specify page number');
     let page = parseInt(req.query.page);
-    let books = await Book.find().skip((page-1)*booksPerPage).limit(booksPerPage);
+    //find books and sort by ratingCount
+    let books = await Book.find().skip((page-1)*booksPerPage).limit(booksPerPage).sort({ratingCount:-1}).select('bookId title authors avgRating imageUrl description ratingCount'); 
     //get book authors
-    for (let i=0;i<books.length;i++){
-        books[i]._doc.populatedAuthors = [];
-        for (let j=0;j<books[i].authors.length;j++){
-            let author = await Author.find({"author_id":books[i].authors[j]})
-            let x = {
-                "author_id":author[0].author_id,
-                "name":author[0].full_name,
-            }
-            books[i]._doc.populatedAuthors.push(x);
-        }
-    }  
+    // for (let i=0;i<books.length;i++){
+    //     books[i]._doc.populatedAuthors = [];
+    //     for (let j=0;j<books[i].authors.length;j++){
+    //         let author = await Author.find({"author_id":books[i].authors[j]})
+    //         let x = {
+    //             "author_id":author[0].author_id,
+    //             "name":author[0].full_name,
+    //         }
+    //         books[i]._doc.populatedAuthors.push(x);
+    //     }
+    // }  
     if (books.length==0) return res.status(404).send('No books found');
     return res.status(200).send(books);
 }
@@ -322,7 +323,7 @@ module.exports.getBook= async (req, res,next) =>{
     // the function will return 200 if the book is found
     // the function will return 404 if the book does not exist
     // the function will return 500 if there is an internal server error
-    let book = await Book.findById(req.params.id).select('bookId title authors avgRating imageUrl');
+    let book = await Book.findById(req.params.id).select('bookId title authors avgRating imageUrl description ratingCount genres');
     if (!book){return res.status(404).send('Book does not exist');}
     // get book authors by author id
     let authors = await Author.find({ author_id: { $in: book.authors } }).select('full_name');
@@ -413,8 +414,9 @@ module.exports.getByGenre= async (req, res,next) =>{
     console.log(pageNumber);
     if (!pageNumber){return res.status(400).send('Page number is required');}
     if (isNaN(pageNumber)){return res.status(400).send('Page number must be a number');}
+
     if (pageNumber<1){return res.status(400).send('Page number must be greater than 0');}
-    let booksPerPage=20;
+    let booksPerPage=16;
     const books = await Book.find({ genres: { $regex: req.query.genre, $options: "i" } })
         // .or([{ title: { $regex: req.query.search, $options: "i" } }, { description: { $regex: req.query.search, $options: "i" } }])
         .select('bookId title authors avgRating ratingCount imageUrl sentimentCount sentimentAvg genres')
@@ -441,3 +443,13 @@ module.exports.getByGenre= async (req, res,next) =>{
     // return res.status(200).send(books);
     
 }
+// module.exports.getByGenresArray= async (req, res,next) =>{
+//     pageNumber = req.query.pageNumber;
+//     console.log(req.query.genres);
+//     console.log(pageNumber);
+//     if (!pageNumber){return res.status(400).send('Page number is required');}
+//     if (isNaN(pageNumber)){return res.status(400).send('Page number must be a number');}
+//     if (pageNumber<1){return res.status(400).send('Page number must be greater than 0');}
+//     let booksPerPage=20;
+//     const books = await Book.find({ genres: { $in: req.query.genres } })
+//         // .or([{ title: { $regex: req.query.search, $options: "i" } }, { description: { $regex: req.query.search, $options: "i" } }])
