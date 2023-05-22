@@ -181,3 +181,37 @@ module.exports.getToReadNext= async (req, res, next) => {
     if (!book) return res.status(404).send('book not found');
     return res.status(200).send(book.toReadNext);
 }
+module.exports.searchInRead= async (req, res, next) => {
+    //search for a regex in read books titles
+        if(!req.query.search) return res.status(400).send('search query not found')
+        const books = await User.findOne({ _id: req.user._id }).select('read').populate('read').populate('read.bookId');
+        let readBooksCount = books.read.length;
+        readbooks = books.read;
+        let result=[];
+        for (let i = 0; i < readBooksCount; i++) {
+            if(readbooks[i].bookId.title.toLowerCase().includes(req.query.search.toLowerCase()))
+            {
+                result.push(readbooks[i]);
+            }
+        }
+        return res.status(200).send(result);
+
+    
+}
+module.exports.searchInTbr= async (req, res, next) => {
+    //search for a regex in read books titles
+        if(!req.query.search) return res.status(400).send('search query not found')
+        const books = await User.findOne({ _id: req.user._id }).select('wantToRead').populate('wantToRead').populate('read.bookId');
+        let readBooksCount = books.wantToRead.length;
+        readbooks = books.wantToRead;
+        let result=[];
+        for (let i = 0; i < readBooksCount; i++) {
+            if(readbooks[i].title.toLowerCase().includes(req.query.search.toLowerCase()))
+            {
+                result.push(readbooks[i]);
+            }
+        }
+        return res.status(200).send(result);
+
+    
+}
