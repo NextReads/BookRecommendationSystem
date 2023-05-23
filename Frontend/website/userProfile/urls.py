@@ -19,5 +19,7 @@ urlpatterns = [
     path('searchinread', views.searchInRead, name='search-in-read'),
     path('searchintbr', views.searchInTbr, name='search-in-tbr'),
     path('setreadinggoal', views.setReadingGoal, name='set-reading-goal'),
+    path('deletetbr/<str:book_id>',views.deleteFromTbr, name='delete-tbr'),
+    path('deleteread/<str:book_id>/<int:rating>',views.deleteFromRead, name='delete-read'),
 
 ]

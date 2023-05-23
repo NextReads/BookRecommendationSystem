@@ -384,3 +384,36 @@ def searchInTbr(request):
     except:
         return render(request, "userprofile/tbrbooks.html", {'books': []})
     
+def deleteFromTbr(request, book_id):
+    try:
+        userToken = request.session.get('token')
+        headers = {'x-auth-token': userToken}
+        response = requests.delete('http://localhost:80/api/users/'+ str(book_id)+'/wantToRead', headers=headers)
+        print("response ",response.text)
+        if response.status_code == 201:
+            messages.success(request, 'deleted from tbr successfully')
+            return redirect('userProfile:tbrbooks')
+        else:
+            messages.error(request,response.text)
+            return redirect('userProfile:tbrbooks')
+    except:
+        messages.error(request, response.text)
+        return redirect('userProfile:tbrbooks')
+    
+def deleteFromRead(request, book_id, rating):
+    try:
+        print("rating ",rating)
+        userToken = request.session.get('token')
+        headers = {'x-auth-token': userToken}
+        response = requests.delete('http://localhost:80/api/users/'+ str(book_id)+'/read/', headers=headers, json={'rating': rating})
+        print("response ",response.text)
+        if response.status_code == 201:
+            messages.success(request, 'deleted from read successfully')
+            return redirect('userProfile:userbooks')
+        else:
+            messages.error(request,response.text)
+            return redirect('userProfile:userbooks')
+    except:
+        messages.error(request, response.text)
+        return redirect('userProfile:userbooks')
+    
