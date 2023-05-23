@@ -215,3 +215,19 @@ module.exports.searchInTbr= async (req, res, next) => {
 
     
 }
+module.exports.setReadingGoal= async (req, res, next) => {
+    let readingGoal=req.body.readingGoal;
+    if(!readingGoal) return res.status(400).send('reading goal not found')
+    try{
+        let user = await User.updateOne({ _id: req.user._id },{$set:{readingGoal:readingGoal}});
+        return res.status(201).send("reading goal set successfully");
+    } catch (error) {
+        return res.status(500).send({ error: "Internal Server error" });
+    }
+}
+
+module.exports.getReadingGoal= async (req, res, next) => {
+    const readingGoal = await User.findOne({ _id: req.user._id }).select('readingGoal');
+    return res.status(200).send(readingGoal);
+}
+

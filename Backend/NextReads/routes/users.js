@@ -24,6 +24,8 @@ router.post('/:bookId/toreadnext',[auth],userController.toReadNext)
 router.get('/toreadnext',[auth],userController.getToReadNext)
 router.get('/searchInRead',[auth],userController.searchInRead)
 router.get('/searchInTbr',[auth],userController.searchInTbr)
+router.post('/setReadingGoal',[auth],userController.setReadingGoal)
+router.get('/getReadingGoal',[auth],userController.getReadingGoal)
 
 // router.post('/events/:eventId',auth,userController.reserveSeat)
 // router.get('/reservation',auth,userController.getReservations)
