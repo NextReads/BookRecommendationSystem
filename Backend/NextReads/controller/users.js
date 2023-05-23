@@ -230,4 +230,46 @@ module.exports.getReadingGoal= async (req, res, next) => {
     const readingGoal = await User.findOne({ _id: req.user._id }).select('readingGoal');
     return res.status(200).send(readingGoal);
 }
+module.exports.removeFromWantToRead= async (req, res, next) => {
+    const book=await Book.findById(req.params.bookId);
+    if(!book) return res.status(404).send('The book with the given ID was not found.');
+    
+    try{
+        const user = await User.findOne({ _id: req.user._id });
+        if(!user.wantToRead.includes(book._id)) return res.status(400).send('Book not in want to read list');
+        user.wantToRead.pull(book);
+        await user.save();
+        return res.status(201).send("book removed successfully");
+    } catch (error) {
+        //console.log(error);
+        res.status(500).send({ error: "Internal Server error" });
+    }
+}
+module.exports.removeFromRead= async (req, res, next) => {
+    const userRatingForBook = req.body.rating;
+    console.log(userRatingForBook);
+    const book=await Book.findById(req.params.bookId);
+    if(!book) return res.status(404).send('The book with the given ID was not found.');
+    
+    try{
+        let sumRating = book.ratingCount * book.avgRating;
+        sumRating -= userRatingForBook;
+        book.ratingCount -= 1;
+        book.avgRating = sumRating / book.ratingCount;
+        const user = await User.findOne({ _id: req.user._id });
+        const readBook = user.read.find(book => book.bookId == req.params.bookId);
+        if(!readBook) return res.status(400).send('Book not in read list');
 
+        user.read.pull(readBook);
+
+        await book.save();
+        await user.save();
+        return res.status(201).send("book removed successfully");
+
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).send({ error: "Internal Server error!!!!!!!!" });
+    }
+    
+}

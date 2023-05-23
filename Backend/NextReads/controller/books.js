@@ -171,7 +171,8 @@ module.exports.addRating= async (req, res, next) => {
         rating:req.body.rating
     })
     user.read.unshift(read);
-    
+    // delete book from user wanto to read list if it exists
+    user.wantToRead = user.wantToRead.filter(r=>r!=req.params.id);
     try {
         await book.save();
         await user.save();
