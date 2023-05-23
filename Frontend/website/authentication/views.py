@@ -11,6 +11,7 @@ import requests
 from requests.exceptions import RequestException
 
 
+
 class EmailValidationView(View):
     def post(self, request):
         data = json.loads(request.body) 
@@ -73,24 +74,6 @@ class SignupView(View):
         except RequestException as e:
             messages.error(request, "An error occurred while making the request. Please try again later.")
             return render(request, "authentication/signup.html", {})
-        # if not User.objects.filter(username=username).exists():
-        #     if not User.objects.filter(email=email).exists():
-
-        #         if len(password) < 6:
-        #             messages.error(request, 'Password too short.')
-        #             return render(request, "authentication/signup.html", context)
-        #         if password != confrimPassword:
-        #             messages.error(request, 'Passwords do not match.')
-        #             return render(request, "authentication/signup.html", context)
-        #         user = User.objects.create_user(username=username, email=email)
-        #         user.set_password(password)
-        #         user.save()
-        #         messages.success(request, 'Account created successfully.')
-        #         #return redirect('login')
-        #     else:
-        #         messages.error(request, 'Email is already in use.')
-        #         return render(request, "authentication/signup.html", {})
-        # return render(request, "authentication/signup.html", {})
 
 
 class LoginView(View):
@@ -124,21 +107,6 @@ class LoginView(View):
         else:
             messages.error(request, 'Please fill all fields.')
             return render(request, "authentication/login.html", context)
-        
-        # if password and username:
-        #     user = auth.authenticate(username=username, password=password)
-        #     print("user", user)
-        #     if user:
-        #         auth.login(request, user)
-        #         #messages.success(request, 'You are now logged in.')
-        #         #return render(request, "authentication/login.html", context)
-        #         return redirect("set-goal-step")
-        #     else:
-        #         messages.error(request, 'Invalid credentials.')
-        #         return render(request, "authentication/login.html", context)
-        # else:
-        #     messages.error(request, 'Please fill all fields.')
-        #     return render(request, "authentication/login.html", context)
 
 class logoutView(View):
     def post(self, request):
@@ -152,6 +120,23 @@ class logoutView(View):
         return redirect('login')
            
 class setGoalStepView(View):
+    def post(self, request):
+        try:
+            userToken = request.session.get('token')
+            headers = {'x-auth-token': userToken}
+            readingGoal = request.POST.get('user_challenge[goal]')
+            data = {'readingGoal': readingGoal}
+            response = requests.post('http://localhost:80/api/users/setreadinggoal', json=data, headers=headers)
+            if response.status_code == 201:
+                messages.success(request, 'Reading goal set successfully')
+                return redirect('rate-books-step')
+            else:
+                messages.error(request, response.text)
+                return redirect('rate-books-step')
+        except:
+            messages.error(request, 'Error occured while setting reading goal')
+            return redirect('rate-books-step')
+        
     def get(self, request):
         return render(request, "authentication/set-goal-step.html", {})
 
@@ -254,6 +239,81 @@ class wantToRead(View):
             messages.error(request, "An error occurred while making the request. Please try again later.")
             return redirect('rate-books-step')
         
+def setReadingGoal(request):
+    try:
+        userToken = request.session.get('token')
+        headers = {'x-auth-token': userToken}
+        readingGoal = request.POST.get('user_challenge[goal]')
+        data = {'readingGoal': readingGoal}
+        response = requests.post('http://localhost:80/api/users/setreadinggoal', json=data, headers=headers)
+        if response.status_code == 201:
+            messages.success(request, 'Reading goal set successfully')
+            return redirect('rate-books-step')
+        else:
+            messages.error(request, response.text)
+            return redirect('rate-books-step')
+    except:
+        messages.error(request, 'Error occured while setting reading goal')
+        return redirect('rate-books-step')
        
-
+################################################################################
         
+def similarBooks(genre):
+        try:
+            response = requests.get('http://localhost:80/api/books/genre/', params={'pageNumber': 1, 'genre': genre})
+            if response.status_code == 200:
+                books = response.json()
+                return books
+            else:
+                return None
+        except: 
+            return None
+def getAllGenreBooks():
+    try:
+        page = 5
+        response =  requests.get('http://localhost:80/api/books/getbooks?page='+str(page))
+        if response.status_code == 200:
+            books = response.json()
+            return books
+        else:
+            return None
+    except: 
+        return None  
+
+def getGenre(request,genre):
+    if(genre == 'all'):
+        books = getAllGenreBooks()
+        for x in books:
+            x['id'] = x.pop('_id')
+        return render(request, "authentication/rate-books-step.html", {'books': books})
+    else:
+        books = similarBooks(genre)
+        for x in books['books']:
+            x['id'] = x.pop('_id')
+        if books:
+            return render(request, "authentication/rate-books-step.html", {'books': books['books']})
+        else:
+            messages.error(request, 'Error occured while getting books')
+            return render(request, "authentication/rate-books-step.html", {'books': []})
+        
+def searchBooks(request):
+    search = request.POST.get('query')
+    print("search ",search)
+    try:
+
+        response = requests.get("http://localhost:80/api/books/search/", params={'pageNumber': 1, 'search': search})
+        if response.status_code == 200:
+            books = response.json()
+            
+            for x in books['books']:
+                x['id'] = x.pop('_id')
+            messages.success(request, 'Search results for ' + search)
+            return render(request, "authentication/rate-books-step.html", {'books': books['books']})
+        
+                                
+        else:
+                messages.error(request, response.text)
+                return render(request, "authentication/rate-books-step.html", {'books': []})
+            
+    except:
+        return render(request, "authentication/rate-books-step.html", {'books': []})

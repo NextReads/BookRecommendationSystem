@@ -20,15 +20,62 @@ def getToReadNext(request):
                 toReadNext['id'] = toReadNext.pop('_id')
                 return toReadNext
             else:
-                return JsonResponse({'message_error': 'error in getting to read next book.'}, status=400)
+                return None #JsonResponse({'message_error': toReadNextResponse.text}, status=400)
         except:
-            return JsonResponse({'message_error': 'error in getting to read next book.'}, status=400)
+            return None #JsonResponse({'message_error': 'error in getting to read next book.'}, status=400)
         
+def getReadingGoal(request):
+    try:
+        userToken = request.session.get('token')
+        headers = {'x-auth-token': userToken}
+        response = requests.get('http://localhost:80/api/users/getreadinggoal', headers=headers)
+        if response.status_code == 200:
+            readingGoal = response.json()
+            #print("readingGoal ",readingGoal)
+            return readingGoal.get('readingGoal')
+        else:
+            return None
+    except:
+        return None 
 
+def setReadingGoal(request):
+    try:
+        userToken = request.session.get('token')
+        headers = {'x-auth-token': userToken}
+        readingGoal = request.POST.get('user_challenge[goal]')
+        data = {'readingGoal': readingGoal}
+        response = requests.post('http://localhost:80/api/users/setreadinggoal', json=data, headers=headers)
+        if response.status_code == 201:
+            messages.success(request, 'Reading goal set successfully')
+            return redirect('userProfile:userhome')
+        else:
+            messages.error(request, response.text)
+            return redirect('userProfile:userhome')
+    except:
+        messages.error(request, 'Error occured while setting reading goal')
+        return redirect('userProfile:userhome')
+
+def getReadCount(request):
+    try:
+        userToken = request.session.get('token')
+        headers = {'x-auth-token': userToken}
+        response = requests.get('http://localhost:80/api/users/ratedbooks', headers=headers)
+        if response.status_code == 200:
+            readCount = response.json()
+            return readCount.get('count')
+        else:
+            return None
+    except:
+        return None 
+           
 # Create your views here.
 def UserProfile(request):
-    # get to read next book
-    return render(request, "userprofile/userhome.html", {'toReadNext': getToReadNext(request)})
+    toReadNext = getToReadNext(request)
+    readingGoal = getReadingGoal(request)
+    readCount = getReadCount(request)
+    print("readCount ",readCount)
+    return render(request, "userprofile/userhome.html", {'toReadNext': toReadNext, 'readingGoal': readingGoal, 'readCount': readCount})
+    
 
 class UserRecommendations(View):
     def get(self, request):
@@ -45,25 +92,7 @@ class UserRecommendations(View):
                 return render(request, "userprofile/recommendations.html", {'recommendations': []})
         except:
             return render(request, "userprofile/recommendations.html", {'recommendations': []})
-        # recommendations = [
-        #             {
-        #                 "id": 1,
-        #                 "title": "The Hunger Games",
-        #                 "author": "Suzanne Collins",
-        #                 "image": "https://images.gr-assets.com/books/1447303603m/2767052.jpg",
-        #                 "rating": 4.33,
-        #                 "description": "Could you survive on your own, in the wild, with everyone out to make sure you don't live to see the morning?"
-        #             },
-        #             {
-        #                 "id": 2,
-        #                 "title": "Harry Potter and the Philosopher's Stone",
-        #                 "author": "J.K. Rowling",
-        #                 "image": "https://images.gr-assets.com/books/1474154022m/3.jpg",
-        #                 "rating": 4.44,
-        #                 "description": "Harry Potter's life is miserable. His parents are dead and he's stuck with his heartless relatives, who force him to live in a tiny closet under the stairs."
-        #             },
-                    
-        #         ]
+        
 
 class UserBooks(View):
     def get(self,request):
@@ -165,21 +194,21 @@ class setToReadNext(View):
             messages.error(request, response.text)
             return redirect('userProfile:tbrbooks')
         
-class browseBooks(View):
-    def get(self,request):
-        #let page = request.GET.get('page')
-        page = 5
-        try:
-            response = requests.get('http://localhost:80/api/books/getbooks?page='+str(page))
-            if response.status_code == 200:
-                books = response.json()
-                return render(request, "userprofile/browseBooks.html", {'books': books})
-            else:
-                print(response.status_code, response.text)
-                return render(request, "userprofile/browseBooks.html", {'books': []})
-        except:
-            print(response.status_code, response.text)
-            return render(request, "userprofile/browseBooks.html", {'books': []})
+# class browseBooks(View):
+#     def get(self,request):
+#         #let page = request.GET.get('page')
+#         page = 5
+#         try:
+#             response = requests.get('http://localhost:80/api/books/getbooks?page='+str(page))
+#             if response.status_code == 200:
+#                 books = response.json()
+#                 return render(request, "userprofile/browseBooks.html", {'books': books})
+#             else:
+#                 print(response.status_code, response.text)
+#                 return render(request, "userprofile/browseBooks.html", {'books': []})
+#         except:
+#             print(response.status_code, response.text)
+#             return render(request, "userprofile/browseBooks.html", {'books': []})
 ##################################
 def similarBooks(genre):
         try:
@@ -354,3 +383,4 @@ def searchInTbr(request):
             return render(request, "userprofile/tbrbooks.html", {'books': []})
     except:
         return render(request, "userprofile/tbrbooks.html", {'books': []})
+    

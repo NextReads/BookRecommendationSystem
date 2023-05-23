@@ -68,8 +68,8 @@ progressNext.addEventListener("click", () => {
   };
   //upateprogrss if url is /authentication/rate-books-step
   console.log(window.location.pathname )
-
-    if (window.location.pathname == "/authentication/rate-books-step"){
+  // check if url contains the word genre or search
+  if (window.location.pathname == "/authentication/rate-books-step" ||  window.location.href.indexOf("search") !=-1 || window.location.href.indexOf("genre") !=-1 ){
         active = 2;
         updateProgress();
         progressNext.disabled = true;

@@ -1,5 +1,7 @@
 {% extends 'userprofile/userprofile_base.html' %} {% load static %} {% block content %}
 <div class = "inner-wrapper">
+  {% include 'partials/_messages.html' %}
+
           <div
             class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3 mb-5"
           >
@@ -7,8 +9,16 @@
               <div class="card mx-5 shadow-sm" style="width: 12rem">
                 <div class="card-header"># Books read</div>
                 <div class="card-body text-center">
-                  <h5 class="card-title">7</h5>
-                  <p class="card-text">Reading Goal : 10</p>
+                  <h5 class="card-title">{{readCount}}</h5>
+                  <p class="card-text">Reading Goal : {{readingGoal}}</p>
+                  <button
+                    class="btn btn-sm btn-link"
+                    data-bs-toggle="modal" 
+                    data-bs-target="#readingGoalModal"
+                  >
+                    Edit
+                  </button>
+                  {% include 'partials/_readingGoal_modal.html'%}
                 </div>
               </div>
             </div>

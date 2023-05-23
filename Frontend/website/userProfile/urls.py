@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from django.views.decorators.csrf import csrf_exempt
-from .views import UserProfile, UserRecommendations, UserBooks, tbrBooks, browseBooks, rateBook
+from .views import UserProfile, UserRecommendations, UserBooks, tbrBooks, rateBook
 app_name = 'userProfile'
 urlpatterns = [
     path('recommendations', views.UserRecommendations.as_view(), name='userrecommendations'),
@@ -18,5 +18,6 @@ urlpatterns = [
     path('search', views.searchBooks, name='search-books'),
     path('searchinread', views.searchInRead, name='search-in-read'),
     path('searchintbr', views.searchInTbr, name='search-in-tbr'),
+    path('setreadinggoal', views.setReadingGoal, name='set-reading-goal'),
 
 ]

@@ -33,20 +33,22 @@
     </td>
     <td class='smallHBreak'></td>
     <td class='readingChallengeForm'>
-    <form class="challengeForm" data-type="script" action="/user_challenges/create_or_update?next_page=%2Fuser%2Fedit_fav_genres%3Freg_path%3Dtrue&amp;reg_path=true" accept-charset="UTF-8" method="post"><input name="utf8" type="hidden" value="&#x2713;" /><input type="hidden" name="_method" value="PUT" /><input type="hidden" name="authenticity_token" value="nVwFq/x1Nof6xS5gqC9r1duniyZnUG74i2rX8PtcWoaKBHkcWJPJXymlaumoLTSRCf9fJXfsa7JGSfZemE8T0w==" /><input value="11633" type="hidden" name="user_challenge[challenge_id]" id="user_challenge_challenge_id" />
-    <div class='ctaText boldText'>
-    <span class='errorMessage smallErrorText hidden'></span>
-    <div class='smallVBreak'></div>
-    I want to read
-    <input class="inputNumber" placeholder="#" min="0" type="number" name="user_challenge[goal]" id="user_challenge_goal" />
-    books in 2023.
-    </div>
-    <p class='submitButtons'>
-    <button class='btn btn-primary mt-3' type=" submit">
-    Take the Challenge
-    </button>
-    </p>
-    </form>
+        <form class="challengeForm" action="{% url 'set-goal-step' %}"  method="post">
+            {% csrf_token %}
+            <div class='ctaText boldText'>
+            <span class='errorMessage smallErrorText hidden'></span>
+            <div class='smallVBreak'></div>
+            I want to read
+            <input class="inputNumber" placeholder="#" min="0" type="number" name="user_challenge[goal]" id="user_challenge_goal" />
+            books in 2023.
+            </div>
+            <p class='submitButtons'>
+            <button class='btn btn-primary mt-3' type=" submit">
+            Take the Challenge
+            </button>
+            </p>
+
+        </form>
     </td>
     <td class='smallHBreak'></td>
     </tr>
