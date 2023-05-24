@@ -14,12 +14,14 @@ urlpatterns = [
     path('userhome/to-read-next', views.setToReadNext.as_view(), name='to-read-next'),
     path('book/<str:book_id>', views.bookDetails, name='book-details'),
     path('browseBooks/genre/<str:genre>', views.getGenre, name='get-genre'),
-    path('browseBooka/want-to-read-browse', views.wantToReadBrowse, name='want-to-read-browse'),
+    path('browseBooks/want-to-read-browse', views.wantToReadBrowse, name='want-to-read-browse'),
+    path('book/want-to-read/<str:book_id>', views.wantToReadBookDetails, name='want-to-read-book-details'),
     path('search', views.searchBooks, name='search-books'),
     path('searchinread', views.searchInRead, name='search-in-read'),
     path('searchintbr', views.searchInTbr, name='search-in-tbr'),
     path('setreadinggoal', views.setReadingGoal, name='set-reading-goal'),
     path('deletetbr/<str:book_id>',views.deleteFromTbr, name='delete-tbr'),
     path('deleteread/<str:book_id>/<int:rating>',views.deleteFromRead, name='delete-read'),
+    path('setcurrentbook/<str:book_id>',views.setCurrentBook, name='set-current-book'),
 
 ]

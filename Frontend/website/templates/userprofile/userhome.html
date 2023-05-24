@@ -23,30 +23,22 @@
               </div>
             </div>
             <div class="col">
-              <a href="#" style="text-decoration: none;">
+              <a href="{% url 'userProfile:book-details' book_id=currentBook.id %}" style="text-decoration: none;">
               <div class="card mx-5 shadow-sm" style="width: 12rem">
                 <img
-                  src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1553383690l/2657.jpg"
+                  src="{{currentBook.imageUrl}}"
                   class="bd-placeholder-img card-img-top"
                   height="260"
                 />
                 <div class="card-header">Currently Reading</div>
                 <div class="card-body text-center">
-                  <h5 class="card-title">Book title</h5>
-                  <div class="justify-content-between align-items-center">
-                    <button
-                      type="button"
-                      class="btn btn-sm btn-outline-secondary mt-2"
-                    >
-                      completed!
-                    </button>
-                  </div>
+                  <h5 class="card-title">{{currentBook.title}}</h5>
                 </div>
               </div>
               </a>
             </div>
             <div class="col">
-              <a href="#" style="text-decoration: none;">
+              <a href="{% url 'userProfile:book-details' book_id=toReadNext.id %}" style="text-decoration: none;">
               <div class="card mx-5 shadow-sm" style="width: 12rem">
                 <img
                   src="{{toReadNext.imageUrl}}"
@@ -56,14 +48,6 @@
                 <div class="card-header">Want to read next</div>
                 <div class="card-body text-center">
                   <h5 class="card-title">{{toReadNext.title}}</h5>
-                  <div class="justify-content-between align-items-center">
-                    <button
-                      type="button"
-                      class="btn btn-sm btn-outline-secondary mt-2"
-                    >
-                      start reading now
-                    </button>
-                  </div>
                 </div>
               </div>
               </a>

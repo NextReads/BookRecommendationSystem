@@ -15,9 +15,7 @@ def getToReadNext(request):
             headers = {'x-auth-token': userToken}
             toReadNextResponse = requests.get('http://localhost:80/api/users/toreadnext', headers=headers)
             if toReadNextResponse.status_code == 200:
-                toReadNext = toReadNextResponse.json()
-                #change bookId[_id] to bookId[id]
-                toReadNext['id'] = toReadNext.pop('_id')
+                toReadNext = toReadNextResponse.json()                
                 return toReadNext
             else:
                 return None #JsonResponse({'message_error': toReadNextResponse.text}, status=400)
@@ -67,14 +65,27 @@ def getReadCount(request):
             return None
     except:
         return None 
-           
+
+def getCurrentBook (request):
+    try:
+        headers = {'x-auth-token':request.session['token'] }
+        response = requests.get('http://localhost:80/api/users/CurrentBook', headers=headers)
+        if response.status_code == 200:
+            book = response.json()
+            return book
+        else:
+            return None
+    except:
+        return None         
 # Create your views here.
 def UserProfile(request):
     toReadNext = getToReadNext(request)
     readingGoal = getReadingGoal(request)
     readCount = getReadCount(request)
+    currentBook = getCurrentBook(request)
     print("readCount ",readCount)
-    return render(request, "userprofile/userhome.html", {'toReadNext': toReadNext, 'readingGoal': readingGoal, 'readCount': readCount})
+    print("currentBook ",currentBook)
+    return render(request, "userprofile/userhome.html", {'toReadNext': toReadNext, 'readingGoal': readingGoal, 'readCount': readCount, 'currentBook': currentBook})
     
 
 class UserRecommendations(View):
@@ -175,40 +186,22 @@ class reviewBook(View):
                 return redirect('userProfile:userbooks')
         except:
             return redirect('userProfile:userbooks')
-        
+       
 class setToReadNext(View):
     def post(self,request):
         bookId = request.POST.get('book_id')
         print("bookId",bookId)
-        try:
-            userToken = request.session.get('token')
-            headers = {'x-auth-token': userToken}
-            response = requests.post('http://localhost:80/api/users/'+ str(bookId) +'/toreadnext', headers=headers)
-            if response.status_code == 201:
-                messages.success(request, 'set to read next successfully')
+        response = toReadNext(request, bookId)
+        if response:
+            if 'message_success' in response:
+                messages.success(request, response['message_success'])
                 return redirect('userProfile:tbrbooks')
             else:
-                messages.error(request,response.text)
+                messages.error(request, response['message_error'])
                 return redirect('userProfile:tbrbooks')
-        except:
-            messages.error(request, response.text)
+        else:
+            messages.error(request, 'Error occured while setting book to read next')
             return redirect('userProfile:tbrbooks')
-        
-# class browseBooks(View):
-#     def get(self,request):
-#         #let page = request.GET.get('page')
-#         page = 5
-#         try:
-#             response = requests.get('http://localhost:80/api/books/getbooks?page='+str(page))
-#             if response.status_code == 200:
-#                 books = response.json()
-#                 return render(request, "userprofile/browseBooks.html", {'books': books})
-#             else:
-#                 print(response.status_code, response.text)
-#                 return render(request, "userprofile/browseBooks.html", {'books': []})
-#         except:
-#             print(response.status_code, response.text)
-#             return render(request, "userprofile/browseBooks.html", {'books': []})
 ##################################
 def similarBooks(genre):
         try:
@@ -244,7 +237,19 @@ def addToWantToRead(request, book_id):
             return {'message_error': response.text}
     except:
         return None
-        
+
+def toReadNext( request, book_id):
+    try:
+        userToken = request.session.get('token')
+        headers = {'x-auth-token': userToken}
+        response = requests.post('http://localhost:80/api/users/'+ str(book_id)+'/toreadnext', headers=headers)
+        print("response ",response.text)
+        if response.status_code == 201:
+            return {'message_success': response.text}
+        else:
+            return {'message_error': response.text}
+    except:
+        return None       
 #################################         
 def bookDetails(request, book_id):
     print("bookId",book_id)
@@ -319,6 +324,19 @@ def wantToReadBrowse(request):
     else:
         messages.error(request, 'Error occured while adding book to want to read')
         return redirect('userProfile:get-genre', genre='all')
+
+def wantToReadBookDetails(request, book_id):
+    response = addToWantToRead(request, book_id)
+    if response:
+        if 'message_success' in response:
+            messages.success(request, response['message_success'])
+            return redirect('userProfile:book-details', book_id=book_id)
+        else:
+            messages.error(request, response['message_error'])
+            return redirect('userProfile:book-details', book_id=book_id)
+    else:
+        messages.error(request, 'Error occured while adding book to want to read')
+        return redirect('userProfile:book-details', book_id=book_id)
     
 def searchBooks(request):
     search = request.POST.get('query')
@@ -416,4 +434,22 @@ def deleteFromRead(request, book_id, rating):
     except:
         messages.error(request, response.text)
         return redirect('userProfile:userbooks')
+    
+def setCurrentBook (request, book_id):
+    print("bookId", book_id)
+    try:
+        headers = {'x-auth-token':request.session['token'] }
+        response = requests.post('http://localhost:80/api/users/'+ str(book_id)+'/CurrentBook', headers=headers)
+        print("response", response.text)
+        print("response", response.status_code)
+        if response.status_code == 201:
+            messages.success(request, response.text)
+            return redirect ('userProfile:book-details', book_id=book_id)
+
+        else:
+            messages.error(request, response.text)
+            return redirect ('userProfile:book-details', book_id=book_id)
+    except:
+        messages.error(request, "An error occurred while making the request. Please try again later.")
+        return redirect ('userProfile:book-details', book_id=book_id)
     

@@ -116,6 +116,8 @@
   <body>
     <div class="container">
       <div class="row">
+        {% include 'partials/_messages.html' %}
+
         <!-- First Column -->
         <div class="col-md-4">
           <img   class="responsive-img" src="{{book.imageUrl}}" alt="Book Image" class="book-image">
@@ -142,9 +144,8 @@
                 </a>
               
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                  <li><a class="dropdown-item" href="#">Want to read</a></li>
-                  <li><a class="dropdown-item" href="#">Currently reading</a></li>
-                  <li><a class="dropdown-item" href="#">read</a></li>
+                  <li><a class="dropdown-item" href="{% url 'userProfile:want-to-read-book-details' book_id=book.id %}">Want to read</a></li>
+                  <li><a class="dropdown-item" href="{% url 'userProfile:set-current-book' book_id=book.id %}">Currently reading</a></li>
                 </ul>
               </div>
             </div>
