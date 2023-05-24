@@ -113,6 +113,11 @@ const userSchema = new mongoose.Schema({
     },
     readingGoal:{
         type: Number,
+    },
+    currentBook:{
+        type: mongoose.Schema.Types.ObjectId,
+        //required: true,
+        ref: 'Book'
     }
 });
 userSchema.methods.generateAuthToken = function() { 

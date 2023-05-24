@@ -154,6 +154,8 @@ module.exports.addToWantToRead= async (req, res, next) => {
     try{
         const user = await User.findOne({ _id: req.user._id });
         if(user.wantToRead.includes(book._id)) return res.status(400).send('Book already in want to read list');
+        const readBook = user.read.find(book => book.bookId == req.params.bookId);
+        if(readBook) return res.status(400).send('Book already in read list');
         user.wantToRead.push(book);
         await user.save();
         return res.status(201).send("book added successfully");
@@ -168,6 +170,9 @@ module.exports.toReadNext= async (req, res, next) => {
     
     try{
         const user = await User.findOne({ _id: req.user._id });
+        //check if user already read the book
+        const readBook = user.read.find(book => book.bookId == req.params.bookId);
+        if(readBook) return res.status(400).send('Book already in read list');
         user.toReadNext=book;
         await user.save();
         return res.status(201).send("book added successfully");
@@ -179,7 +184,7 @@ module.exports.toReadNext= async (req, res, next) => {
 module.exports.getToReadNext= async (req, res, next) => {
     const book=await User.findOne({ _id: req.user._id }).select('toReadNext').populate('toReadNext');
     if (!book) return res.status(404).send('book not found');
-    return res.status(200).send(book.toReadNext);
+    return res.status(200).send({"id": book.toReadNext._id,"title":book.toReadNext.title,"imageUrl":book.toReadNext.imageUrl});
 }
 module.exports.searchInRead= async (req, res, next) => {
     //search for a regex in read books titles
@@ -272,4 +277,25 @@ module.exports.removeFromRead= async (req, res, next) => {
         return res.status(500).send({ error: "Internal Server error!!!!!!!!" });
     }
     
+}
+module.exports.setCurrentBook= async (req, res, next) => {
+    const book=await Book.findById( req.params.bookId);
+    if(!book) return res.status(404).send('The book with the given ID was not found.');
+    
+    try{
+        const user = await User.findOne({ _id: req.user._id });
+        const readBook = user.read.find(book => book.bookId == req.params.bookId);
+        if(readBook) return res.status(400).send('Book already in read list');
+        user.currentBook=book;
+        await user.save();
+        return res.status(201).send("book added successfully");
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ error: "Internal Server error" });
+    }
+}
+module.exports.getCurrentBook= async (req, res, next) => {
+    const book=await User.findOne({ _id: req.user._id }).select('currentBook').populate('currentBook') ;
+    if (!book) return res.status(404).send('book not found');
+    return res.status(200).send({"id": book.currentBook._id,"title":book.currentBook.title,"imageUrl":book.currentBook.imageUrl});
 }

@@ -421,8 +421,8 @@ module.exports.getByGenre= async (req, res,next) =>{
     // console.log(req.query.search);
     // console.log(req);
     pageNumber = req.query.pageNumber;
-    console.log(req.query.genre);
-    console.log(pageNumber);
+    //console.log(req.query.genre);
+    //console.log(pageNumber);
     if (!pageNumber){return res.status(400).send('Page number is required');}
     if (isNaN(pageNumber)){return res.status(400).send('Page number must be a number');}
 
