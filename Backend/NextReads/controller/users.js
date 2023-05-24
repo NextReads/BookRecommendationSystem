@@ -182,9 +182,9 @@ module.exports.toReadNext= async (req, res, next) => {
     }
 }
 module.exports.getToReadNext= async (req, res, next) => {
-    const book=await User.findOne({ _id: req.user._id }).select('toReadNext').populate('toReadNext');
-    if (!book) return res.status(404).send('book not found');
-    return res.status(200).send({"id": book.toReadNext._id,"title":book.toReadNext.title,"imageUrl":book.toReadNext.imageUrl});
+    const user=await User.findOne({ _id: req.user._id }).select('toReadNext').populate('toReadNext');
+    if (!user.toReadNext) return res.status(404).send('book not found');
+    return res.status(200).send({"id":user.toReadNext._id,"title":user.toReadNext.title,"imageUrl":user.toReadNext.imageUrl});
 }
 module.exports.searchInRead= async (req, res, next) => {
     //search for a regex in read books titles
@@ -295,7 +295,7 @@ module.exports.setCurrentBook= async (req, res, next) => {
     }
 }
 module.exports.getCurrentBook= async (req, res, next) => {
-    const book=await User.findOne({ _id: req.user._id }).select('currentBook').populate('currentBook') ;
-    if (!book) return res.status(404).send('book not found');
-    return res.status(200).send({"id": book.currentBook._id,"title":book.currentBook.title,"imageUrl":book.currentBook.imageUrl});
+    const user=await User.findOne({ _id: req.user._id }).select('currentBook').populate('currentBook') ;
+    if (!user.currentBook) return res.status(404).send('book not found');
+    return res.status(200).send({"id":user.currentBook._id,"title":user.currentBook.title,"imageUrl":user.currentBook.imageUrl});
 }
