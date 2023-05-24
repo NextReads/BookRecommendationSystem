@@ -15,7 +15,9 @@ def getToReadNext(request):
             headers = {'x-auth-token': userToken}
             toReadNextResponse = requests.get('http://localhost:80/api/users/toreadnext', headers=headers)
             if toReadNextResponse.status_code == 200:
-                toReadNext = toReadNextResponse.json()                
+                toReadNext = toReadNextResponse.json()  
+                # change bookId[_id] to bookId[id]
+                #toReadNext['id'] = toReadNext.pop('_id')              
                 return toReadNext
             else:
                 return None #JsonResponse({'message_error': toReadNextResponse.text}, status=400)
@@ -72,6 +74,7 @@ def getCurrentBook (request):
         response = requests.get('http://localhost:80/api/users/CurrentBook', headers=headers)
         if response.status_code == 200:
             book = response.json()
+            #book['id'] = book.pop('_id')
             return book
         else:
             return None
@@ -85,6 +88,7 @@ def UserProfile(request):
     currentBook = getCurrentBook(request)
     print("readCount ",readCount)
     print("currentBook ",currentBook)
+    print("toReadNext ",toReadNext)
     return render(request, "userprofile/userhome.html", {'toReadNext': toReadNext, 'readingGoal': readingGoal, 'readCount': readCount, 'currentBook': currentBook})
     
 

@@ -23,7 +23,9 @@
               </div>
             </div>
             <div class="col">
+              {% if currentBook %}
               <a href="{% url 'userProfile:book-details' book_id=currentBook.id %}" style="text-decoration: none;">
+              {% endif %}
               <div class="card mx-5 shadow-sm" style="width: 12rem">
                 <img
                   src="{{currentBook.imageUrl}}"
@@ -35,10 +37,14 @@
                   <h5 class="card-title">{{currentBook.title}}</h5>
                 </div>
               </div>
+              {% if currentBook %}
               </a>
+              {% endif %}
             </div>
             <div class="col">
+              {% if toReadNext %}
               <a href="{% url 'userProfile:book-details' book_id=toReadNext.id %}" style="text-decoration: none;">
+              {% endif %}
               <div class="card mx-5 shadow-sm" style="width: 12rem">
                 <img
                   src="{{toReadNext.imageUrl}}"
@@ -50,7 +56,9 @@
                   <h5 class="card-title">{{toReadNext.title}}</h5>
                 </div>
               </div>
+              {% if toReadNext %}
               </a>
+              {% endif %}
             </div>
           </div>
         </div>
