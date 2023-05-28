@@ -106,7 +106,7 @@ class RatingMatrix:
         # 1-a Books (by conent based)
         print("from_content_number: ", from_content_number)
         print("from_user_number: ", from_user_number)
-        
+
         current_read_books = current_read_books_df['book_id'].to_list()
         books_cb = content_based_recommendation_mulitple_books(
             current_read_books_df, genres_df, from_content_number)
@@ -234,6 +234,14 @@ class RatingMatrix:
     # # 			B- Case book_ID no genre (follow steps from 2-I)
 
     def get_cf_rating_matrix(self, current_user: str, current_read_books_dict: dict, ratings_df: pd.DataFrame, genres_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        This function returns the rating matrix for the current_user, it goes through several steps exaplained below:
+        @param current_user: the current user
+        @param current_read_books_dict: the current user's read books
+        @param ratings_df: the ratings dataframe
+        @param genres_df: the genres dataframe
+        @return: the rating matrix, ratings_matrix_centered 
+        """
 
         actual_user_read_books_df = self.dict_to_dataframe(
             current_user, current_read_books_dict)
