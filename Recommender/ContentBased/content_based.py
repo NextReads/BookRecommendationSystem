@@ -110,8 +110,8 @@ def new_genre_entry_normalized(book_id_rating: pd.DataFrame, genres_df_subset: p
     new_entry = new_entry / new_entry.sum()
     new_entry = (new_entry * N).astype(int)
     new_entry['book_id'] = CB_IMAGINARY_BOOK_ID
-    print("genres of new entry: ")
-    print(new_entry.T)
+    # print("genres of new entry: ")
+    # print(new_entry.T)
     return new_entry
 
 

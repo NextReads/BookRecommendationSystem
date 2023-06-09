@@ -128,9 +128,6 @@ class RatingMatrix:
     def cf_user__content_all(self, current_user: str, current_read_books_df: pd.DataFrame, ratings_df: pd.DataFrame, genres_df: pd.DataFrame) -> pd.DataFrame:
         from_user_number, from_content_number = self.divide_max_book_number(
             (current_read_books_df.shape[0]))
-        # 1-a Books (by conent based)
-        print("from_content_number: ", from_content_number)
-        print("from_user_number: ", from_user_number)
 
         current_read_books = current_read_books_df['book_id'].to_list()
         books_cb = content_based_recommendation_mulitple_books(
@@ -151,8 +148,6 @@ class RatingMatrix:
         users = self.get_other_users(current_user, books_user, ratings_df)
         users_books = self.get_highest_count_books(users, ratings_df)
         all_books = books_cb + users_books
-        print("all_books: ", len(all_books))
-
 
         # out of these users, get the ones who read at least one book from books_cb
         users_df = ratings_df[ratings_df['user_id'].isin(
@@ -160,7 +155,6 @@ class RatingMatrix:
 
         users_number = min(
             len(users_df['user_id'].unique()), CF_MAX_USER_NUMBER)
-        print("users_number: ", users_number)
 
         # get the users who read most of the books in books_cb
         users = users_df.groupby('user_id').count().sort_values(
@@ -173,8 +167,6 @@ class RatingMatrix:
         # get the ratings of the users
         ratings = ratings_df[ratings_df['user_id'].isin(
             users) & ratings_df['book_id'].isin(all_books + books_user)]
-        # print unique users in ratings
-        print("unique users in ratings: ", ratings['user_id'].unique())
 
         return ratings, books_cb
 
