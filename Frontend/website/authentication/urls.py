@@ -12,4 +12,10 @@ urlpatterns = [
     path('rate-books-step', views.rateBooksStepView.as_view(), name='rate-books-step'),
     path('logout', views.logoutView.as_view(), name='logout'),
     path('rate-book', views.rateBook.as_view(), name='rate-book'),
+    path('want-to-read', views.wantToRead.as_view(), name='want-to-read'),
+    #####################
+    path('search', views.searchBooks, name='search-books'),
+    path('genre/<str:genre>', views.getGenre, name='get-genre'),
+
+
 ]
