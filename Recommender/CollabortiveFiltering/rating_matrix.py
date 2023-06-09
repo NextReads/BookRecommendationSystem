@@ -26,15 +26,6 @@ from ContentBased.content_based import content_based_recommendation, content_bas
 # 				2- Books (books which are most rated by users in step 1)
 
 
-# 	II- user, {books_IDs: ratings}, specific book_ID
-# 		Getting Rating Matrix via
-# 			A- cf_user__content_specific
-# 				1- The single book_ID (by collaborative filtering)
-# 				2- Users (users who read most of the books in step 1)
-
-# 			B- Case book_ID no genre (follow steps from 2-I)
-
-
 class RatingMatrix:
 
     # function to divide the CF_MAX_BOOK_NUMBER between content based recommendations and books user already read
@@ -130,6 +121,7 @@ class RatingMatrix:
 
         users_number = min(
             len(users_df['user_id'].unique()), CF_MAX_USER_NUMBER)
+        print("users_number: ", users_number)
 
         # get the users who read most of the books in books_cb
         users = users_df.groupby('user_id').count().sort_values(
@@ -211,27 +203,6 @@ class RatingMatrix:
             unique_books) & ratings_df['user_id'].isin(unique_users)]
 
         return users_books_df
-
-    # 	II- user, {books_IDs: ratings}, specific book_ID
-    # 		Getting Rating Matrix via
-    # 			A- cf_user__content_specific
-    # 				1- The single book_ID (by collaborative filtering)
-    # 				2- Users (users who read most of the books in step 1)
-
-    # def cf_user__content_specific(self, current_user: str, current_read_books_df: pd.DataFrame, ratings_df: pd.DataFrame, genres_df: pd.DataFrame, book_id: str) -> pd.DataFrame:
-    #     # check if the given book_id has all nan values in the genres_df
-    #     if genres_df[genres_df['book_id'] == int(book_id)].isnull().all().all():
-    #         return pd.DataFrame()
-    #     # this has a similar structure to cf_user__content_all but using content_based_recommendation instead
-    #     from_user_number, from_content_number = self.divide_max_book_number(
-    #         len(current_read_books_df))
-    #     # get the books from the content_based_recommendation
-    #     books_cb = content_based_recommendation(
-    #         book_id, genres_df, from_content_number)
-
-    #     from_content_number = len(books_cb)
-
-    # # 			B- Case book_ID no genre (follow steps from 2-I)
 
     def get_cf_rating_matrix(self, current_user: str, current_read_books_dict: dict, ratings_df: pd.DataFrame, genres_df: pd.DataFrame) -> pd.DataFrame:
         """

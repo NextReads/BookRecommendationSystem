@@ -184,6 +184,30 @@ class CollaborativeFiltering:
             sorted(predicted_rating_dict.items(), key=lambda item: item[1], reverse=True))
         return sorted_predicted_rating_dict
 
+    def sort_prediction_according_to_mean(self, predicted_rating_dict: dict) -> dict:
+        mean = self.get_mean_current_user_rating()
+        sorted_predicted_rating_dict = dict(
+            sorted(predicted_rating_dict.items(), key=lambda item: abs(item[1]-mean), reverse=False))
+        return sorted_predicted_rating_dict
+    
+    def sort_prediction_according_to_max(self, predicted_rating_dict: dict) -> dict:
+        max = self.ratings_matrix.loc[self.user_id, :].max()
+        sorted_predicted_rating_dict = dict(
+            sorted(predicted_rating_dict.items(), key=lambda item: abs(item[1]-max), reverse=False))
+        return sorted_predicted_rating_dict
+
+    def remove_books_with_low_rating(self, predicted_rating_dict: dict) -> dict:
+        """
+        Function to remove any book that has rating less than user's minimum rating
+        :param predicted_rating_dict: predicted rating dictionary
+        :return: predicted rating dictionary
+        """
+
+        minimum_rating = self.ratings_matrix.loc[self.user_id, :].min()
+        predicted_rating_dict = {
+            k: v for k, v in predicted_rating_dict.items() if v >= minimum_rating}
+        return predicted_rating_dict
+
     def user_based_collaborative_filtering(self) -> dict:
         """
         Function to apply the user based collaborative filtering approach, calls the get_predicted_rating and sort_prediction_descedingly functions
@@ -199,6 +223,11 @@ class CollaborativeFiltering:
             # remove all nan values from predicted_rating_dict
             predicted_rating_dict = {
                 k: v for k, v in predicted_rating_dict.items() if not np.isnan(v)}
-            sorted_predicted_rating_dict = self.sort_prediction_descedingly(
+            sorted_predicted_rating_dict = self.sort_prediction_according_to_max(
                 predicted_rating_dict)
+            sorted_predicted_rating_dict = self.remove_books_with_low_rating(
+                sorted_predicted_rating_dict)
+            # check if the sorted_predicted_rating_dict is empty
+            if len(sorted_predicted_rating_dict) == 0:
+                self.sentiment = False
         return sorted_predicted_rating_dict, self.sentiment
