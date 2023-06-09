@@ -6,7 +6,7 @@ from Utils.common_functions import *
 from Utils.constants import *
 
 from ContentBased.content_based import content_based_recommendation, content_based_recommendation_mulitple_books
-
+from collaborative_filtering import *
 
 # This class is used to create the ratings matrix and the ratings matrix centered
 # we have multiple cases to cover:
@@ -91,6 +91,40 @@ class RatingMatrix:
     # 			A- cf_user__content_all
     # 				1- Books (by collaborative filtering)
     # 				2- Users (users who read most of the books in step 1)
+
+    # function to get users who rated atleast 2 books from the current user's read books
+
+    def get_other_users(self, current_user: str, current_read_books: list, ratings_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Function to get users who rated atleast 2 books from the current user's read books
+        :param current_user: the current user
+        :param current_read_books: the current user's read books
+        :param ratings_df: the ratings dataset
+        :return: users who rated atleast 2 books from the current user's read books
+        """
+        other_users = ratings_df[ratings_df['book_id'].isin(
+            current_read_books)]
+        other_users = other_users.groupby('user_id').filter(
+            lambda x: len(x) >= 2)
+        return other_users.user_id.unique()
+
+    # Function to get highest count of books (100 books) read by other users
+
+    def get_highest_count_books(self, other_users: list, ratings_df: pd.DataFrame) -> list:
+        # get the books read by other users
+        other_users_books = ratings_df[ratings_df['user_id'].isin(
+            other_users)]
+        # get the count of books read by other users
+        other_users_books_count = other_users_books.groupby(
+            'book_id').count().reset_index()
+        # sort the books by the count of books read by other users
+        other_users_books_count = other_users_books_count.sort_values(
+            'user_id', ascending=False)
+        # get the top 100 books read by other users
+        other_users_books_count = other_users_books_count.head(100)
+        # return it as a list
+        return other_users_books_count.book_id.to_list()
+
     def cf_user__content_all(self, current_user: str, current_read_books_df: pd.DataFrame, ratings_df: pd.DataFrame, genres_df: pd.DataFrame) -> pd.DataFrame:
         from_user_number, from_content_number = self.divide_max_book_number(
             (current_read_books_df.shape[0]))
@@ -110,14 +144,19 @@ class RatingMatrix:
 
         # 1-b Books (books read by the user)
         books_user = current_read_books[:from_user_number]
+        print("books_user: ", books_user)
 
         # 2- Users (users who read most of the books in step 1)
         # get all other users who at least read one book from books_user
-        users = ratings_df[ratings_df['book_id'].isin(
-            books_user)]['user_id'].unique()
+        users = self.get_other_users(current_user, books_user, ratings_df)
+        users_books = self.get_highest_count_books(users, ratings_df)
+        all_books = books_cb + users_books
+        print("all_books: ", len(all_books))
+
+
         # out of these users, get the ones who read at least one book from books_cb
         users_df = ratings_df[ratings_df['user_id'].isin(
-            users) & ratings_df['book_id'].isin(books_cb)]
+            users) & ratings_df['book_id'].isin(all_books)]
 
         users_number = min(
             len(users_df['user_id'].unique()), CF_MAX_USER_NUMBER)
@@ -133,7 +172,9 @@ class RatingMatrix:
 
         # get the ratings of the users
         ratings = ratings_df[ratings_df['user_id'].isin(
-            users) & ratings_df['book_id'].isin(books_cb + books_user)]
+            users) & ratings_df['book_id'].isin(all_books + books_user)]
+        # print unique users in ratings
+        print("unique users in ratings: ", ratings['user_id'].unique())
 
         return ratings, books_cb
 
@@ -245,4 +286,15 @@ class RatingMatrix:
 
         ratings_matrix = create_ratings_matrix(users_books_df)
         ratings_matrix_centered = mean_centered_rating_matrix(ratings_matrix)
+        # cf = CollaborativeFiltering(
+        #     current_user, ratings_matrix, ratings_matrix_centered)
+        # if len(cf.users_pearson_similiarity.unique()) <= 2:
+        #     users_books_df = self.cf_user(
+        #         current_user, current_read_books_df, ratings_df)
+        #     ratings_matrix = create_ratings_matrix(users_books_df)
+        #     ratings_matrix_centered = mean_centered_rating_matrix(
+        #         ratings_matrix)
+        #     print(
+        #         "cf_user called: case: user + books (equivalent genre but no enough similiarity)")
+
         return ratings_matrix, ratings_matrix_centered, books_cb
