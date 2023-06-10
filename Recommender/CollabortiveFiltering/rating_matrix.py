@@ -6,7 +6,7 @@ from Utils.common_functions import *
 from Utils.constants import *
 
 from ContentBased.content_based import content_based_recommendation, content_based_recommendation_mulitple_books
-from collaborative_filtering import *
+from CollabortiveFiltering.collaborative_filtering import *
 
 # This class is used to create the ratings matrix and the ratings matrix centered
 # we have multiple cases to cover:
