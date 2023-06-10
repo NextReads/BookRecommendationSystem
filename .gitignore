@@ -5,6 +5,7 @@ __pycache__
 geckodriver.log
 reviews.txt
 *.csv
+*.json
 __pycache__
 
 Dataset/*/*.csv
