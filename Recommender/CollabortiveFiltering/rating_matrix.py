@@ -136,12 +136,12 @@ class RatingMatrix:
         if books_cb.empty:
             return pd.DataFrame(), pd.DataFrame()
         from_content_number = len(books_cb)
-        print("from_content_number after: ", from_content_number)
+        # print("from_content_number after: ", from_content_number)
         books_cb = books_cb.index.to_list()
 
         # 1-b Books (books read by the user)
         books_user = current_read_books[:from_user_number]
-        print("books_user: ", books_user)
+        # print("books_user: ", books_user)
 
         # 2- Users (users who read most of the books in step 1)
         # get all other users who at least read one book from books_user
@@ -237,18 +237,18 @@ class RatingMatrix:
 
         return users_books_df
 
-    def get_cf_rating_matrix(self, current_user: str, current_read_books_dict: dict, ratings_df: pd.DataFrame, genres_df: pd.DataFrame) -> pd.DataFrame:
+    def get_final_dataframe(self, current_user: str, current_read_books_dict: dict, ratings_df: pd.DataFrame, genres_df: pd.DataFrame) -> pd.DataFrame:
         """
-        This function returns the rating matrix for the current_user, it goes through several steps exaplained below:
-        @param current_user: the current user
-        @param current_read_books_dict: the current user's read books
-        @param ratings_df: the ratings dataframe
-        @param genres_df: the genres dataframe
-        @return: the rating matrix, ratings_matrix_centered 
+        Function to get the final dataframe to be used in the CF algorithm
+        :param current_user: the current user
+        :param current_read_books_dict: the current user's read books
+        :param ratings_df: the ratings dataset
+        :return: the final dataframe
         """
 
         actual_user_read_books_df = self.dict_to_dataframe(
             current_user, current_read_books_dict)
+
 
         # current_read_books_df is the actual_user_read_books_df with id and rating columns dropped
         current_read_books_df = actual_user_read_books_df.drop(
@@ -265,9 +265,12 @@ class RatingMatrix:
             print("The data is not compatible with the CF algorithm")
             # TODO:: calling the content_based_recommendation
             return pd.DataFrame()
+        
 
         users_books_df, books_cb = self.cf_user__content_all(
             current_user, current_read_books_rating_df, ratings_df, genres_df)
+        # print("hi4")
+
         if users_books_df.empty:
             print("cf_user called: case: user + books (have no equivalent genre)")
             users_books_df = self.cf_user(
@@ -276,17 +279,23 @@ class RatingMatrix:
             print(
                 "cf_user__content_all called: case: user + books (have equivalent genre)")
 
+        return users_books_df, books_cb
+    
+
+
+    def get_cf_rating_matrix(self, current_user: str, current_read_books_dict: dict, ratings_df: pd.DataFrame, genres_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        This function returns the rating matrix for the current_user, it goes through several steps exaplained below:
+        @param current_user: the current user
+        @param current_read_books_dict: the current user's read books
+        @param ratings_df: the ratings dataframe
+        @param genres_df: the genres dataframe
+        @return: the rating matrix, ratings_matrix_centered 
+        """
+        users_books_df, books_cb = self.get_final_dataframe(
+            current_user, current_read_books_dict, ratings_df, genres_df)
+
         ratings_matrix = create_ratings_matrix(users_books_df)
         ratings_matrix_centered = mean_centered_rating_matrix(ratings_matrix)
-        # cf = CollaborativeFiltering(
-        #     current_user, ratings_matrix, ratings_matrix_centered)
-        # if len(cf.users_pearson_similiarity.unique()) <= 2:
-        #     users_books_df = self.cf_user(
-        #         current_user, current_read_books_df, ratings_df)
-        #     ratings_matrix = create_ratings_matrix(users_books_df)
-        #     ratings_matrix_centered = mean_centered_rating_matrix(
-        #         ratings_matrix)
-        #     print(
-        #         "cf_user called: case: user + books (equivalent genre but no enough similiarity)")
 
         return ratings_matrix, ratings_matrix_centered, books_cb
