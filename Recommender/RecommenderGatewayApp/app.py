@@ -14,6 +14,7 @@ from recommender import combineScores
 import pandas as pd
 from ContentBased.content_based import content_based_recommendation, visualize_recommendations
 import Utils.common_functions as cfcf
+import Utils.constants as c
 import os
 import py7zr
 import shutil
@@ -119,7 +120,12 @@ def book(book_id):
         response_time = time.time() - start_time
         NR_HISTOGRAM.observe(response_time)
         #visData = visualize_recommendations(listIds,booksData)
-        return jsonify(dict(listIds))
+        if not listIds:
+            result = dict(
+                zip(c.DEFAULT_BOOK_IDS, [0] * len(c.DEFAULT_BOOK_IDS)))
+        else:
+            result = dict(listIds)
+        return jsonify(result)
 
 
 @app.route("/RecommendUserBook", methods=['POST'])
@@ -139,13 +145,20 @@ def recommendUserBook():
             user_id, ratings_matrix, ratings_matrix_centered)
         predicted_books, sentiment = cf_model.user_based_collaborative_filtering()
 
-
         response_time = time.time() - start_time
         NR_HISTOGRAM.observe(response_time)
         print("here")
-        # attach to response header the sentiment 
-        response = predicted_books if sentiment is True else json.dumps(books_cb)
-        print (response)
+        # attach to response header the sentiment
+        if sentiment is True:
+            response = predicted_books
+        else:
+            # check if books_cb is empty
+            if not books_cb:
+                response = json.dumps(c.DEFAULT_BOOK_IDS)
+            else:
+                response = json.dumps(books_cb)
+
+        print(response)
         return (response, 200, {'sentiment': sentiment})
 
 
