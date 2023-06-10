@@ -31,13 +31,18 @@ def content_based_recommendation_mulitple_books(book_id_rating: pd.DataFrame, ge
     :return: the books for the rating matrix for the books in the book_id list using content based recommendation
     """
     genre_df_copy = genre_df.copy()
+    # get books whose genres sum are grater than 5000, drop book_id column before summing
+    genre_df_copy = genre_df_copy[genre_df_copy.drop(
+        'book_id', axis=1).sum(axis=1) > 1000]
+
     genres_df_subset = create_genres_df_subset(
         book_id_rating['book_id'].tolist(), genre_df_copy)
     new_entry = new_genre_entry_normalized(book_id_rating, genres_df_subset)
     new_entry_df = pd.DataFrame(new_entry).T
     # TODO:: checking if the all of the values of the new entry are zero/nan
-    # genre_df_copy = genre_df_copy.append(new_entry, ignore_index=True)
-    # concatenate the new entry to the genre_df_copy
+    if new_entry_df.drop('book_id', axis=1).sum(axis=1).values[0] == 0:
+        return pd.Series()
+
     genre_df_copy = pd.concat([new_entry_df, genre_df_copy], ignore_index=True)
 
     cb_recommendation = content_based_recommendation(
@@ -77,7 +82,7 @@ def new_genre_entry(genres_df_subset: pd.DataFrame) -> pd.DataFrame:
     return new_entry
 
 
-def new_genre_entry_normalized(book_id_rating: pd.DataFrame, genres_df_subset: pd.DataFrame, N=CB_SUM_OF_GENRES) -> pd.DataFrame:
+def new_genre_entry_normalized(book_id_rating: pd.DataFrame, genres_df_subset: pd.DataFrame, N=CB_SUM_OF_GENRES, G=CB_GENRE_FRAC_THRESH) -> pd.DataFrame:
     """
     Function to create a new entry for the imaginary book by normalizing the values then multiplying by N
     :params genres_df_subset: the dataframe that contains the genres of the books in the book_id list
@@ -100,10 +105,13 @@ def new_genre_entry_normalized(book_id_rating: pd.DataFrame, genres_df_subset: p
 
     new_entry = genres_df_subset.sum(axis=0)
     new_entry = new_entry / new_entry.sum()
+    new_entry[new_entry < G] = 0
+    # renormalize the values
+    new_entry = new_entry / new_entry.sum()
     new_entry = (new_entry * N).astype(int)
     new_entry['book_id'] = CB_IMAGINARY_BOOK_ID
-    print("genres of new entry: ")
-    print(new_entry.T)
+    # print("genres of new entry: ")
+    # print(new_entry.T)
     return new_entry
 
 
