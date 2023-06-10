@@ -1,13 +1,17 @@
 {% load static %}
+<link href="{% static 'css/registerr.css'%}" rel="stylesheet" />
 <a href="{% url 'userProfile:book-details' book_id=book.id %}" style="text-decoration: none;">
 <div class="col">
     <div class="card shadow-sm h-100">
-      <div class="mx-3 my-3">
-      <img
-        src="{{book.imageUrl}}"
-        class="bd-placeholder-img card-img-top"
-        height="270"
-      />
+      <div class="mx-1 my-1">
+        <div class="d-flex justify-content-center align-items-center">
+          <img
+            src="{{book.imageUrl}}"
+            class=""
+            height="210"
+            width="130"
+          />
+      </div>
       </div>
       <div class="card-body text-center">
         <p class="card-text">{{book.title}}</p>

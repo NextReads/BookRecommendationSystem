@@ -15,7 +15,7 @@ urlpatterns = [
     path('want-to-read', views.wantToRead.as_view(), name='want-to-read'),
     #####################
     path('search', views.searchBooks, name='search-books'),
-    path('genre/<str:genre>', views.getGenre, name='get-genre'),
+    path('genre/<str:genre>/<int:pageNumber>', views.getGenre, name='get-genre'),
 
 
 ]

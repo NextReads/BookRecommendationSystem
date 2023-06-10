@@ -217,10 +217,9 @@ def similarBooks(genre):
                 return None
         except: 
             return None
-def getAllGenreBooks():
+def getAllGenreBooks(pageNumber):
     try:
-        page = 5
-        response =  requests.get('http://localhost:80/api/books/getbooks?page='+str(page))
+        response =  requests.get('http://localhost:80/api/books/getbooks?page='+str(pageNumber))
         if response.status_code == 200:
             books = response.json()
             return books
@@ -296,18 +295,23 @@ def bookDetails(request, book_id):
         messages.error(request, 'Error occured while getting book details')
         return redirect('userProfile:userbooks')
     
-def getGenre(request,genre):
+def getGenre(request, genre, pageNumber):
     if(genre == 'all'):
-        books = getAllGenreBooks()
-        for x in books:
-            x['id'] = x.pop('_id')
-        return render(request, "userprofile/browseBooks.html", {'books': books})
+        books = getAllGenreBooks(pageNumber)
+        if books:
+            for x in books:
+                x['id'] = x.pop('_id')
+            return render(request, "userprofile/browseBooks.html", {'books': books})
+        else:
+            messages.error(request, 'Error occured while getting books')
+            return render(request, "userprofile/browseBooks.html", {'books': []})
     else:
         #print("genre ",genre)
         books = similarBooks(genre)
-        for x in books['books']:
-            x['id'] = x.pop('_id')
         if books:
+
+            for x in books['books']:
+                x['id'] = x.pop('_id')
             return render(request, "userprofile/browseBooks.html", {'books': books['books']})
         else:
             messages.error(request, 'Error occured while getting books')

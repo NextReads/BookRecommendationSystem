@@ -46,8 +46,10 @@ class SignupView(View):
         email = request.POST.get('email')
         password = request.POST.get('password')
         confrimPassword = request.POST.get('confirmPassword')
-        firstName = "nouranTest"
-        lastName = "nouranTest"
+        firstName = request.POST.get('firstName')
+        lastName = request.POST.get('lastName')
+        print ("firstName", firstName)
+        print ("lastName", lastName)
         role = "Member"
         context = {
             'fieldValues': request.POST
@@ -126,9 +128,9 @@ class setGoalStepView(View):
             headers = {'x-auth-token': userToken}
             readingGoal = request.POST.get('user_challenge[goal]')
             data = {'readingGoal': readingGoal}
+            print("data", data)
             response = requests.post('http://localhost:80/api/users/setreadinggoal', json=data, headers=headers)
             if response.status_code == 201:
-                messages.success(request, 'Reading goal set successfully')
                 return redirect('rate-books-step')
             else:
                 messages.error(request, response.text)
@@ -159,6 +161,7 @@ class rateBooksStepView(View):
 
             try:
                 booksResposne = requests.get('http://localhost:80/api/books/getbooks?page='+str(page))
+                print("booksResposne", booksResposne.status_code)
                 if booksResposne.status_code == 200:
                     books = booksResposne.json()
                     #rename _id to id
@@ -170,11 +173,10 @@ class rateBooksStepView(View):
                     }
                     if context:
                         return render(request, "authentication/rate-books-step.html", context)
-                    else:
+                else:
                         messages.error(request, booksResposne.text)
                         return render(request, "authentication/rate-books-step.html", {})
-            except RequestException as e:
-                messages.error(request, "An error occurred while making the request. Please try again later.")
+            except:
                 return render(request, "authentication/rate-books-step.html", {})
 
 class rateBook(View):
@@ -268,10 +270,9 @@ def similarBooks(genre):
                 return None
         except: 
             return None
-def getAllGenreBooks():
+def getAllGenreBooks(pageNumber):
     try:
-        page = 5
-        response =  requests.get('http://localhost:80/api/books/getbooks?page='+str(page))
+        response =  requests.get('http://localhost:80/api/books/getbooks?page='+str(pageNumber))
         if response.status_code == 200:
             books = response.json()
             return books
@@ -280,17 +281,21 @@ def getAllGenreBooks():
     except: 
         return None  
 
-def getGenre(request,genre):
+def getGenre(request,genre, pageNumber):
     if(genre == 'all'):
-        books = getAllGenreBooks()
-        for x in books:
-            x['id'] = x.pop('_id')
-        return render(request, "authentication/rate-books-step.html", {'books': books})
+        books = getAllGenreBooks(pageNumber)
+        if books:
+            for x in books:
+                x['id'] = x.pop('_id')
+            return render(request, "authentication/rate-books-step.html", {'books': books})
+        else:
+            messages.error(request, 'Error occured while getting books')
+            return render(request, "authentication/rate-books-step.html", {'books': []})
     else:
         books = similarBooks(genre)
-        for x in books['books']:
-            x['id'] = x.pop('_id')
         if books:
+            for x in books['books']:
+                x['id'] = x.pop('_id')
             return render(request, "authentication/rate-books-step.html", {'books': books['books']})
         else:
             messages.error(request, 'Error occured while getting books')

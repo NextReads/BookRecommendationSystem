@@ -10,7 +10,7 @@ progressNext.addEventListener("click", () => {
       active = steps.length;
     }
     if (active == 2){
-        window.location.pathname = "/authentication/rate-books-step";
+        window.location.pathname = "/authentication/genre/all/1";
         progressNext.disabled = true;
     }
     if (active == 3){

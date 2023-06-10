@@ -27,6 +27,29 @@
   <div class="invalid-feedback-email" style="display: none"></div>
   <p class="text-sm text-success emailSuccessOutput"></p>
 
+  <div class="input-group">
+      <div class="form-floating mb-2">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="firstName"
+          name="firstName"
+          value = "{{ fieldValues.firstName }}"
+        />
+        <label for="usernameField">firstName</label>
+      </div>
+      <div class="form-floating mb-2">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="lastName"
+          name="firstName"
+          value = "{{ fieldValues.lastName }}"
+        />
+        <label for="usernameField">lastName</label>
+      </div>
+  </div>
+
   <div class="form-floating mb-2">
     <input
       type="text"
