@@ -288,7 +288,7 @@ module.exports.Recommender= async (req, res, next) => {
     for (let book of recommendedBooks){
         cfRatingRet = books[book.bookId];
         // if sentimentHeaderCheck is true, add sentiment score to book
-        if (bool(sentimentHeaderCheck)){
+        if (sentimentHeaderCheck){
             cfRatingRet = books[book.bookId]
         }
         else{
