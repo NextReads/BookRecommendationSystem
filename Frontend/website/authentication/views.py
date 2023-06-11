@@ -10,6 +10,8 @@ import json
 import requests
 from requests.exceptions import RequestException
 
+from config import domainName
+
 
 
 class EmailValidationView(View):
@@ -63,7 +65,7 @@ class SignupView(View):
         
         data={'username': username, 'email': email, 'password': password, 'firstName': firstName, 'lastName': lastName, 'role': role}
         try:
-            response = requests.post('http://localhost:80/api/users', json=data)
+            response = requests.post('{domainName}/api/users', json=data)
             if response.status_code == 201:
                 userToken = response.headers['x-auth-token']
                 #save token in session
@@ -91,7 +93,7 @@ class LoginView(View):
         if username and password:
             data={'username': username, 'password': password}
             try:
-                response = requests.post('http://localhost:80/api/users/login', json=data)
+                response = requests.post('{domainName}/api/users/login', json=data)
                 
                 if response.status_code == 201:
                     userToken = response.headers['x-auth-token']
@@ -128,8 +130,7 @@ class setGoalStepView(View):
             headers = {'x-auth-token': userToken}
             readingGoal = request.POST.get('user_challenge[goal]')
             data = {'readingGoal': readingGoal}
-            print("data", data)
-            response = requests.post('http://localhost:80/api/users/setreadinggoal', json=data, headers=headers)
+            response = requests.post('{domainName}/api/users/setreadinggoal', json=data, headers=headers)
             if response.status_code == 201:
                 return redirect('rate-books-step')
             else:
@@ -149,7 +150,7 @@ class rateBooksStepView(View):
             headers = {'x-auth-token':request.session['token'] }
 
             try:
-                rateCount = requests.get('http://localhost:80/api/users/ratedbooks', headers=headers)
+                rateCount = requests.get('{domainName}/api/users/ratedbooks', headers=headers)
                 if rateCount.status_code == 200:
                     rateCount = rateCount.json()
                     print("rateCount", rateCount)
@@ -160,8 +161,7 @@ class rateBooksStepView(View):
 
 
             try:
-                booksResposne = requests.get('http://localhost:80/api/books/getbooks?page='+str(page))
-                print("booksResposne", booksResposne.status_code)
+                booksResposne = requests.get('{domainName}/api/books/getbooks?page='+str(page))
                 if booksResposne.status_code == 200:
                     books = booksResposne.json()
                     #rename _id to id
@@ -191,7 +191,7 @@ class rateBook(View):
 
         # get number of rated books by user
         try:
-            rateCount = requests.get('http://localhost:80/api/users/ratedbooks', headers=headers)
+            rateCount = requests.get('{domainName}/api/users/ratedbooks', headers=headers)
             if rateCount.status_code == 200:
                 rateCount = rateCount.json()
                 print("rateCount", rateCount)
@@ -203,7 +203,7 @@ class rateBook(View):
         if bookId and rating:
             data={'bookId': bookId, 'rating': rating}
             try:
-                response = requests.post('http://localhost:80/api/books/'+ str(bookId)+'/rating', json=data, headers=headers)
+                response = requests.post('{domainName}/api/books/'+ str(bookId)+'/rating', json=data, headers=headers)
                 print("response", response.text)
                 print("response", response.status_code)
                 if response.status_code == 201:
@@ -227,7 +227,7 @@ class wantToRead(View):
         print("bookId", bookId)
         try:
             headers = {'x-auth-token':request.session['token'] }
-            response = requests.post('http://localhost:80/api/users/'+ str(bookId)+'/wantToRead', headers=headers)
+            response = requests.post('{domainName}/api/users/'+ str(bookId)+'/wantToRead', headers=headers)
             print("response", response.text)
             print("response", response.status_code)
             if response.status_code == 201:
@@ -247,7 +247,7 @@ def setReadingGoal(request):
         headers = {'x-auth-token': userToken}
         readingGoal = request.POST.get('user_challenge[goal]')
         data = {'readingGoal': readingGoal}
-        response = requests.post('http://localhost:80/api/users/setreadinggoal', json=data, headers=headers)
+        response = requests.post('{domainName}/api/users/setreadinggoal', json=data, headers=headers)
         if response.status_code == 201:
             messages.success(request, 'Reading goal set successfully')
             return redirect('rate-books-step')
@@ -262,7 +262,7 @@ def setReadingGoal(request):
         
 def similarBooks(genre):
         try:
-            response = requests.get('http://localhost:80/api/books/genre/', params={'pageNumber': 1, 'genre': genre})
+            response = requests.get('{domainName}/api/books/genre/', params={'pageNumber': 1, 'genre': genre})
             if response.status_code == 200:
                 books = response.json()
                 return books
@@ -272,7 +272,7 @@ def similarBooks(genre):
             return None
 def getAllGenreBooks(pageNumber):
     try:
-        response =  requests.get('http://localhost:80/api/books/getbooks?page='+str(pageNumber))
+        response =  requests.get('{domainName}/api/books/getbooks?page='+str(pageNumber))
         if response.status_code == 200:
             books = response.json()
             return books
@@ -306,7 +306,7 @@ def searchBooks(request):
     print("search ",search)
     try:
 
-        response = requests.get("http://localhost:80/api/books/search/", params={'pageNumber': 1, 'search': search})
+        response = requests.get("{domainName}/api/books/search/", params={'pageNumber': 1, 'search': search})
         if response.status_code == 200:
             books = response.json()
             
