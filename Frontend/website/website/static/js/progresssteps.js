@@ -10,7 +10,7 @@ progressNext.addEventListener("click", () => {
       active = steps.length;
     }
     if (active == 2){
-        window.location.pathname = "/authentication/genre/all/1";
+        window.location.pathname = "/authentication/rate-books-step";
         progressNext.disabled = true;
     }
     if (active == 3){
@@ -74,8 +74,6 @@ progressNext.addEventListener("click", () => {
         updateProgress();
         progressNext.disabled = true;
     }
-
-window.onload = checkRateCount();
 function checkRateCount() {
   var rateCount = document.getElementById("rateCount").value;
   console.log("skfdlkf",rateCount)
@@ -85,5 +83,6 @@ function checkRateCount() {
     document.getElementById("progress-next").disabled = true;
   }
 }
+window.onload = checkRateCount();
 
 

@@ -93,19 +93,29 @@ def UserProfile(request):
     
 
 class UserRecommendations(View):
-    def get(self, request):
+    def getRecommendedBooks(self, request):
         try:
             userToken = request.session.get('token')
-            #print("offffffff ",userToken)
             headers = {'x-auth-token': userToken}
             recommendationsResponse = requests.get('http://localhost:80/api/books/recommend', headers=headers)
             if recommendationsResponse.status_code == 200:
                 recommendations = recommendationsResponse.json()
-                #print("recommendations ",recommendations)
-                return render(request, "userprofile/recommendations.html", {'recommendations': recommendations})
+                return recommendations #JsonResponse({'books': recommendations}, status=200)
             else:
-                return render(request, "userprofile/recommendations.html", {'recommendations': []})
+                return None #JsonResponse({'message_error': recommendationsResponse.text}, status=400)
         except:
+            return None #JsonResponse({'message_error': 'error in getting recommendations.'}, status=400)
+        
+
+    def get(self, request):
+        recommendations = self.getRecommendedBooks(request)
+        if recommendations:
+            #print("recommendations ",recommendations)
+            for x in recommendations:
+                x['id'] = x.pop('_id')
+            return render(request, "userprofile/recommendations.html", {'recommendations': recommendations})
+        else:
+            messages.error(request, 'Error occured while getting recommendations')
             return render(request, "userprofile/recommendations.html", {'recommendations': []})
         
 

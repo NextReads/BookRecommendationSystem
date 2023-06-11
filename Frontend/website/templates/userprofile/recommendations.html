@@ -1,36 +1,52 @@
 {% extends 'userprofile/userprofile_base.html' %} {% load static %} {% block content %}
 <div class = "inner-wrapper">
-{% if recommendations %}
-        <div>
-            <h1>Recommended for you!</h1>
-        </div>
-        <div class="cards-container">
-          
-          {% for book in recommendations %}
-          <div class="card shadow p-3 mb-5 bg-body rounded" style="min-width: 300px">
-            <div class="inner-card">
-              <img
-              src="{{book.imageURL}}"
-              alt="..." height="260" />
-              <div class="card-body">
-                <h5 class="card-title">{{book.title}}</h5>
-                <p class="card-text">
-                  {{book.description}}
-                </p>
-                <a href="#" class="btn btn-primary">view similar books</a>
-              </div>
+  <!-- <div id ="spinner-box" class="text-center mt-3 spinner-box" >
+    <div class="spinner-border text-info" role="status"></div>
+  </div> -->
+    {% if recommendations %}
+            <div>
+                <h1>Recommended for you!</h1>
             </div>
+            <div class="cards-container">
+              
+              {% for book in recommendations %}
+              <a href="{% url 'userProfile:book-details' book_id=book.id %}" style="text-decoration: none;">
+                <div class="card shadow p-3 mb-3 bg-body rounded" style="min-width: 300px">
+                <div class="inner-card">
+                  <img
+                  src="{{book.imageUrl}}"
+                  height="210"
+                  width="130" 
+                  />
+                  <div class="card-body">
+                    <!-- display book index-->
+                    <h5 class="card-title">#{{forloop.counter}}: {{book.title}}</h5>
+                    <p class="card-text">
+                      {{book.authors|join:','}}
+                    </p>
+                    <p class="card-text">
+                      Average book rating : {{book.avgRating}}/5
+                    </p>
+                  </div>
+                </div>
+              </div>
+             </a>
+              {% endfor %}
+
+              {% else %}
+              <div class="mb-6">
+                <h1>Sorry, we couldn't find any recommendations for you! </h1>
+                <a href="{% url 'userProfile:get-genre' genre='all' pageNumber='1' %}" >Rate some books</a>
+              </div>
+
+            </div>
+
           </div>
-          {% endfor %}
-
-          {% else %}
-          <div class="mb-6">
-            <h1>Sorry, we couldn't find any recommendations for you! </h1>
-            <a href="/userProfile/browsebooks" >Rate some books</a>
-          </div>
-
-        </div>
-
-</div>
-{% endif %}
+    {% endif %}
+    <style>
+      .card:hover {
+        transform: scale(1.03);
+        box-shadow: 0 0 11px rgba(33,33,33,.7); 
+      }
+    </style>  
 {% endblock %}

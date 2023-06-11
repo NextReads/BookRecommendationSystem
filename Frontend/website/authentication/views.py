@@ -47,7 +47,7 @@ class SignupView(View):
         password = request.POST.get('password')
         confrimPassword = request.POST.get('confirmPassword')
         firstName = request.POST.get('firstName')
-        lastName = request.POST.get('lastName')
+        lastName = "user"
         print ("firstName", firstName)
         print ("lastName", lastName)
         role = "Member"
@@ -144,7 +144,7 @@ class setGoalStepView(View):
 
 class rateBooksStepView(View):
     def get(self, request):
-            page = 10
+            page = 1
             context = {}
             headers = {'x-auth-token':request.session['token'] }
 
