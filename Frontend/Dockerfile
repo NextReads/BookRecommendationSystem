@@ -8,6 +8,8 @@ COPY ./Frontend /app
 
 RUN pip install -r requirements.txt --no-cache-dir
 
+ENV NAME DEP
+
 ENV PYTHONUNBUFFERED=1
 
 ENTRYPOINT ["python3"]
