@@ -15,3 +15,5 @@ Backend/NextReads/venv/Scripts
 Backend/NextReads/node_modules
 Recommender/SentimentAnalysis/models/tfidf.pkl
 Recommender/SentimentAnalysis/models/tfidf.pkl
+Frontend/website/db.sqlite3
+Frontend/website/db.sqlite3
