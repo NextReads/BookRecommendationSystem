@@ -94,32 +94,35 @@ def UserProfile(request):
     
 
 class UserRecommendations(View):
-    def getRecommendedBooks(self, request):
+    def get(self, request):
         try:
             userToken = request.session.get('token')
             headers = {'x-auth-token': userToken}
             recommendationsResponse = requests.get('{domainName}/api/books/recommend', headers=headers)
             if recommendationsResponse.status_code == 200:
                 recommendations = recommendationsResponse.json()
-                return recommendations #JsonResponse({'books': recommendations}, status=200)
+                return  JsonResponse({'recommendations': recommendations}, status=200)
             else:
-                return None #JsonResponse({'message_error': recommendationsResponse.text}, status=400)
+                return JsonResponse({'message_error': recommendationsResponse.text}, status=400)
         except:
-            return None #JsonResponse({'message_error': 'error in getting recommendations.'}, status=400)
+            return JsonResponse({'message_error': 'error in getting recommendations.'}, status=400)
         
 
+    # def get(self, request):
+    #     recommendations = self.getRecommendedBooks(request)
+    #     if recommendations:
+    #         #print("recommendations ",recommendations)
+    #         for x in recommendations:
+    #             x['id'] = x.pop('_id')
+    #         return render(request, "userprofile/recommendations.html", {'recommendations': recommendations})
+    #     else:
+    #         messages.error(request, 'Error occured while getting recommendations')
+    #         return render(request, "userprofile/recommendations.html", {'recommendations': []})
+        
+class recommendationsPage(View):
     def get(self, request):
-        recommendations = self.getRecommendedBooks(request)
-        if recommendations:
-            #print("recommendations ",recommendations)
-            for x in recommendations:
-                x['id'] = x.pop('_id')
-            return render(request, "userprofile/recommendations.html", {'recommendations': recommendations})
-        else:
-            messages.error(request, 'Error occured while getting recommendations')
-            return render(request, "userprofile/recommendations.html", {'recommendations': []})
-        
-
+        return render(request, "userprofile/recommendations.html")
+    
 class UserBooks(View):
     def get(self,request):
         try:

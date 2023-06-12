@@ -5,6 +5,7 @@ from .views import UserProfile, UserRecommendations, UserBooks, tbrBooks, rateBo
 app_name = 'userProfile'
 urlpatterns = [
     path('recommendations', views.UserRecommendations.as_view(), name='userrecommendations'),
+    path('recommendationsPage', views.recommendationsPage.as_view(), name='userrecommendationspage'),
     path('userhome', views.UserProfile, name='userhome'),
     path('userbooks', views.UserBooks.as_view(), name='userbooks'),
     path('tbrbooks', views.tbrBooks.as_view(), name='tbrbooks'),
