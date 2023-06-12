@@ -168,8 +168,7 @@ class rateBook(View):
     def post(self,request):
         bookId = request.POST.get('fe_eh')
         rating = request.POST.get('rating')
-        print("bookId zsfsdgds ",bookId)
-        print("rating ",rating)
+        
         try:
             userToken = request.session.get('token')
             headers = {'x-auth-token': userToken}
@@ -339,13 +338,13 @@ def wantToReadBrowse(request):
     if response:
         if 'message_success' in response:
             messages.success(request, response['message_success'])
-            return redirect('userProfile:get-genre', genre='all')
+            return redirect('userProfile:get-genre', genre='all', pageNumber=1)
         else:
             messages.error(request, response['message_error'])
-            return redirect('userProfile:get-genre', genre='all')
+            return redirect('userProfile:get-genre', genre='all', pageNumber=1)
     else:
         messages.error(request, 'Error occured while adding book to want to read')
-        return redirect('userProfile:get-genre', genre='all')
+        return redirect('userProfile:get-genre', genre='all', pageNumber=1)
 
 def wantToReadBookDetails(request, book_id):
     response = addToWantToRead(request, book_id)
