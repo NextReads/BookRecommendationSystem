@@ -1,9 +1,11 @@
 {% extends 'userprofile/userprofile_base.html' %} {% load static %} {% block content %}
+<script  defer src="{% static 'js/spinner.js' %}"></script>
 <div class = "inner-wrapper">
-  <!-- <div id ="spinner-box" class="text-center mt-3 spinner-box" >
+  <div id ="spinner-box" class="text-center mt-3 spinner-box" >
     <div class="spinner-border text-info" role="status"></div>
-  </div> -->
-    {% if recommendations %}
+  </div>
+  <div id="data-box">
+    <!-- {% if recommendations %}
             <div>
                 <h1>Recommended for you!</h1>
             </div>
@@ -19,7 +21,6 @@
                   width="130" 
                   />
                   <div class="card-body">
-                    <!-- display book index-->
                     <h5 class="card-title">#{{forloop.counter}}: {{book.title}}</h5>
                     <p class="card-text">
                       {{book.authors|join:','}}
@@ -41,8 +42,11 @@
 
             </div>
 
-          </div>
-    {% endif %}
+         
+    {% endif %} -->
+  </div>
+  </div> <!-- inner-wrapper -->
+
     <style>
       .card:hover {
         transform: scale(1.03);
