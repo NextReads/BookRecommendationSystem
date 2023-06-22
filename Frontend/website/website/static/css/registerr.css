@@ -1,0 +1,271 @@
+body {
+    font-size: .875rem;
+  }
+  
+  .feather {
+    width: 16px;
+    height: 16px;
+  }
+  
+  /*
+   * Sidebar
+   */
+  
+  .sidebar {
+    position: fixed;
+    top: 2rem;
+    /* rtl:raw:
+    right: 0;
+    */
+    bottom: 0;
+    /* rtl:remove */
+    left: 0;
+    z-index: 100; /* Behind the navbar */
+    padding: 48px 0 0; /* Height of navbar */
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+  }
+  
+  @media (max-width: 645px) {
+    .sidebar {
+      top: 4rem;
+    }
+  }
+  
+  .sidebar-sticky {
+    height: calc(100vh - 48px);
+    overflow-x: hidden;
+    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+  }
+  
+  .sidebar .nav-link {
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .sidebar .nav-link .feather {
+    margin-right: 4px;
+    color: #727272;
+  }
+  
+  .sidebar .nav-link.active {
+    color: #2470dc;
+  }
+  
+  .sidebar .nav-link:hover .feather,
+  .sidebar .nav-link.active .feather {
+    color: inherit;
+  }
+  
+  .sidebar-heading {
+    font-size: .75rem;
+  }
+  
+  /*
+   * Navbar
+   */
+  
+  .navbar-brand {
+    padding-top: .75rem;
+    padding-bottom: .75rem;
+    background-color: rgba(0, 0, 0, .25);
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
+  }
+  
+  .navbar .navbar-toggler {
+    top: .25rem;
+    right: 1rem;
+  }
+  
+  .navbar .form-control {
+    padding: .75rem 1rem;
+  }
+  
+  .form-control-dark {
+    color: #fff;
+    background-color: rgba(255, 255, 255, .1);
+    border-color: rgba(255, 255, 255, .1);
+  }
+  
+  .form-control-dark:focus {
+    border-color: transparent;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);
+  }
+  #progress {
+    position: relative;
+    margin-bottom: 30px;   
+  }
+  #progress-bar {
+    position: absolute;
+    background: lightseagreen;
+    height: 5px;
+    width: 0%;
+    top: 50%;
+    left: 0;
+  }
+  #progress-num {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+  }
+  #progress-num::before {
+    content: "";
+    background-color: lightgray;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    height: 5px;
+    width: 100%;
+    z-index: -1;
+  }
+  #progress-num .step {
+    border: 3px solid lightgray;
+    border-radius: 100%;
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+    background-color: #fff;
+    font-family: sans-serif;
+    font-size: 14px;    
+    position: relative;
+    z-index: 1;
+    margin: 5px 20px 0px 20px;
+  }
+  #progress-num .step.active {
+    border-color: lightseagreen;
+    background-color: lightseagreen;
+    color: #fff;
+  }
+.pageTitle {
+    font-size: 24px;
+    padding: 20px
+}
+.readingChallengeBadge .badgeYear {
+  color: #ffffff;
+  font-size: 16px;
+  font-family: "Lato", "Helvetica Neue", "Helvetica", sans-serif;
+  font-weight: bold;
+  padding-top: 14px;
+  padding-bottom: 7px;
+  position: relative;
+}
+.readingChallengeBadge {
+  padding: 1em;
+}
+.readingChallengeBadge .badgeYear .bookImg {
+  width: 96px;
+  padding: 8px 4px 4px 4px;
+}
+.readingChallengeBadge .badgeYear .challengeText--reading {
+  font-size: 21px;
+}
+.readingChallengeBadge .badgeYear .challengeText {
+  line-height: 1;
+  padding: 5px;
+}
+.readingChallengeSignup {
+  border: 1px solid #D8D8D8;
+  border-radius: 3px;
+  margin: 18px auto;
+}
+.goalNotice .mediumText {
+  margin: 2px 0;
+}
+#setAGoal {
+  text-align: center;
+}
+.readingChallengeSignup .readingChallengeForm .ctaText {
+  font-size: 20px;
+}
+.smallHBreak {
+  padding: 0em 0.5em 0em 0.5em;
+}
+.readingChallengeSignup .inputNumber {
+  -moz-box-shadow: inset 0 0 5px 1px rgba(170,170,170,0.4);
+  -webkit-box-shadow: inset 0 0 5px 1px rgba(170,170,170,0.4);
+  box-shadow: inset 0 0 5px 1px rgba(170,170,170,0.4);
+  border: 1px solid transparent;
+  border-radius: 5px;
+  width: 3em;
+  height: 2em;
+  font-size: 16px;
+  margin: 0;
+  padding: 0 5px;
+  text-align: center;
+}
+
+.stars .fa-star {
+  color: grey;
+}
+.rmv-btn {
+  padding: 0;
+  border: none;
+  border-color: transparent !important;
+  background: transparent !important;
+
+}
+
+/* prev siblings should be orange */
+.stars:hover .fa-star{
+  color: orange;
+}
+
+.stars .fa-star:hover ~ .fa-star {
+  color: grey;
+}
+
+.star-rating {
+  margin: 0px 0 0px;
+  font-size: 0;
+  white-space: nowrap;
+  display: inline-block;
+  width: 175px;
+  height: 35px;
+  overflow: hidden;
+  position: relative;
+  background: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB3aWR0aD0iMjBweCIgaGVpZ2h0PSIyMHB4IiB2aWV3Qm94PSIwIDAgMjAgMjAiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDIwIDIwIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cG9seWdvbiBmaWxsPSIjREREREREIiBwb2ludHM9IjEwLDAgMTMuMDksNi41ODMgMjAsNy42MzkgMTUsMTIuNzY0IDE2LjE4LDIwIDEwLDE2LjU4MyAzLjgyLDIwIDUsMTIuNzY0IDAsNy42MzkgNi45MSw2LjU4MyAiLz48L3N2Zz4=');
+  background-size: contain;
+ }
+
+.star-rating i {
+  opacity: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 20%;
+  z-index: 1;
+  background: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB3aWR0aD0iMjBweCIgaGVpZ2h0PSIyMHB4IiB2aWV3Qm94PSIwIDAgMjAgMjAiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDIwIDIwIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cG9seWdvbiBmaWxsPSIjRkZERjg4IiBwb2ludHM9IjEwLDAgMTMuMDksNi41ODMgMjAsNy42MzkgMTUsMTIuNzY0IDE2LjE4LDIwIDEwLDE2LjU4MyAzLjgyLDIwIDUsMTIuNzY0IDAsNy42MzkgNi45MSw2LjU4MyAiLz48L3N2Zz4=');
+  background-size: contain;
+}
+
+.star-rating input {
+  opacity: 0;
+  display: inline-block;
+  width: 20%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  z-index: 2;
+  position: relative;
+}
+
+.star-rating input:hover + i,
+.star-rating input:checked + i {
+  opacity: 1;
+}
+.star-rating i ~ i {
+  width: 40%;
+}
+.star-rating i ~ i ~ i {
+  width: 60%;
+}
+.star-rating i ~ i ~ i ~ i {
+  width: 80%;
+}
+.star-rating i ~ i ~ i ~ i ~ i {
+  width: 100%;
+}
+

@@ -1,0 +1,14 @@
+Flask
+numpy
+pandas
+matplotlib
+seaborn
+prometheus_flask_exporter
+prometheus_client
+sklearn
+scikit-learn
+nltk
+regex
+gdown
+zipfile36
+py7zr

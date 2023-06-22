@@ -1,0 +1,60 @@
+{% extends 'register_steps_base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+<div class='mainContent goalContent' id='setAGoal'>
+    <h1 class='pageTitle'>
+    Set a Reading Goal!
+    </h1>
+    <div class='goalNotice'>
+    <p class='mediumText'>
+    Join other readers in the NextReads Reading Challenge!
+    </p>
+    </div>
+    <table class='readingChallengeSignup'>
+    <tr>
+    <td>
+    <div class='readingChallengeBadge'>
+    <div class='badgeYear' style='background-color: #7584e9'>
+    <img class="bookImg" alt="2023 Reading Challenge" src="https://s.gr-assets.com/assets/challenges/yearly/img_RCBook-626ef5100b911207af0c4d84f02df03a.svg" />
+    <div class='challengeText'>
+    <div class='challengeText--reading'>
+    READING
+    </div>
+    <div>
+    CHALLENGE
+    </div>
+    </div>
+    </div>
+    </div>
+    
+    </td>
+    <td class='smallHBreak'></td>
+    <td class='readingChallengeForm'>
+        <form class="challengeForm" action="{% url 'set-goal-step' %}"  method="post">
+            {% csrf_token %}
+            <div class='ctaText boldText'>
+            <span class='errorMessage smallErrorText hidden'></span>
+            <div class='smallVBreak'></div>
+            I want to read
+            <input class="inputNumber" placeholder="#" min="0" type="number" name="user_challenge[goal]" id="user_challenge_goal" />
+            books in 2023.
+            </div>
+            <p class='submitButtons'>
+            <button class='btn btn-primary mt-3' type=" submit">
+            Take the Challenge
+            </button>
+            </p>
+
+        </form>
+    </td>
+    <td class='smallHBreak'></td>
+    </tr>
+    </table>
+    <span class='actionLink'>
+    <a href="/authentication/rate-books-step">skip this step »</a>
+    </span>
+    </div>
+{% endblock %}

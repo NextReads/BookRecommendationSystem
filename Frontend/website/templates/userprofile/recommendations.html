@@ -1,0 +1,56 @@
+{% extends 'userprofile/userprofile_base.html' %} {% load static %} {% block content %}
+<script  defer src="{% static 'js/spinner.js' %}"></script>
+<div class = "inner-wrapper">
+  <div id ="spinner-box" class="text-center mt-3 spinner-box" >
+    <div class="spinner-border text-info" role="status"></div>
+  </div>
+  <div id="data-box">
+    <!-- {% if recommendations %}
+            <div>
+                <h1>Recommended for you!</h1>
+            </div>
+            <div class="cards-container">
+              
+              {% for book in recommendations %}
+              <a href="{% url 'userProfile:book-details' book_id=book.id %}" style="text-decoration: none;">
+                <div class="card shadow p-3 mb-3 bg-body rounded" style="min-width: 300px">
+                <div class="inner-card">
+                  <img
+                  src="{{book.imageUrl}}"
+                  height="210"
+                  width="130" 
+                  />
+                  <div class="card-body">
+                    <h5 class="card-title">#{{forloop.counter}}: {{book.title}}</h5>
+                    <p class="card-text">
+                      {{book.authors|join:','}}
+                    </p>
+                    <p class="card-text">
+                      Average book rating : {{book.avgRating}}/5
+                    </p>
+                  </div>
+                </div>
+              </div>
+             </a>
+              {% endfor %}
+
+              {% else %}
+              <div class="mb-6">
+                <h1>Sorry, we couldn't find any recommendations for you! </h1>
+                <a href="{% url 'userProfile:get-genre' genre='all' pageNumber='1' %}" >Rate some books</a>
+              </div>
+
+            </div>
+
+         
+    {% endif %} -->
+  </div>
+  </div> <!-- inner-wrapper -->
+
+    <style>
+      .card:hover {
+        transform: scale(1.03);
+        box-shadow: 0 0 11px rgba(33,33,33,.7); 
+      }
+    </style>  
+{% endblock %}

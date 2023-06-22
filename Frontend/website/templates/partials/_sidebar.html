@@ -1,0 +1,88 @@
+{% load static %}
+<nav
+id="sidebarMenu"
+class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"
+>
+<div class="position-sticky pt-3 sidebar-sticky" style="margin-top: 5.5rem">
+  <form class="d-flex" role="search" method="POST" action="{%  url 'userProfile:search-books' %}">
+    {% csrf_token %}
+    <input type="hidden" name="current_page" value={{request.path}} />
+    <input
+      class="form-control mx-2"
+      type="search"
+      placeholder="Title/ISBN"
+      aria-label="Search"
+      name ="query"
+    />
+    <button class="btn btn-outline-success me-2" type="submit">
+      Search
+    </button>
+  </form>
+  <ul class="nav flex-column">
+    <li class="nav-item">
+      <a class="nav-link active" aria-current="page" href="{% url 'userProfile:get-genre' genre='all' pageNumber='1'%}">
+        <span data-feather="home" class="align-text-bottom"></span>
+        All books
+      </a>
+      <a class="nav-link" aria-current="page" href="{% url 'userProfile:get-genre' genre='non-fiction' pageNumber='1'%}">
+        <span data-feather="home" class="align-text-bottom"></span>
+        Non-Fiction
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'userProfile:get-genre' genre='fiction' pageNumber='1'%}">
+        <span data-feather="file" class="align-text-bottom"></span>
+        Fiction
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'userProfile:get-genre' genre='history' pageNumber='1'%}">
+        <span data-feather="file" class="align-text-bottom"></span>
+        Histroy
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'userProfile:get-genre' genre='science-fiction'  pageNumber='1'%}">
+        <span data-feather="users" class="align-text-bottom"></span>
+        Science-fiction
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'userProfile:get-genre' genre='young'  pageNumber='1'%}">
+        <span data-feather="users" class="align-text-bottom"></span>
+        Young adult
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'userProfile:get-genre' genre='mystery' pageNumber='1'%}">
+        <span data-feather="layers" class="align-text-bottom"></span>
+        Mystery
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'userProfile:get-genre' genre='fantasy' pageNumber='1'%}">
+        <span data-feather="layers" class="align-text-bottom"></span>
+        Fantasy
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'userProfile:get-genre' genre='romance' pageNumber='1'%}">
+        <span data-feather="layers" class="align-text-bottom"></span>
+        Romance
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'userProfile:get-genre' genre='paranormal' pageNumber='1'%}">
+        <span data-feather="layers" class="align-text-bottom"></span>
+        Paranormal
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'userProfile:get-genre' genre='thriller' pageNumber='1'%}">
+        <span data-feather="layers" class="align-text-bottom"></span>
+        Thriller
+      </a>
+    </li>
+  </ul>
+</div>
+</nav>

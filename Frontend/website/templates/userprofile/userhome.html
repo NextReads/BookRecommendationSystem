@@ -1,0 +1,66 @@
+{% extends 'userprofile/userprofile_base.html' %} {% load static %} {% block content %}
+<div class = "inner-wrapper">
+  {% include 'partials/_messages.html' %}
+
+          <div
+            class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3 mb-5"
+          >
+            <div class="col">
+              <div class="card mx-5 shadow-sm" style="width: 12rem">
+                <div class="card-header"># Books read</div>
+                <div class="card-body text-center">
+                  <h5 class="card-title">{{readCount}}</h5>
+                  <p class="card-text">Reading Goal : {{readingGoal}}</p>
+                  <button
+                    class="btn btn-sm btn-link"
+                    data-bs-toggle="modal" 
+                    data-bs-target="#readingGoalModal"
+                  >
+                    Edit
+                  </button>
+                  {% include 'partials/_readingGoal_modal.html'%}
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              {% if currentBook %}
+              <a href="{% url 'userProfile:book-details' book_id=currentBook.id %}" style="text-decoration: none;">
+              {% endif %}
+              <div class="card mx-5 shadow-sm" style="width: 12rem">
+                <img
+                  src="{{currentBook.imageUrl}}"
+                  class="bd-placeholder-img card-img-top"
+                  height="260"
+                />
+                <div class="card-header">Currently Reading</div>
+                <div class="card-body text-center">
+                  <h5 class="card-title">{{currentBook.title}}</h5>
+                </div>
+              </div>
+              {% if currentBook %}
+              </a>
+              {% endif %}
+            </div>
+            <div class="col">
+              {% if toReadNext %}
+              <a href="{% url 'userProfile:book-details' book_id=toReadNext.id %}" style="text-decoration: none;">
+              {% endif %}
+              <div class="card mx-5 shadow-sm" style="width: 12rem">
+                <img
+                  src="{{toReadNext.imageUrl}}"
+                  class="bd-placeholder-img card-img-top"
+                  height="260"
+                />
+                <div class="card-header">Want to read next</div>
+                <div class="card-body text-center">
+                  <h5 class="card-title">{{toReadNext.title}}</h5>
+                </div>
+              </div>
+              {% if toReadNext %}
+              </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+{% endblock %}       
+<!-- {% url 'userProfile:to-read-next' %} -->
