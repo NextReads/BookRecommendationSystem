@@ -5,6 +5,7 @@ from .views import UserProfile, UserRecommendations, UserBooks, tbrBooks, rateBo
 app_name = 'userProfile'
 urlpatterns = [
     path('recommendations', views.UserRecommendations.as_view(), name='userrecommendations'),
+    path('recommendationsPage', views.recommendationsPage.as_view(), name='userrecommendationspage'),
     path('userhome', views.UserProfile, name='userhome'),
     path('userbooks', views.UserBooks.as_view(), name='userbooks'),
     path('tbrbooks', views.tbrBooks.as_view(), name='tbrbooks'),
@@ -13,7 +14,7 @@ urlpatterns = [
     path('userbooks/reviewbook', views.reviewBook.as_view(), name='reviewbook'),
     path('userhome/to-read-next', views.setToReadNext.as_view(), name='to-read-next'),
     path('book/<str:book_id>', views.bookDetails, name='book-details'),
-    path('browseBooks/genre/<str:genre>', views.getGenre, name='get-genre'),
+    path('browseBooks/genre/<str:genre>/<int:pageNumber>', views.getGenre, name='get-genre'),
     path('browseBooks/want-to-read-browse', views.wantToReadBrowse, name='want-to-read-browse'),
     path('book/want-to-read/<str:book_id>', views.wantToReadBookDetails, name='want-to-read-book-details'),
     path('search', views.searchBooks, name='search-books'),

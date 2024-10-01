@@ -1,12 +1,14 @@
 {% load static %}
 <div class="col">
     <div class="card shadow-sm h-100">
-      <img
-        src="{{book.imageUrl}}"
-        class="bd-placeholder-img card-img-top"
-        height="280"
-        width="100%"
-      />
+      <div class="d-flex justify-content-center align-items-center">
+        <img
+          src="{{book.imageUrl}}"
+          class=""
+          height="210"
+          width="130"
+        />
+    </div>
       <div class="card-body text-center">
         <p class="card-text">{{book.title}}</p>
         <div class="justify-content-between align-items-center">
@@ -50,4 +52,9 @@
       </div>
     </div>
   </div>
- 
+  <style>
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 11px rgba(33,33,33,.7); 
+    }
+  </style>

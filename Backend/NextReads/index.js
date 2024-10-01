@@ -9,7 +9,7 @@ if (!process.env['JWTPRIVATEKEY']) {
   }
 
 
-mongoose.connect('mongodb+srv://AhmedAyman:1102@nextreads.he0ja7f.mongodb.net/nextreads')
+mongoose.connect('mongodb+srv://brutefoursteam:1234@nextreads.phkbn.mongodb.net/test')
     .then(() => console.log('connected to MongoDB'))
     .catch(err => console.error('could not connect to MongoDB', err));
 

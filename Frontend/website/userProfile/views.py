@@ -4,6 +4,7 @@ from django.views import View
 from django.contrib import messages
 from django.http import JsonResponse
 
+from config import domainName
 
 
 import requests
@@ -13,7 +14,7 @@ def getToReadNext(request):
         try:
             userToken = request.session.get('token')
             headers = {'x-auth-token': userToken}
-            toReadNextResponse = requests.get('http://localhost:80/api/users/toreadnext', headers=headers)
+            toReadNextResponse = requests.get(f'{domainName}/api/users/toreadnext', headers=headers)
             if toReadNextResponse.status_code == 200:
                 toReadNext = toReadNextResponse.json()  
                 # change bookId[_id] to bookId[id]
@@ -28,7 +29,7 @@ def getReadingGoal(request):
     try:
         userToken = request.session.get('token')
         headers = {'x-auth-token': userToken}
-        response = requests.get('http://localhost:80/api/users/getreadinggoal', headers=headers)
+        response = requests.get(f'{domainName}/api/users/getreadinggoal', headers=headers)
         if response.status_code == 200:
             readingGoal = response.json()
             #print("readingGoal ",readingGoal)
@@ -44,7 +45,7 @@ def setReadingGoal(request):
         headers = {'x-auth-token': userToken}
         readingGoal = request.POST.get('user_challenge[goal]')
         data = {'readingGoal': readingGoal}
-        response = requests.post('http://localhost:80/api/users/setreadinggoal', json=data, headers=headers)
+        response = requests.post(f'{domainName}/api/users/setreadinggoal', json=data, headers=headers)
         if response.status_code == 201:
             messages.success(request, 'Reading goal set successfully')
             return redirect('userProfile:userhome')
@@ -59,7 +60,7 @@ def getReadCount(request):
     try:
         userToken = request.session.get('token')
         headers = {'x-auth-token': userToken}
-        response = requests.get('http://localhost:80/api/users/ratedbooks', headers=headers)
+        response = requests.get(f'{domainName}/api/users/ratedbooks', headers=headers)
         if response.status_code == 200:
             readCount = response.json()
             return readCount.get('count')
@@ -71,7 +72,7 @@ def getReadCount(request):
 def getCurrentBook (request):
     try:
         headers = {'x-auth-token':request.session['token'] }
-        response = requests.get('http://localhost:80/api/users/CurrentBook', headers=headers)
+        response = requests.get(f'{domainName}/api/users/CurrentBook', headers=headers)
         if response.status_code == 200:
             book = response.json()
             #book['id'] = book.pop('_id')
@@ -96,25 +97,38 @@ class UserRecommendations(View):
     def get(self, request):
         try:
             userToken = request.session.get('token')
-            #print("offffffff ",userToken)
             headers = {'x-auth-token': userToken}
-            recommendationsResponse = requests.get('http://localhost:80/api/books/recommend', headers=headers)
+            recommendationsResponse = requests.get(f'{domainName}/api/books/recommend', headers=headers)
             if recommendationsResponse.status_code == 200:
                 recommendations = recommendationsResponse.json()
-                #print("recommendations ",recommendations)
-                return render(request, "userprofile/recommendations.html", {'recommendations': recommendations})
+                return  JsonResponse({'recommendations': recommendations}, status=200)
             else:
-                return render(request, "userprofile/recommendations.html", {'recommendations': []})
+                return JsonResponse({'message_error': recommendationsResponse.text}, status=400)
         except:
-            return render(request, "userprofile/recommendations.html", {'recommendations': []})
+            return JsonResponse({'message_error': 'error in getting recommendations.'}, status=400)
         
 
+    # def get(self, request):
+    #     recommendations = self.getRecommendedBooks(request)
+    #     if recommendations:
+    #         #print("recommendations ",recommendations)
+    #         for x in recommendations:
+    #             x['id'] = x.pop('_id')
+    #         return render(request, "userprofile/recommendations.html", {'recommendations': recommendations})
+    #     else:
+    #         messages.error(request, 'Error occured while getting recommendations')
+    #         return render(request, "userprofile/recommendations.html", {'recommendations': []})
+        
+class recommendationsPage(View):
+    def get(self, request):
+        return render(request, "userprofile/recommendations.html")
+    
 class UserBooks(View):
     def get(self,request):
         try:
             userToken = request.session.get('token')
             headers = {'x-auth-token': userToken}
-            booksResponse = requests.get('http://localhost:80/api/users/readbooks', headers=headers)
+            booksResponse = requests.get(f'{domainName}/api/users/readbooks', headers=headers)
             if booksResponse.status_code == 201:
                 books = booksResponse.json()
                 #book has bookId which includes all the details of the book
@@ -137,7 +151,7 @@ class tbrBooks(View):
         try:
             userToken = request.session.get('token')
             headers = {'x-auth-token': userToken}
-            booksResponse = requests.get('http://localhost:80/api/users/wanttoread', headers=headers)
+            booksResponse = requests.get(f'{domainName}/api/users/wanttoread', headers=headers)
             if booksResponse.status_code == 201:
                 books = booksResponse.json()
                 for book in books:
@@ -154,13 +168,12 @@ class rateBook(View):
     def post(self,request):
         bookId = request.POST.get('fe_eh')
         rating = request.POST.get('rating')
-        print("bookId zsfsdgds ",bookId)
-        print("rating ",rating)
+        
         try:
             userToken = request.session.get('token')
             headers = {'x-auth-token': userToken}
             data = {'bookId': bookId, 'rating': rating}
-            response = requests.post('http://localhost:80/api/books/'+ str(bookId)+'/rating', json=data, headers=headers)
+            response = requests.post(f'{domainName}/api/books/'+ str(bookId)+'/rating', json=data, headers=headers)
             if response.status_code == 201:
                 messages.success(request, 'Book rated successfully')
                 return redirect('userProfile:userbooks')
@@ -182,7 +195,7 @@ class reviewBook(View):
             userToken = request.session.get('token')
             headers = {'x-auth-token': userToken}
             data = {'review': review}
-            response = requests.post('http://localhost:80/api/books/'+ str(bookId)+'/review', json=data, headers=headers)
+            response = requests.post(f'{domainName}/api/books/'+ str(bookId)+'/review', json=data, headers=headers)
             if response.status_code == 201:
                 return redirect('userProfile:userbooks')
             else:
@@ -209,7 +222,7 @@ class setToReadNext(View):
 ##################################
 def similarBooks(genre):
         try:
-            response = requests.get('http://localhost:80/api/books/genre/', params={'pageNumber': 1, 'genre': genre})
+            response = requests.get(f'{domainName}/api/books/genre/', params={'pageNumber': 1, 'genre': genre})
             if response.status_code == 200:
                 books = response.json()
                 return books
@@ -217,10 +230,9 @@ def similarBooks(genre):
                 return None
         except: 
             return None
-def getAllGenreBooks():
+def getAllGenreBooks(pageNumber):
     try:
-        page = 5
-        response =  requests.get('http://localhost:80/api/books/getbooks?page='+str(page))
+        response =  requests.get(f'{domainName}/api/books/getbooks?page='+str(pageNumber))
         if response.status_code == 200:
             books = response.json()
             return books
@@ -233,7 +245,7 @@ def addToWantToRead(request, book_id):
     try:
         userToken = request.session.get('token')
         headers = {'x-auth-token': userToken}
-        response = requests.post('http://localhost:80/api/users/'+ str(book_id)+'/wantToRead', headers=headers)
+        response = requests.post(f'{domainName}/api/users/'+ str(book_id)+'/wantToRead', headers=headers)
         print("response ",response.text)
         if response.status_code == 201:
             return {'message_success': response.text}
@@ -246,7 +258,7 @@ def toReadNext( request, book_id):
     try:
         userToken = request.session.get('token')
         headers = {'x-auth-token': userToken}
-        response = requests.post('http://localhost:80/api/users/'+ str(book_id)+'/toreadnext', headers=headers)
+        response = requests.post(f'{domainName}/api/users/'+ str(book_id)+'/toreadnext', headers=headers)
         print("response ",response.text)
         if response.status_code == 201:
             return {'message_success': response.text}
@@ -259,7 +271,7 @@ def bookDetails(request, book_id):
     print("bookId",book_id)
     def getbookdetails(book_id):
         try:
-            response = requests.get('http://localhost:80/api/books/book/'+ str(book_id))
+            response = requests.get(f'{domainName}/api/books/book/'+ str(book_id))
             if response.status_code == 200:
                 book = response.json()
                 return book
@@ -296,18 +308,23 @@ def bookDetails(request, book_id):
         messages.error(request, 'Error occured while getting book details')
         return redirect('userProfile:userbooks')
     
-def getGenre(request,genre):
+def getGenre(request, genre, pageNumber):
     if(genre == 'all'):
-        books = getAllGenreBooks()
-        for x in books:
-            x['id'] = x.pop('_id')
-        return render(request, "userprofile/browseBooks.html", {'books': books})
+        books = getAllGenreBooks(pageNumber)
+        if books:
+            for x in books:
+                x['id'] = x.pop('_id')
+            return render(request, "userprofile/browseBooks.html", {'books': books})
+        else:
+            messages.error(request, 'Error occured while getting books')
+            return render(request, "userprofile/browseBooks.html", {'books': []})
     else:
         #print("genre ",genre)
         books = similarBooks(genre)
-        for x in books['books']:
-            x['id'] = x.pop('_id')
         if books:
+
+            for x in books['books']:
+                x['id'] = x.pop('_id')
             return render(request, "userprofile/browseBooks.html", {'books': books['books']})
         else:
             messages.error(request, 'Error occured while getting books')
@@ -321,13 +338,13 @@ def wantToReadBrowse(request):
     if response:
         if 'message_success' in response:
             messages.success(request, response['message_success'])
-            return redirect('userProfile:get-genre', genre='all')
+            return redirect('userProfile:get-genre', genre='all', pageNumber=1)
         else:
             messages.error(request, response['message_error'])
-            return redirect('userProfile:get-genre', genre='all')
+            return redirect('userProfile:get-genre', genre='all', pageNumber=1)
     else:
         messages.error(request, 'Error occured while adding book to want to read')
-        return redirect('userProfile:get-genre', genre='all')
+        return redirect('userProfile:get-genre', genre='all', pageNumber=1)
 
 def wantToReadBookDetails(request, book_id):
     response = addToWantToRead(request, book_id)
@@ -347,7 +364,7 @@ def searchBooks(request):
     print("search ",search)
     try:
 
-        response = requests.get("http://localhost:80/api/books/search/", params={'pageNumber': 1, 'search': search})
+        response = requests.get("{domainName}/api/books/search/", params={'pageNumber': 1, 'search': search})
         if response.status_code == 200:
             books = response.json()
             
@@ -372,7 +389,7 @@ def searchInRead(request):
     try:
         userToken = request.session.get('token')
         headers = {'x-auth-token': userToken}
-        response = requests.get('http://localhost:80/api/users/searchinread', params={'pageNumber': 1, 'search': search}, headers=headers)
+        response = requests.get(f'{domainName}/api/users/searchinread', params={'pageNumber': 1, 'search': search}, headers=headers)
         if response.status_code == 200:
             books = response.json()
             print("books ",books)
@@ -392,7 +409,7 @@ def searchInTbr(request):
     try:
         userToken = request.session.get('token')
         headers = {'x-auth-token': userToken}
-        response = requests.get('http://localhost:80/api/users/searchintbr', params={'pageNumber': 1, 'search': search}, headers=headers)
+        response = requests.get(f'{domainName}/api/users/searchintbr', params={'pageNumber': 1, 'search': search}, headers=headers)
         if response.status_code == 200:
             books = response.json()
             print("books ",books)
@@ -410,7 +427,7 @@ def deleteFromTbr(request, book_id):
     try:
         userToken = request.session.get('token')
         headers = {'x-auth-token': userToken}
-        response = requests.delete('http://localhost:80/api/users/'+ str(book_id)+'/wantToRead', headers=headers)
+        response = requests.delete(f'{domainName}/api/users/'+ str(book_id)+'/wantToRead', headers=headers)
         print("response ",response.text)
         if response.status_code == 201:
             messages.success(request, 'deleted from tbr successfully')
@@ -427,7 +444,7 @@ def deleteFromRead(request, book_id, rating):
         print("rating ",rating)
         userToken = request.session.get('token')
         headers = {'x-auth-token': userToken}
-        response = requests.delete('http://localhost:80/api/users/'+ str(book_id)+'/read/', headers=headers, json={'rating': rating})
+        response = requests.delete(f'{domainName}/api/users/'+ str(book_id)+'/read/', headers=headers, json={'rating': rating})
         print("response ",response.text)
         if response.status_code == 201:
             messages.success(request, 'deleted from read successfully')
@@ -443,7 +460,7 @@ def setCurrentBook (request, book_id):
     print("bookId", book_id)
     try:
         headers = {'x-auth-token':request.session['token'] }
-        response = requests.post('http://localhost:80/api/users/'+ str(book_id)+'/CurrentBook', headers=headers)
+        response = requests.post(f'{domainName}/api/users/'+ str(book_id)+'/CurrentBook', headers=headers)
         print("response", response.text)
         print("response", response.status_code)
         if response.status_code == 201:

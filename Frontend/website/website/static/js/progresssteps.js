@@ -74,8 +74,6 @@ progressNext.addEventListener("click", () => {
         updateProgress();
         progressNext.disabled = true;
     }
-
-window.onload = checkRateCount();
 function checkRateCount() {
   var rateCount = document.getElementById("rateCount").value;
   console.log("skfdlkf",rateCount)
@@ -85,5 +83,6 @@ function checkRateCount() {
     document.getElementById("progress-next").disabled = true;
   }
 }
+window.onload = checkRateCount();
 
 

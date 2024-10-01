@@ -25,7 +25,8 @@ SECRET_KEY = "django-insecure-b+-f9)$qv!4&39r9-j=d_1a8nci1k)it!p=ayt!$z955wmovqy
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['nextreadsfrontend.azurewebsites.net','nextreads.me','127.0.0.1']
+ALLOWED_HOSTS = ['nextreadsfrontend.azurewebsites.net','nextreads.me','127.0.0.1','localhost']
+CSRF_TRUSTED_ORIGINS = ['https://nextreadsfrontend.azurewebsites.net','https://nextreads.me']
 
 
 # Application definition
